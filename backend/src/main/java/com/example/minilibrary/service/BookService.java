@@ -41,4 +41,9 @@ public class BookService {
         }
         bookRepository.deleteById(id);
     }
+
+    @Transactional
+    public void deleteAll() {
+        bookRepository.deleteAll();
+    }
 }
