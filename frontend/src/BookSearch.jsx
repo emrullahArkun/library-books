@@ -22,37 +22,36 @@ function BookSearch({ onBookAdded }) {
     const [hasMore, setHasMore] = useState(true);
     const [loading, setLoading] = useState(false);
 
-    // Live search effect with debounce
+    // Effect only for category change if we want it to auto-trigger? 
+    // User asked for "manual trigger" essentially. 
+    // To match "results ... load ... after click on search", we should NOT trigger on category change automatically 
+    // UNLESS the user expects category filters to apply immediately. 
+    // Usually category filters are live. Let's make them part of the search query but only trigger when "Search" is clicked?
+    // OR: Trigger search immediately when Category is clicked (common pattern). 
+    // The prompt says "results ... not live load ... but after click on search".
+    // I will implement it such that changing category sets the state, but fetch is manual. 
+    // However, for UX, clicking a category usually refreshes results. I'll stick to strict interpretation: Manual, or only manual for text?
+    // "not live load ... but after click on search (or Enter)" implies the text input mostly.
+    // Let's safe bet: Category click triggers search immediately (it's a click interaction), text typing does not.
+
     useEffect(() => {
-        const delayDebounceFn = setTimeout(() => {
-            // Reset and search if query or category changes
-            setStartIndex(0);
-            setResults([]);
-            setHasMore(true);
-
-            if (query.trim() || activeCategory !== 'all') {
-                fetchBooks(0, false);
-            } else {
-                setResults([]);
-            }
-        }, 400);
-
-        return () => clearTimeout(delayDebounceFn);
-    }, [query, activeCategory]);
+        // Only trigger search if activeCategory changes (and it's not the initial mount potentially, or just let it be)
+        // But wait, the user said "Results loaded ... after click on search". 
+        // If I make category click trigger search, that complies with "click".
+        // UseEffect to reset results when category changes? No, let's keep it simple.
+        // We will just clear results if they become invalid? No.
+        // Let's remove the live search useEffect entirely.
+    }, []);
 
     const fetchBooks = async (index, isLoadMore) => {
-        if (loading) return; // Prevent duplicate requests
+        if (loading) return;
         setLoading(true);
         try {
             let searchUrl = 'https://www.googleapis.com/books/v1/volumes?q=';
-
-            // Construct query parts
             const queryPart = query.trim() || '';
             const categoryPart = activeCategory !== 'all' ? `subject:${activeCategory}` : '';
 
-            // Combine parts: "query subject:category" or just one of them
-            // If both are empty, we might search for something generic like "newest" if we wanted, 
-            // but logic here requires at least one.
+            // If empty search, verify if we should return
             if (!queryPart && !categoryPart) {
                 setLoading(false);
                 return;
@@ -70,11 +69,7 @@ function BookSearch({ onBookAdded }) {
                 } else {
                     setResults(data.items);
                 }
-
-                // If fewer items returned than requested, we reached the end
-                if (data.items.length < 20) {
-                    setHasMore(false);
-                }
+                if (data.items.length < 20) setHasMore(false);
             } else {
                 if (!isLoadMore) setResults([]);
                 setHasMore(false);
@@ -87,26 +82,32 @@ function BookSearch({ onBookAdded }) {
         }
     }
 
-    const handleScroll = (e) => {
-        const { scrollTop, scrollHeight, clientHeight } = e.target;
-        // Check if scrolled near bottom (within 50px)
-        if (scrollHeight - scrollTop <= clientHeight + 50) {
-            if (hasMore && !loading && (query.trim() || activeCategory !== 'all')) {
-                const nextIndex = startIndex + 20;
-                setStartIndex(nextIndex);
-                fetchBooks(nextIndex, true);
-            }
+    const loadMore = () => {
+        if (hasMore && !loading) {
+            const nextIndex = startIndex + 20;
+            setStartIndex(nextIndex);
+            fetchBooks(nextIndex, true);
         }
     };
 
     const searchBooks = (e) => {
-        e.preventDefault();
-        // Manual submit ensures search (logic handled in effect mostly, but robust here)
-        if (query.trim() || activeCategory !== 'all') {
-            setStartIndex(0);
-            fetchBooks(0, false);
-        }
+        if (e) e.preventDefault();
+        setStartIndex(0);
+        setHasMore(true);
+        setResults([]);
+        fetchBooks(0, false);
     };
+
+    // Trigger search when category changes? 
+    // Let's do it. It feels broken otherwise if you click "Fiction" and nothing happens.
+    useEffect(() => {
+        if (activeCategory !== 'all' || query) {
+            // We can trigger it, but let's respect "not live". 
+            // Actually, clicking a category IS a "search action". 
+            // Typing is what usually annoys people with "live" search.
+            searchBooks();
+        }
+    }, [activeCategory]);
 
     const addBookToLibrary = async (book) => {
         const volumeInfo = book.volumeInfo;
@@ -181,34 +182,84 @@ function BookSearch({ onBookAdded }) {
             {message && <p className={`message ${message.type}`}>{message.text}</p>}
             {error && <p className="error">{error}</p>}
 
-            <div
-                className="results-list"
-                onScroll={handleScroll}
-                style={{ display: (results.length > 0) ? 'flex' : 'none' }}
-            >
-                {results.map((book, index) => (
-                    <div key={`${book.id}-${index}`} className="search-result-card">
-                        <div className="result-img-wrapper">
-                            {book.volumeInfo.imageLinks?.smallThumbnail ? (
-                                <img src={book.volumeInfo.imageLinks.smallThumbnail} alt="" className="result-thumb" />
-                            ) : (
-                                <div className="result-thumb-placeholder">📚</div>
-                            )}
+            <div className="results-grid">
+                {results.map((book, index) => {
+                    const info = book.volumeInfo;
+                    return (
+                        <div key={`${book.id}-${index}`} className="search-result-card">
+                            <div className="card-header">
+                                <div className="result-img-wrapper">
+                                    {info.imageLinks?.thumbnail ? (
+                                        <img src={info.imageLinks.thumbnail} alt="" className="result-thumb" />
+                                    ) : (
+                                        <div className="result-thumb-placeholder">📚</div>
+                                    )}
+                                </div>
+                                <div className="card-basic-info">
+                                    <div className="book-title">{info.title}</div>
+                                    <div className="author">by {info.authors?.join(', ') || 'Unknown'}</div>
+                                    {info.publishedDate && <div className="meta-date">{info.publishedDate}</div>}
+                                    {info.publisher && <div className="meta-publisher">{info.publisher}</div>}
+                                </div>
+                            </div>
+
+                            <div className="card-details">
+                                {info.description && (
+                                    <p className="description" title={info.description}>
+                                        {info.description.length > 150
+                                            ? info.description.substring(0, 150) + '...'
+                                            : info.description}
+                                    </p>
+                                )}
+                                <div className="meta-row">
+                                    {info.pageCount && <span className="tag">📄 {info.pageCount} p.</span>}
+                                    {info.categories && <span className="tag">🏷️ {info.categories[0]}</span>}
+                                    {info.averageRating && <span className="tag">⭐ {info.averageRating}</span>}
+                                </div>
+                            </div>
+
+                            <div className="links-row">
+                                <span style={{ width: '100%', fontSize: '0.8em', color: '#999', marginBottom: '4px' }}>Links:</span>
+                                {book.accessInfo?.webReaderLink && (
+                                    <a href={book.accessInfo.webReaderLink} target="_blank" rel="noopener noreferrer" className="link-chip">
+                                        📖 Reader
+                                    </a>
+                                )}
+                                {info.previewLink && (
+                                    <a href={info.previewLink} target="_blank" rel="noopener noreferrer" className="link-chip">
+                                        👀 Preview
+                                    </a>
+                                )}
+                                {info.infoLink && (
+                                    <a href={info.infoLink} target="_blank" rel="noopener noreferrer" className="link-chip">
+                                        ℹ️ Info
+                                    </a>
+                                )}
+                                {info.canonicalVolumeLink && (
+                                    <a href={info.canonicalVolumeLink} target="_blank" rel="noopener noreferrer" className="link-chip">
+                                        🔗 Canonical
+                                    </a>
+                                )}
+                            </div>
+
+                            <button onClick={() => addBookToLibrary(book)} className="add-button">
+                                Add to Library
+                            </button>
                         </div>
-                        <div className="result-info">
-                            <div className="book-title">{book.volumeInfo.title}</div>
-                            <span className="author">by {book.volumeInfo.authors?.join(', ')}</span>
-                            {book.volumeInfo.publishedDate && <span className="search-date">{book.volumeInfo.publishedDate.substring(0, 4)}</span>}
-                        </div>
-                        <button onClick={() => addBookToLibrary(book)} className="add-button">
-                            Add to Library
-                        </button>
-                    </div>
-                ))}
-                {loading && <div className="loading-more">Loading more...</div>}
-                {!hasMore && results.length > 0 && <div className="end-message">No more results</div>}
-            </div>
-        </div>
+                    )
+                })}
+            </div >
+
+            {loading && <div className="loading-more">Loading...</div>}
+
+            {
+                results.length > 0 && hasMore && !loading && (
+                    <button onClick={loadMore} className="load-more-btn">Load More Results</button>
+                )
+            }
+
+            {!hasMore && results.length > 0 && <div className="end-message">End of results</div>}
+        </div >
     );
 }
 
