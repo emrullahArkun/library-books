@@ -17,7 +17,7 @@ services:
   db:
     image: postgres:16-alpine
     ports:
-      - "5432:5432"
+      - "5433:5432"
     environment:
       - POSTGRES_DB=minilibrary
       - POSTGRES_USER=postgres
