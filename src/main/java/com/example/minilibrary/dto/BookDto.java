@@ -1,4 +1,7 @@
 package com.example.minilibrary.dto;
 
-public record BookDto(Long id, String isbn, String title, Long authorId) {
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
+public record BookDto(Long id, @NotBlank String isbn, @NotBlank String title, @NotNull Long authorId) {
 }

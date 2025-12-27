@@ -33,7 +33,7 @@ public class AuthorController {
     }
 
     @PostMapping
-    public ResponseEntity<AuthorDto> createAuthor(@RequestBody AuthorDto authorDto) {
+    public ResponseEntity<AuthorDto> createAuthor(@RequestBody @jakarta.validation.Valid AuthorDto authorDto) {
         Author author = convertToEntity(authorDto);
         Author savedAuthor = authorService.save(author);
         return ResponseEntity.ok(convertToDto(savedAuthor));

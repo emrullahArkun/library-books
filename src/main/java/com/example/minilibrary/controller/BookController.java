@@ -36,7 +36,7 @@ public class BookController {
     }
 
     @PostMapping
-    public ResponseEntity<BookDto> createBook(@RequestBody BookDto bookDto) {
+    public ResponseEntity<BookDto> createBook(@RequestBody @jakarta.validation.Valid BookDto bookDto) {
         Author author = authorService.findById(bookDto.authorId())
                 .orElseThrow(() -> new ResourceNotFoundException("Author not found with id: " + bookDto.authorId()));
 

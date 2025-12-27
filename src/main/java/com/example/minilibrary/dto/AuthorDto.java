@@ -1,4 +1,6 @@
 package com.example.minilibrary.dto;
 
-public record AuthorDto(Long id, String name) {
+import jakarta.validation.constraints.NotBlank;
+
+public record AuthorDto(Long id, @NotBlank String name) {
 }
