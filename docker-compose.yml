@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   app:
-    build: .
+    build: ./backend
     ports:
       - "8080:8080"
     depends_on:
@@ -23,8 +23,20 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
     volumes:
+      - ./backend/src:/app/src # Mount source for live reload if configured (optional)
+      - ./backend/pom.xml:/app/pom.xml
       - postgres_data:/var/lib/postgresql/data
     restart: always
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - app
 
 volumes:
   postgres_data:

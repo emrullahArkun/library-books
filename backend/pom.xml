@@ -9,9 +9,9 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.example</groupId>
-	<artifactId>mini-library</artifactId>
+	<artifactId>library-books</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>mini-library</name>
+	<name>library-books</name>
 	<description>Mini Library System Backend Practice</description>
 	<properties>
 		<java.version>21</java.version>
