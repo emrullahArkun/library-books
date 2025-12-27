@@ -1,42 +1,26 @@
 import { useState, useEffect } from 'react'
-import BookSearch from './BookSearch'
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Navbar from './Navbar';
+import MyBooks from './MyBooks';
+import BookSearch from './BookSearch';
 import './App.css'
 
 function App() {
-  const [books, setBooks] = useState([])
-  const [error, setError] = useState(null)
-
-  const fetchBooks = () => {
-    fetch('/api/books')
-      .then(res => {
-        if (!res.ok) throw new Error('Network response was not ok')
-        return res.json()
-      })
-      .then(data => setBooks(data))
-      .catch(err => setError(err.message))
-  }
-
-  useEffect(() => {
-    fetchBooks()
-  }, [])
-
   return (
-    <div className="container">
-      <h1>Library Books</h1>
-
-      <BookSearch onBookAdded={fetchBooks} />
-
-      {error && <p className="error">Error: {error}</p>}
-      <div className="book-grid">
-        {books.map(book => (
-          <div key={book.id} className="book-card">
-            <h3>{book.title}</h3>
-            <p className="isbn">ISBN: {book.isbn}</p>
-          </div>
-        ))}
-        {books.length === 0 && !error && <p>No books found. Add some via API!</p>}
+    <Router>
+      <div className="app-container">
+        <Navbar />
+        <Routes>
+          <Route path="/" element={
+            <div className="home-content">
+              <h1>Welcome to Library Books</h1>
+              <BookSearch />
+            </div>
+          } />
+          <Route path="/my-books" element={<MyBooks />} />
+        </Routes>
       </div>
-    </div>
+    </Router>
   )
 }
 

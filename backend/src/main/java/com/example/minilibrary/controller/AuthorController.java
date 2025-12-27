@@ -4,6 +4,7 @@ import com.example.minilibrary.dto.AuthorDto;
 import com.example.minilibrary.model.Author;
 import com.example.minilibrary.service.AuthorService;
 import com.example.minilibrary.exception.ResourceNotFoundException;
+import com.example.minilibrary.mapper.AuthorMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,11 +18,12 @@ import java.util.stream.Collectors;
 public class AuthorController {
 
     private final AuthorService authorService;
+    private final AuthorMapper authorMapper;
 
     @GetMapping
     public List<AuthorDto> getAllAuthors() {
         return authorService.findAll().stream()
-                .map(this::convertToDto)
+                .map(authorMapper::toDto)
                 .collect(Collectors.toList());
     }
 
@@ -29,29 +31,19 @@ public class AuthorController {
     public ResponseEntity<AuthorDto> getAuthorById(@PathVariable Long id) {
         Author author = authorService.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Author not found with id: " + id));
-        return ResponseEntity.ok(convertToDto(author));
+        return ResponseEntity.ok(authorMapper.toDto(author));
     }
 
     @PostMapping
     public ResponseEntity<AuthorDto> createAuthor(@RequestBody @jakarta.validation.Valid AuthorDto authorDto) {
-        Author author = convertToEntity(authorDto);
+        Author author = authorMapper.toEntity(authorDto);
         Author savedAuthor = authorService.save(author);
-        return ResponseEntity.ok(convertToDto(savedAuthor));
+        return ResponseEntity.ok(authorMapper.toDto(savedAuthor));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteAuthor(@PathVariable Long id) {
         authorService.deleteById(id);
         return ResponseEntity.noContent().build();
-    }
-
-    private AuthorDto convertToDto(Author author) {
-        return new AuthorDto(author.getId(), author.getName());
-    }
-
-    private Author convertToEntity(AuthorDto authorDto) {
-        Author author = new Author();
-        author.setName(authorDto.name());
-        return author;
     }
 }

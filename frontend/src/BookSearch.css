@@ -1,15 +1,20 @@
 .search-container {
-    margin: 30px 0;
-    padding: 20px;
+    margin: 30px auto;
+    padding: 15px;
     background: #fff;
     border-radius: 8px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    max-width: 800px;
+    width: 100%;
+    box-sizing: border-box;
+    position: relative;
+    z-index: 100;
 }
 
 .search-form {
     display: flex;
     gap: 10px;
-    margin-bottom: 20px;
+    margin-bottom: 0;
 }
 
 .search-input {
@@ -21,13 +26,17 @@
 }
 
 .search-button {
-    padding: 10px 20px;
+    padding: 0 20px;
     background-color: #4CAF50;
     color: white;
     border: none;
     border-radius: 4px;
     cursor: pointer;
     font-size: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    height: 42px;
 }
 
 .search-button:hover {
@@ -37,27 +46,48 @@
 .results-list {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+    border-radius: 0 0 8px 8px;
+    border: 1px solid #eee;
+    max-height: 400px;
+    overflow-y: auto;
+    z-index: 1000;
+}
+
+.results-list:empty {
+    display: none;
 }
 
 .search-result-card {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 10px;
-    border: 1px solid #eee;
-    border-radius: 4px;
+    padding: 15px 20px;
+    border-bottom: 1px solid #eee;
+    background: white;
     transition: background-color 0.2s;
 }
 
+.search-result-card:last-child {
+    border-bottom: none;
+}
+
 .search-result-card:hover {
-    background-color: #f5f5f5;
+    background-color: #f9f9f9;
 }
 
 .result-info {
     display: flex;
     flex-direction: column;
     text-align: left;
+    flex: 1;
+    min-width: 0;
+    padding-right: 20px;
 }
 
 .author {
@@ -72,6 +102,8 @@
     padding: 8px 16px;
     border-radius: 4px;
     cursor: pointer;
+    flex-shrink: 0;
+    white-space: nowrap;
 }
 
 .add-button:hover {
@@ -81,7 +113,22 @@
 .message {
     margin: 10px 0;
     padding: 10px;
+    border-radius: 4px;
+}
+
+.message.success {
     background-color: #e8f5e9;
     color: #2e7d32;
-    border-radius: 4px;
+}
+
+.message.error {
+    background-color: #ffebee;
+    color: #c62828;
+}
+
+.book-title {
+    font-weight: 600;
+    color: #000;
+    font-size: 1.1em;
+    margin-bottom: 4px;
 }

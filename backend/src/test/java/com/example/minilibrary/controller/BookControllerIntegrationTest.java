@@ -49,7 +49,8 @@ public class BookControllerIntegrationTest {
 
                 // When: Creating a book for this author
                 com.example.minilibrary.dto.CreateBookRequest request = new com.example.minilibrary.dto.CreateBookRequest(
-                                "978-1234567890", "Harry Potter", savedAuthor.getId(), null);
+                                "978-1234567890", "Harry Potter", savedAuthor.getId(), null, "2001",
+                                "http://cover.url");
 
                 mockMvc.perform(post("/api/books")
                                 .contentType(MediaType.APPLICATION_JSON)
@@ -64,7 +65,7 @@ public class BookControllerIntegrationTest {
         void shouldCreateBookWithAuthorName() throws Exception {
                 // When: Creating a book with ONLY author name (Find or Create logic)
                 com.example.minilibrary.dto.CreateBookRequest request = new com.example.minilibrary.dto.CreateBookRequest(
-                                "978-9876543210", "New Book", null, "New Author");
+                                "978-9876543210", "New Book", null, "New Author", null, null);
 
                 mockMvc.perform(post("/api/books")
                                 .contentType(MediaType.APPLICATION_JSON)
@@ -79,7 +80,7 @@ public class BookControllerIntegrationTest {
                 // When: Creating a book for a non-existent author ID
                 com.example.minilibrary.dto.CreateBookRequest request = new com.example.minilibrary.dto.CreateBookRequest(
                                 "123",
-                                "Unknown Book", 999L, null);
+                                "Unknown Book", 999L, null, null, null);
 
                 mockMvc.perform(post("/api/books")
                                 .contentType(MediaType.APPLICATION_JSON)
