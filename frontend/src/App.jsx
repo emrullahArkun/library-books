@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react'
+import BookSearch from './BookSearch'
 import './App.css'
 
 function App() {
   const [books, setBooks] = useState([])
   const [error, setError] = useState(null)
 
-  useEffect(() => {
+  const fetchBooks = () => {
     fetch('/api/books')
       .then(res => {
         if (!res.ok) throw new Error('Network response was not ok')
@@ -13,11 +14,18 @@ function App() {
       })
       .then(data => setBooks(data))
       .catch(err => setError(err.message))
+  }
+
+  useEffect(() => {
+    fetchBooks()
   }, [])
 
   return (
     <div className="container">
       <h1>Library Books</h1>
+
+      <BookSearch onBookAdded={fetchBooks} />
+
       {error && <p className="error">Error: {error}</p>}
       <div className="book-grid">
         {books.map(book => (

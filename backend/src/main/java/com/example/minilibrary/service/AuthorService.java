@@ -26,6 +26,13 @@ public class AuthorService {
         return authorRepository.findById(id);
     }
 
+    public Optional<Author> findByName(String name) {
+        if (name == null) {
+            throw new IllegalArgumentException("Name cannot be null");
+        }
+        return authorRepository.findByName(name);
+    }
+
     @Transactional
     public Author save(Author author) {
         if (author == null) {
