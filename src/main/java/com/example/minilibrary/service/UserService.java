@@ -22,18 +22,27 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
 
     public User createUser(User user) {
+        if (user == null) {
+            throw new IllegalArgumentException("User cannot be null");
+        }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setRole("USER"); // Default role
         return userRepository.save(user);
     }
 
     public User getUserById(Long id) {
+        if (id == null) {
+            throw new IllegalArgumentException("ID cannot be null");
+        }
         return userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
     }
 
     @Transactional
     public User addBookToFavorites(Long userId, Long bookId) {
+        if (userId == null || bookId == null) {
+            throw new IllegalArgumentException("IDs cannot be null");
+        }
         User user = getUserById(userId);
         Book book = bookRepository.findById(bookId)
                 .orElseThrow(() -> new ResourceNotFoundException("Book not found with id: " + bookId));
@@ -44,6 +53,9 @@ public class UserService {
 
     @Transactional
     public User removeBookFromFavorites(Long userId, Long bookId) {
+        if (userId == null || bookId == null) {
+            throw new IllegalArgumentException("IDs cannot be null");
+        }
         User user = getUserById(userId);
         Book book = bookRepository.findById(bookId)
                 .orElseThrow(() -> new ResourceNotFoundException("Book not found with id: " + bookId));
@@ -54,6 +66,9 @@ public class UserService {
 
     @Transactional
     public User addAuthorToFavorites(Long userId, Long authorId) {
+        if (userId == null || authorId == null) {
+            throw new IllegalArgumentException("IDs cannot be null");
+        }
         User user = getUserById(userId);
         Author author = authorRepository.findById(authorId)
                 .orElseThrow(() -> new ResourceNotFoundException("Author not found with id: " + authorId));
@@ -64,6 +79,9 @@ public class UserService {
 
     @Transactional
     public User removeAuthorFromFavorites(Long userId, Long authorId) {
+        if (userId == null || authorId == null) {
+            throw new IllegalArgumentException("IDs cannot be null");
+        }
         User user = getUserById(userId);
         Author author = authorRepository.findById(authorId)
                 .orElseThrow(() -> new ResourceNotFoundException("Author not found with id: " + authorId));

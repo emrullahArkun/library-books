@@ -20,16 +20,25 @@ public class BookService {
     }
 
     public Optional<Book> findById(Long id) {
+        if (id == null) {
+            throw new IllegalArgumentException("ID cannot be null");
+        }
         return bookRepository.findById(id);
     }
 
     @Transactional
     public Book save(Book book) {
+        if (book == null) {
+            throw new IllegalArgumentException("Book cannot be null");
+        }
         return bookRepository.save(book);
     }
 
     @Transactional
     public void deleteById(Long id) {
+        if (id == null) {
+            throw new IllegalArgumentException("ID cannot be null");
+        }
         bookRepository.deleteById(id);
     }
 }

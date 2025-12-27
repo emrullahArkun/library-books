@@ -20,16 +20,25 @@ public class AuthorService {
     }
 
     public Optional<Author> findById(Long id) {
+        if (id == null) {
+            throw new IllegalArgumentException("ID cannot be null");
+        }
         return authorRepository.findById(id);
     }
 
     @Transactional
     public Author save(Author author) {
+        if (author == null) {
+            throw new IllegalArgumentException("Author cannot be null");
+        }
         return authorRepository.save(author);
     }
 
     @Transactional
     public void deleteById(Long id) {
+        if (id == null) {
+            throw new IllegalArgumentException("ID cannot be null");
+        }
         authorRepository.deleteById(id);
     }
 }
