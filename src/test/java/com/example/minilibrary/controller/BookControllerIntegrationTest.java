@@ -20,6 +20,7 @@ import static org.hamcrest.Matchers.*;
 @SpringBootTest
 @AutoConfigureMockMvc
 @SuppressWarnings("null")
+@org.springframework.security.test.context.support.WithMockUser(username = "admin", roles = { "USER" })
 public class BookControllerIntegrationTest {
 
     @Autowired
