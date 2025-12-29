@@ -10,13 +10,25 @@
         "placeholder": "Search by title, author, ISBN...",
         "button": "Search",
         "loading": "Loading...",
+        "welcomeMessage": "What do you want to read now?",
         "loadMore": "Load More Results",
         "endResults": "End of results",
         "result": {
             "by": "by",
             "unknown": "Unknown",
             "addToLibrary": "Add to Library",
-            "pages": "p."
+            "pages": "p.",
+            "showMore": "Show More",
+            "description": "Description"
+        },
+        "toast": {
+            "successTitle": "Book Added",
+            "successDesc": "Successfully added \"{{title}}\" to your library.",
+            "errorTitle": "Error",
+            "loginRequired": "Please login to add books",
+            "noIsbn": "Cannot add book: No ISBN found",
+            "duplicate": "This book is already in your collection.",
+            "addFailed": "Failed to add book to library"
         }
     },
     "myBooks": {

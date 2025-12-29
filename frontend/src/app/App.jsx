@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Outlet } from 'react-router-dom';
 import Navbar from '../common/components/Navbar';
 import MyBooks from '../features/my-books/MyBooks';
@@ -8,6 +9,8 @@ import VerifyEmailPage from '../features/auth/VerifyEmailPage';
 import { AuthProvider } from '../context/AuthContext';
 import ProtectedRoute from '../components/ProtectedRoute';
 import PublicRoute from '../components/PublicRoute';
+import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import './App.css'
 
 // Layout component included Navbar
@@ -17,6 +20,45 @@ const MainLayout = () => {
       <Navbar />
       <Outlet />
     </>
+  );
+};
+
+const TypewriterTitle = () => {
+  const { t } = useTranslation();
+  const fullText = t('search.welcomeMessage');
+  const [displayedText, setDisplayedText] = useState('');
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  useEffect(() => {
+    // Reset if text changes (e.g. language switch)
+    if (currentIndex === 0) setDisplayedText('');
+
+    if (currentIndex < fullText.length) {
+      const timeout = setTimeout(() => {
+        setDisplayedText(prev => prev + fullText[currentIndex]);
+        setCurrentIndex(prev => prev + 1);
+      }, 50); // Typing speed
+      return () => clearTimeout(timeout);
+    }
+  }, [currentIndex, fullText]);
+
+  // Handle language switch reset
+  useEffect(() => {
+    setDisplayedText('');
+    setCurrentIndex(0);
+  }, [fullText]);
+
+  return (
+    <h1 style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "1.5em" }}>
+      {displayedText}
+      {currentIndex < fullText.length && (
+        <motion.span
+          animate={{ opacity: [1, 0] }}
+          transition={{ duration: 0.8, repeat: Infinity, ease: "linear" }}
+          style={{ display: 'inline-block', marginLeft: '2px', width: '2px', height: '1em', backgroundColor: 'currentColor' }}
+        />
+      )}
+    </h1>
   );
 };
 
@@ -31,7 +73,7 @@ function App() {
               <Route path="/" element={
                 <ProtectedRoute>
                   <div className="home-content">
-                    <h1>Welcome to Library Books</h1>
+                    <TypewriterTitle />
                     <BookSearch />
                   </div>
                 </ProtectedRoute>

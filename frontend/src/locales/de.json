@@ -10,13 +10,25 @@
         "placeholder": "Suche nach Titel, Autor, ISBN...",
         "button": "Suchen",
         "loading": "Lädt...",
+        "welcomeMessage": "Was möchtest du heute lesen?",
         "loadMore": "Mehr Ergebnisse laden",
         "endResults": "Keine weiteren Ergebnisse",
         "result": {
             "by": "von",
             "unknown": "Unbekannt",
             "addToLibrary": "Zur Bibliothek hinzufügen",
-            "pages": "S."
+            "pages": "S.",
+            "showMore": "Mehr anzeigen",
+            "description": "Beschreibung"
+        },
+        "toast": {
+            "successTitle": "Buch hinzugefügt",
+            "successDesc": "\"{{title}}\" wurde erfolgreich zu deiner Bibliothek hinzugefügt.",
+            "errorTitle": "Fehler",
+            "loginRequired": "Bitte melden Sie sich an, um Bücher hinzuzufügen",
+            "noIsbn": "Buch kann nicht hinzugefügt werden: Keine ISBN gefunden",
+            "duplicate": "Dieses Buch ist bereits in deiner Sammlung.",
+            "addFailed": "Hinzufügen zur Bibliothek fehlgeschlagen"
         }
     },
     "myBooks": {

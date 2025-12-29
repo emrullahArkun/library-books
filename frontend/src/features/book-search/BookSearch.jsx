@@ -11,7 +11,6 @@ function BookSearch({ onBookAdded }) {
         query, setQuery,
         results,
         error,
-        message,
         hasMore,
         loading,
         searchBooks,
@@ -30,7 +29,6 @@ function BookSearch({ onBookAdded }) {
         <div className="search-container">
             <SearchForm query={query} setQuery={setQuery} onSearch={searchBooks} />
 
-            {message && <p className={`message ${message.type}`}>{message.text}</p>}
             {error && <p className="error">{error}</p>}
 
             <div className="results-grid">

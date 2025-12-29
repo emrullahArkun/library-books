@@ -1,11 +1,14 @@
 import { useState } from 'react';
 import { useAuth } from '../../../context/AuthContext';
 import { useInfiniteQuery, useMutation } from '@tanstack/react-query';
+import { useToast } from '@chakra-ui/react';
+import { useTranslation } from 'react-i18next';
 
 export const useBookSearch = () => {
     const [query, setQuery] = useState('');
-    const [message, setMessage] = useState('');
     const { token } = useAuth();
+    const toast = useToast();
+    const { t } = useTranslation();
 
     const {
         data,
@@ -34,18 +37,27 @@ export const useBookSearch = () => {
         initialPageParam: 0
     });
 
-    const results = data ? data.pages.flatMap(page => page.items || []) : [];
+    const results = data ? data.pages.flatMap(page => page.items || [])
+        .filter(book => {
+            const info = book.volumeInfo;
+            const hasAuthors = info.authors && info.authors.length > 0;
+            const hasISBN = info.industryIdentifiers?.some(id => id.type === 'ISBN_13' || id.type === 'ISBN_10');
+            const hasDescription = info.description && info.description.trim().length > 0;
+            return hasAuthors && hasISBN && hasDescription;
+        })
+        : [];
+
     const totalItems = data?.pages[0]?.totalItems || 0;
 
     const addBookMutation = useMutation({
         mutationFn: async (book) => {
-            if (!token) throw new Error('Please login to add books');
+            if (!token) throw new Error(t('search.toast.loginRequired'));
 
             const volumeInfo = book.volumeInfo;
             const isbnInfo = volumeInfo.industryIdentifiers?.find(id => id.type === 'ISBN_13')
                 || volumeInfo.industryIdentifiers?.find(id => id.type === 'ISBN_10');
 
-            if (!isbnInfo) throw new Error('Cannot add book: No ISBN found');
+            if (!isbnInfo) throw new Error(t('search.toast.noIsbn'));
 
             const newBook = {
                 title: volumeInfo.title,
@@ -68,16 +80,30 @@ export const useBookSearch = () => {
             if (response.ok) {
                 return newBook;
             } else if (response.status === 409) {
-                throw new Error('This book is already in your collection.');
+                throw new Error(t('search.toast.duplicate'));
             } else {
-                throw new Error('Failed to add book to library');
+                throw new Error(t('search.toast.addFailed'));
             }
         },
         onSuccess: (data) => {
-            setMessage({ text: `Added "${data.title}" to library!`, type: 'success' });
+            toast({
+                title: t('search.toast.successTitle'),
+                description: t('search.toast.successDesc', { title: data.title }),
+                status: 'success',
+                duration: 3000,
+                isClosable: true,
+                position: 'top-right'
+            });
         },
         onError: (err) => {
-            setMessage({ text: err.message, type: 'error' });
+            toast({
+                title: t('search.toast.errorTitle'),
+                description: err.message,
+                status: 'error',
+                duration: 3000,
+                isClosable: true,
+                position: 'top-right'
+            });
         }
     });
 
@@ -90,7 +116,6 @@ export const useBookSearch = () => {
         query, setQuery,
         results,
         error: error ? error.message : null,
-        message,
         hasMore: hasNextPage,
         loading: isLoading || isFetching,
         searchBooks,
