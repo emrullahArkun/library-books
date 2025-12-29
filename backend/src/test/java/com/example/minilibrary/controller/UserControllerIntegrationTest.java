@@ -81,6 +81,7 @@ public class UserControllerIntegrationTest {
                 book.setTitle("Harry Potter");
                 book.setIsbn("12345");
                 book.setAuthor(savedAuthor);
+                book.setUser(userRepository.findById(createdUser.id()).orElseThrow());
                 Book savedBook = bookRepository.save(book);
 
                 // When: Adding book to favorites
