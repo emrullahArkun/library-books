@@ -61,7 +61,12 @@
             "loginLink": "Already have an account?"
         },
         "email": "Email",
-        "password": "Password"
+        "password": "Password",
+        "confirmPassword": "Confirm Password",
+        "passwordsDoNotMatch": "Passwords do not match",
+        "required": "Please fill out this field",
+        "enterEmail": "Enter your email",
+        "enterPassword": "Enter your password"
     },
     "readingSession": {
         "start": "▶ Start Reading",

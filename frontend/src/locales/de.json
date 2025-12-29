@@ -61,7 +61,12 @@
             "loginLink": "Bereits registriert?"
         },
         "email": "E-Mail",
-        "password": "Passwort"
+        "password": "Passwort",
+        "confirmPassword": "Passwort wiederholen",
+        "passwordsDoNotMatch": "Passwörter stimmen nicht überein",
+        "required": "Bitte füllen Sie dieses Feld aus",
+        "enterEmail": "E-Mail eingeben",
+        "enterPassword": "Passwort eingeben"
     },
     "readingSession": {
         "start": "▶ Lesen starten",

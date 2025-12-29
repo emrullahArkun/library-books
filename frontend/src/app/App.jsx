@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Outlet } from 'react-router-dom';
 import Navbar from '../common/components/Navbar';
 import MyBooks from '../features/my-books/MyBooks';
 import BookSearch from '../features/book-search/BookSearch';
@@ -10,21 +10,40 @@ import ProtectedRoute from '../components/ProtectedRoute';
 import PublicRoute from '../components/PublicRoute';
 import './App.css'
 
+// Layout component included Navbar
+const MainLayout = () => {
+  return (
+    <>
+      <Navbar />
+      <Outlet />
+    </>
+  );
+};
+
 function App() {
   return (
     <AuthProvider>
       <Router>
         <div className="app-container">
-          <Navbar />
           <Routes>
-            <Route path="/" element={
-              <ProtectedRoute>
-                <div className="home-content">
-                  <h1>Welcome to Library Books</h1>
-                  <BookSearch />
-                </div>
-              </ProtectedRoute>
-            } />
+            {/* Routes with Navbar */}
+            <Route element={<MainLayout />}>
+              <Route path="/" element={
+                <ProtectedRoute>
+                  <div className="home-content">
+                    <h1>Welcome to Library Books</h1>
+                    <BookSearch />
+                  </div>
+                </ProtectedRoute>
+              } />
+              <Route path="/my-books" element={
+                <ProtectedRoute>
+                  <MyBooks />
+                </ProtectedRoute>
+              } />
+            </Route>
+
+            {/* Routes without Navbar */}
             <Route path="/login" element={
               <PublicRoute>
                 <LoginPage />
@@ -36,11 +55,6 @@ function App() {
               </PublicRoute>
             } />
             <Route path="/verify" element={<VerifyEmailPage />} />
-            <Route path="/my-books" element={
-              <ProtectedRoute>
-                <MyBooks />
-              </ProtectedRoute>
-            } />
           </Routes>
         </div>
       </Router>
