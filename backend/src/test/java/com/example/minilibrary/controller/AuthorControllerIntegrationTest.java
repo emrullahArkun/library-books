@@ -31,6 +31,9 @@ public class AuthorControllerIntegrationTest {
     @Autowired
     private ObjectMapper objectMapper;
 
+    @org.springframework.boot.test.mock.mockito.MockBean
+    private org.springframework.mail.javamail.JavaMailSender mailSender;
+
     @BeforeEach
     void setUp() {
         authorRepository.deleteAll();
