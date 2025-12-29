@@ -1,9 +1,7 @@
 package com.example.minilibrary.controller;
 
 import com.example.minilibrary.dto.BookDto;
-import com.example.minilibrary.model.Author;
 import com.example.minilibrary.model.Book;
-import com.example.minilibrary.service.AuthorService;
 import com.example.minilibrary.service.BookService;
 import com.example.minilibrary.exception.ResourceNotFoundException;
 import com.example.minilibrary.mapper.BookMapper;
@@ -21,7 +19,6 @@ import java.util.stream.Collectors;
 public class BookController {
 
     private final BookService bookService;
-    private final AuthorService authorService;
     private final BookMapper bookMapper;
     private final com.example.minilibrary.repository.UserRepository userRepository;
 
@@ -48,36 +45,7 @@ public class BookController {
     public ResponseEntity<BookDto> createBook(
             @RequestBody @jakarta.validation.Valid CreateBookRequest request,
             java.security.Principal principal) {
-        Author author;
-        if (request.authorId() != null) {
-            author = authorService.findById(request.authorId())
-                    .orElseThrow(
-                            () -> new ResourceNotFoundException("Author not found with id: " + request.authorId()));
-        } else if (request.authorName() != null && !request.authorName().isBlank()) {
-            author = authorService.findByName(request.authorName())
-                    .orElseGet(() -> {
-                        Author newAuthor = new Author();
-                        newAuthor.setName(request.authorName());
-                        return authorService.save(newAuthor);
-                    });
-        } else {
-            throw new IllegalArgumentException("Either authorId or authorName must be provided");
-        }
-
-        com.example.minilibrary.model.User user = getCurrentUser(principal);
-        Book book = bookMapper.toEntity(request);
-        book.setAuthor(author);
-        book.setUser(user);
-
-        if (bookService.existsByIsbnAndUser(book.getIsbn(), user)) {
-            throw new com.example.minilibrary.exception.DuplicateResourceException(
-                    "Book with ISBN " + book.getIsbn() + " already exists in your collection.");
-        }
-
-        if (book.getStartDate() == null) {
-            book.setStartDate(java.time.LocalDate.now());
-        }
-        Book savedBook = bookService.save(book);
+        Book savedBook = bookService.createBook(request, getCurrentUser(principal));
         return ResponseEntity.ok(bookMapper.toDto(savedBook));
     }
 

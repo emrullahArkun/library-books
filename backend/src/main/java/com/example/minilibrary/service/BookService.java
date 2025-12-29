@@ -1,28 +1,35 @@
 package com.example.minilibrary.service;
 
+import com.example.minilibrary.dto.CreateBookRequest;
+import com.example.minilibrary.exception.DuplicateResourceException;
+import com.example.minilibrary.exception.ResourceNotFoundException;
+import com.example.minilibrary.mapper.BookMapper;
+import com.example.minilibrary.model.Author;
 import com.example.minilibrary.model.Book;
 import com.example.minilibrary.repository.BookRepository;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Validated
 public class BookService {
 
     private final BookRepository bookRepository;
+    private final AuthorService authorService;
+    private final BookMapper bookMapper;
 
     public List<Book> findAllByUser(com.example.minilibrary.model.User user) {
         return bookRepository.findByUser(user);
     }
 
-    public Optional<Book> findByIdAndUser(Long id, com.example.minilibrary.model.User user) {
-        if (id == null) {
-            throw new IllegalArgumentException("ID cannot be null");
-        }
+    public Optional<Book> findByIdAndUser(@NotNull Long id, com.example.minilibrary.model.User user) {
         // Ensuring the user can only access their own book
         return bookRepository.findById(id).filter(book -> book.getUser().equals(user));
     }
@@ -32,18 +39,46 @@ public class BookService {
     }
 
     @Transactional
-    public Book save(Book book) {
-        if (book == null) {
-            throw new IllegalArgumentException("Book cannot be null");
+    public Book createBook(CreateBookRequest request, com.example.minilibrary.model.User user) {
+        Author author;
+        if (request.authorId() != null) {
+            author = authorService.findById(request.authorId())
+                    .orElseThrow(
+                            () -> new ResourceNotFoundException("Author not found with id: " + request.authorId()));
+        } else if (request.authorName() != null && !request.authorName().isBlank()) {
+            author = authorService.findByName(request.authorName())
+                    .orElseGet(() -> {
+                        Author newAuthor = new Author();
+                        newAuthor.setName(request.authorName());
+                        return authorService.save(newAuthor);
+                    });
+        } else {
+            throw new IllegalArgumentException("Either authorId or authorName must be provided");
         }
+
+        if (existsByIsbnAndUser(request.isbn(), user)) {
+            throw new DuplicateResourceException(
+                    "Book with ISBN " + request.isbn() + " already exists in your collection.");
+        }
+
+        Book book = bookMapper.toEntity(request);
+        book.setAuthor(author);
+        book.setUser(user);
+
+        if (book.getStartDate() == null) {
+            book.setStartDate(java.time.LocalDate.now());
+        }
+
         return bookRepository.save(book);
     }
 
     @Transactional
-    public void deleteByIdAndUser(Long id, com.example.minilibrary.model.User user) {
-        if (id == null) {
-            throw new IllegalArgumentException("ID cannot be null");
-        }
+    public Book save(@NotNull Book book) {
+        return bookRepository.save(book);
+    }
+
+    @Transactional
+    public void deleteByIdAndUser(@NotNull Long id, com.example.minilibrary.model.User user) {
         bookRepository.deleteByIdAndUser(id, user);
     }
 
@@ -53,9 +88,10 @@ public class BookService {
     }
 
     @Transactional
-    public Book updateBookProgress(Long id, Integer currentPage, com.example.minilibrary.model.User user) {
+    public Book updateBookProgress(@NotNull Long id, @NotNull Integer currentPage,
+            com.example.minilibrary.model.User user) {
         Book book = findByIdAndUser(id, user)
-                .orElseThrow(() -> new com.example.minilibrary.exception.ResourceNotFoundException("Book not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Book not found"));
 
         if (currentPage < 0) {
             throw new IllegalArgumentException("Current page cannot be negative");
@@ -69,13 +105,10 @@ public class BookService {
     }
 
     @Transactional
-    public Book updateBookStatus(Long id, Boolean completed, com.example.minilibrary.model.User user) {
+    public Book updateBookStatus(@NotNull Long id, @NotNull Boolean completed,
+            com.example.minilibrary.model.User user) {
         Book book = findByIdAndUser(id, user)
-                .orElseThrow(() -> new com.example.minilibrary.exception.ResourceNotFoundException("Book not found"));
-
-        if (completed == null) {
-            throw new IllegalArgumentException("Completed status cannot be null");
-        }
+                .orElseThrow(() -> new ResourceNotFoundException("Book not found"));
 
         book.setCompleted(completed);
         return bookRepository.save(book);

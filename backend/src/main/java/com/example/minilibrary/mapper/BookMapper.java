@@ -19,5 +19,6 @@ public interface BookMapper {
     @Mapping(target = "currentPage", ignore = true)
     @Mapping(target = "startDate", ignore = true)
     @Mapping(target = "user", ignore = true)
+    @Mapping(target = "completed", ignore = true)
     Book toEntity(CreateBookRequest request);
 }
