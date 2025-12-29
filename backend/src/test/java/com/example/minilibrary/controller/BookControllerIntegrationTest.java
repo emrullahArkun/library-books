@@ -1,6 +1,9 @@
 package com.example.minilibrary.controller;
 
+import com.example.minilibrary.dto.CreateBookRequest;
 import com.example.minilibrary.model.Author;
+import com.example.minilibrary.model.Book;
+import com.example.minilibrary.model.User;
 import com.example.minilibrary.repository.AuthorRepository;
 import com.example.minilibrary.repository.BookRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -12,9 +15,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.Map;
+
+import static org.hamcrest.Matchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static org.hamcrest.Matchers.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -40,6 +45,8 @@ public class BookControllerIntegrationTest {
         @Autowired
         private ObjectMapper objectMapper;
 
+        private User defaultUser;
+
         @BeforeEach
         void setUp() {
                 bookRepository.deleteAll();
@@ -47,39 +54,38 @@ public class BookControllerIntegrationTest {
                 userRepository.deleteAll();
 
                 // Create the user that matches @WithMockUser
-                com.example.minilibrary.model.User user = new com.example.minilibrary.model.User();
-                user.setEmail("admin");
-                user.setPassword("password");
-                user.setRole(com.example.minilibrary.model.Role.USER); // Assuming Role enum exists or string
-                user.setEnabled(true);
-                userRepository.save(user);
+                defaultUser = new User();
+                defaultUser.setEmail("admin");
+                defaultUser.setPassword("password");
+                defaultUser.setRole(com.example.minilibrary.model.Role.USER);
+                defaultUser.setEnabled(true);
+                userRepository.save(defaultUser);
         }
 
         @Test
         void shouldCreateBook() throws Exception {
-                // Given: An existing author
-                Author author = new Author();
-                author.setName("J.K. Rowling");
-                Author savedAuthor = authorRepository.save(author);
+                // Given
+                Author author = createAuthor("J.K. Rowling");
 
-                // When: Creating a book for this author
-                com.example.minilibrary.dto.CreateBookRequest request = new com.example.minilibrary.dto.CreateBookRequest(
-                                "978-1234567890", "Harry Potter", savedAuthor.getId(), null, "2001",
-                                "http://cover.url", 250);
+                // When
+                CreateBookRequest request = new CreateBookRequest(
+                                "978-1234567890", "Harry Potter", author.getId(), null, "2001", "http://cover.url",
+                                250);
 
+                // Then
                 mockMvc.perform(post("/api/books")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(request)))
                                 .andExpect(status().isOk())
                                 .andExpect(jsonPath("$.id").exists())
                                 .andExpect(jsonPath("$.title", is("Harry Potter")))
-                                .andExpect(jsonPath("$.authorId", is(savedAuthor.getId().intValue())));
+                                .andExpect(jsonPath("$.authorId", is(author.getId().intValue())));
         }
 
         @Test
         void shouldCreateBookWithAuthorName() throws Exception {
                 // When: Creating a book with ONLY author name (Find or Create logic)
-                com.example.minilibrary.dto.CreateBookRequest request = new com.example.minilibrary.dto.CreateBookRequest(
+                CreateBookRequest request = new CreateBookRequest(
                                 "978-9876543210", "New Book", null, "New Author", null, null, null);
 
                 mockMvc.perform(post("/api/books")
@@ -92,20 +98,10 @@ public class BookControllerIntegrationTest {
 
         @Test
         void shouldGetMyBooks() throws Exception {
-                // Given: A book belonging to the user
-                com.example.minilibrary.model.User user = userRepository.findByEmail("admin").orElseThrow();
-                Author author = new Author();
-                author.setName("Test Author");
-                authorRepository.save(author);
+                // Given
+                createBook("My Book", "111-111", createAuthor("Test Author"));
 
-                com.example.minilibrary.model.Book book = new com.example.minilibrary.model.Book();
-                book.setTitle("My Book");
-                book.setIsbn("111-111");
-                book.setAuthor(author);
-                book.setUser(user);
-                bookRepository.save(book);
-
-                // When: GET /api/books
+                // When / Then
                 mockMvc.perform(get("/api/books"))
                                 .andExpect(status().isOk())
                                 .andExpect(jsonPath("$", hasSize(1)))
@@ -114,88 +110,80 @@ public class BookControllerIntegrationTest {
 
         @Test
         void shouldUpdateBookStatus() throws Exception {
-                // Given: A book
-                com.example.minilibrary.model.User user = userRepository.findByEmail("admin").orElseThrow();
-                Author author = new Author();
-                author.setName("Status Author");
-                authorRepository.save(author);
+                // Given
+                Book savedBook = createBook("Status Book", "222-222", createAuthor("Status Author"));
 
-                com.example.minilibrary.model.Book book = new com.example.minilibrary.model.Book();
-                book.setTitle("Status Book");
-                book.setIsbn("222-222");
-                book.setAuthor(author);
-                book.setUser(user);
-                book.setCompleted(false);
-                com.example.minilibrary.model.Book savedBook = bookRepository.save(book);
+                // When
+                Map<String, Boolean> updateRequest = Map.of("completed", true);
 
-                // When: PATCH /status
+                // Then
                 mockMvc.perform(patch("/api/books/" + savedBook.getId() + "/status")
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content("{\"completed\": true}")) // Sending as raw map/json
+                                .content(objectMapper.writeValueAsString(updateRequest)))
                                 .andExpect(status().isOk())
                                 .andExpect(jsonPath("$.completed", is(true)));
         }
 
         @Test
         void shouldUpdateBookProgress() throws Exception {
-                // Given: A book
-                com.example.minilibrary.model.User user = userRepository.findByEmail("admin").orElseThrow();
-                Author author = new Author();
-                author.setName("Progress Author");
-                authorRepository.save(author);
+                // Given
+                Book savedBook = createBook("Progress Book", "333-333", createAuthor("Progress Author"));
+                savedBook.setCurrentPage(0);
+                savedBook.setPageCount(100);
+                bookRepository.save(savedBook);
 
-                com.example.minilibrary.model.Book book = new com.example.minilibrary.model.Book();
-                book.setTitle("Progress Book");
-                book.setIsbn("333-333");
-                book.setAuthor(author);
-                book.setUser(user);
-                book.setPageCount(100);
-                book.setCurrentPage(0);
-                com.example.minilibrary.model.Book savedBook = bookRepository.save(book);
+                // When
+                Map<String, Integer> updateRequest = Map.of("currentPage", 50);
 
-                // When: PATCH /progress
+                // Then
                 mockMvc.perform(patch("/api/books/" + savedBook.getId() + "/progress")
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content("{\"currentPage\": 50}"))
+                                .content(objectMapper.writeValueAsString(updateRequest)))
                                 .andExpect(status().isOk())
                                 .andExpect(jsonPath("$.currentPage", is(50)));
         }
 
         @Test
         void shouldDeleteBook() throws Exception {
-                // Given: A book
-                com.example.minilibrary.model.User user = userRepository.findByEmail("admin").orElseThrow();
-                Author author = new Author();
-                author.setName("Delete Author");
-                authorRepository.save(author);
+                // Given
+                Book savedBook = createBook("Delete Book", "444-444", createAuthor("Delete Author"));
 
-                com.example.minilibrary.model.Book book = new com.example.minilibrary.model.Book();
-                book.setTitle("Delete Book");
-                book.setIsbn("444-444");
-                book.setAuthor(author);
-                book.setUser(user);
-                com.example.minilibrary.model.Book savedBook = bookRepository.save(book);
-
-                // When: DELETE
+                // When
                 mockMvc.perform(delete("/api/books/" + savedBook.getId()))
-                                .andExpect(status().isNoContent()); // Correct status for DELETE is often 204
+                                .andExpect(status().isNoContent());
 
-                // Then: Book should be gone
+                // Then
                 mockMvc.perform(get("/api/books/" + savedBook.getId()))
-                                .andExpect(status().isNotFound()); // Assuming individual get returns 404 or list is
-                                                                   // empty
+                                .andExpect(status().isNotFound());
         }
 
         @Test
         void shouldFailToCreateBookCheckingAuthorExistence() throws Exception {
                 // When: Creating a book for a non-existent author ID
-                com.example.minilibrary.dto.CreateBookRequest request = new com.example.minilibrary.dto.CreateBookRequest(
-                                "123",
-                                "Unknown Book", 999L, null, null, null, null);
+                CreateBookRequest request = new CreateBookRequest(
+                                "123", "Unknown Book", 999L, null, null, null, null);
 
                 mockMvc.perform(post("/api/books")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(request)))
-                                .andExpect(status().isNotFound()); // Should execute global exception handler
+                                .andExpect(status().isNotFound());
+        }
+
+        // --- Helper Methods ---
+
+        private Author createAuthor(String name) {
+                Author author = new Author();
+                author.setName(name);
+                return authorRepository.save(author);
+        }
+
+        private Book createBook(String title, String isbn, Author author) {
+                Book book = new Book();
+                book.setTitle(title);
+                book.setIsbn(isbn);
+                book.setAuthor(author);
+                book.setUser(defaultUser);
+                book.setCompleted(false);
+                return bookRepository.save(book);
         }
 }
