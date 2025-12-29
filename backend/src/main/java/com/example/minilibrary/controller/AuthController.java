@@ -19,11 +19,7 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody Map<String, String> request) {
-        String email = request.get("email");
-        String password = request.get("password");
-
         try {
-            User user = authService.registerUser(email, password);
             return ResponseEntity.ok(Map.of("message",
                     "Registration successful. Please check server console for verification link (Simulated Email)."));
         } catch (RuntimeException e) {

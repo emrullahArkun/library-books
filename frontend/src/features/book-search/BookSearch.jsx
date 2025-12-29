@@ -3,8 +3,10 @@ import './BookSearch.css';
 import { useBookSearch } from './hooks/useBookSearch';
 import SearchForm from './components/SearchForm';
 import SearchResultCard from './components/SearchResultCard';
+import { useTranslation } from 'react-i18next';
 
 function BookSearch({ onBookAdded }) {
+    const { t } = useTranslation();
     const {
         query, setQuery,
         results,
@@ -41,13 +43,13 @@ function BookSearch({ onBookAdded }) {
                 ))}
             </div>
 
-            {loading && <div className="loading-more">Loading...</div>}
+            {loading && <div className="loading-more">{t('search.loading')}</div>}
 
             {results.length > 0 && hasMore && !loading && (
-                <button onClick={loadMore} className="load-more-btn">Load More Results</button>
+                <button onClick={loadMore} className="load-more-btn">{t('search.loadMore')}</button>
             )}
 
-            {!hasMore && results.length > 0 && <div className="end-message">End of results</div>}
+            {!hasMore && results.length > 0 && <div className="end-message">{t('search.endResults')}</div>}
         </div>
     );
 }

@@ -1,8 +1,10 @@
 import React from 'react';
 import { FaBookOpen, FaFileAlt, FaTag, FaStar } from 'react-icons/fa';
+import { useTranslation } from 'react-i18next';
 import '../BookSearch.css';
 
 const SearchResultCard = ({ book, onAdd }) => {
+    const { t } = useTranslation();
     const info = book.volumeInfo;
 
     return (
@@ -17,7 +19,7 @@ const SearchResultCard = ({ book, onAdd }) => {
                 </div>
                 <div className="card-basic-info">
                     <div className="book-title">{info.title}</div>
-                    <div className="author">by {info.authors?.join(', ') || 'Unknown'}</div>
+                    <div className="author">{t('search.result.by')} {info.authors?.join(', ') || t('search.result.unknown')}</div>
                     {info.publishedDate && <div className="meta-date">{info.publishedDate}</div>}
                     {info.publisher && <div className="meta-publisher">{info.publisher}</div>}
                 </div>
@@ -32,7 +34,7 @@ const SearchResultCard = ({ book, onAdd }) => {
                     </p>
                 )}
                 <div className="meta-row">
-                    {info.pageCount && <span className="tag"><FaFileAlt /> {info.pageCount} p.</span>}
+                    {info.pageCount && <span className="tag"><FaFileAlt /> {info.pageCount} {t('search.result.pages')}</span>}
                     {info.categories && (
                         <span className="tag">
                             <FaTag />
@@ -44,7 +46,7 @@ const SearchResultCard = ({ book, onAdd }) => {
             </div>
 
             <button onClick={() => onAdd(book)} className="add-button">
-                Add to Library
+                {t('search.result.addToLibrary')}
             </button>
         </div>
     );

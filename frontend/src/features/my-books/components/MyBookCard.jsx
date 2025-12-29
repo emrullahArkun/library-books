@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import '../MyBooks.css';
 import UpdateProgressModal from './UpdateProgressModal';
 
 const MyBookCard = ({ book, isSelected, onToggleSelect, onUpdateProgress, onUpdateStatus }) => {
+    const { t } = useTranslation();
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     const calculateEstimate = () => {
-        if (book.completed) return "Finished!";
+        if (book.completed) return t('bookCard.finished');
         if (!book.startDate || !book.currentPage || !book.pageCount) return null;
 
         const start = new Date(book.startDate);
@@ -19,12 +21,12 @@ const MyBookCard = ({ book, isSelected, onToggleSelect, onUpdateProgress, onUpda
         const pagesLeft = book.pageCount - book.currentPage;
         const daysLeft = Math.ceil(pagesLeft / pagesPerDay);
 
-        if (daysLeft <= 0) return "Finished!";
+        if (daysLeft <= 0) return t('bookCard.finished');
 
         const finishDate = new Date();
         finishDate.setDate(finishDate.getDate() + daysLeft);
 
-        return `Est. finish: ${finishDate.toLocaleDateString()} (${daysLeft} days)`;
+        return t('bookCard.estFinish', { date: finishDate.toLocaleDateString(), days: daysLeft });
     };
 
     const handleUpdate = (id, page) => {
@@ -45,12 +47,12 @@ const MyBookCard = ({ book, isSelected, onToggleSelect, onUpdateProgress, onUpda
                 {book.coverUrl ? (
                     <img src={book.coverUrl} alt={book.title} />
                 ) : (
-                    <div className="no-cover">No Cover</div>
+                    <div className="no-cover">{t('bookCard.noCover')}</div>
                 )}
             </div>
             <div className="book-info">
                 <h3>{book.title}</h3>
-                <p className="author">by {book.authorName}</p>
+                <p className="author">{t('bookCard.by')} {book.authorName}</p>
 
                 <div className="status-toggle">
                     <label>
@@ -59,7 +61,7 @@ const MyBookCard = ({ book, isSelected, onToggleSelect, onUpdateProgress, onUpda
                             checked={book.completed || false}
                             onChange={(e) => onUpdateStatus(book.id, e.target.checked)}
                         />
-                        Mark as Read
+                        {t('bookCard.markAsRead')}
                     </label>
                 </div>
 
@@ -67,7 +69,7 @@ const MyBookCard = ({ book, isSelected, onToggleSelect, onUpdateProgress, onUpda
                     <div className="progress-section">
                         <progress value={book.currentPage || 0} max={book.pageCount}></progress>
                         <div className="progress-stats">
-                            Read {book.currentPage || 0} of {book.pageCount} pages
+                            {t('bookCard.readProgress', { current: book.currentPage || 0, total: book.pageCount })}
                         </div>
                         {calculateEstimate() && (
                             <div className="progress-prediction">
@@ -79,12 +81,12 @@ const MyBookCard = ({ book, isSelected, onToggleSelect, onUpdateProgress, onUpda
                                 className="update-progress-btn"
                                 onClick={() => setIsModalOpen(true)}
                             >
-                                Update Progress
+                                {t('bookCard.updateProgress')}
                             </button>
                         )}
                     </div>
                 ) : (
-                    <p className="isbn">Pages: Unknown</p> // Fallback if no page count
+                    <p className="isbn">{t('bookCard.pagesUnknown')}</p> // Fallback if no page count
                 )}
             </div>
 

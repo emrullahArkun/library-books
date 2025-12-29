@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import './Auth.css';
 
 function RegisterPage() {
+    const { t } = useTranslation();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [message, setMessage] = useState('');
@@ -37,12 +39,12 @@ function RegisterPage() {
     return (
         <div className="auth-container">
             <div className="auth-card">
-                <h2>Register</h2>
+                <h2>{t('auth.register.title')}</h2>
                 {message && <div className="success-message">{message}</div>}
                 {error && <div className="error-message">{error}</div>}
                 <form onSubmit={handleSubmit}>
                     <div className="form-group">
-                        <label>Email</label>
+                        <label>{t('auth.email')}</label>
                         <input
                             type="email"
                             value={email}
@@ -51,7 +53,7 @@ function RegisterPage() {
                         />
                     </div>
                     <div className="form-group">
-                        <label>Password</label>
+                        <label>{t('auth.password')}</label>
                         <input
                             type="password"
                             value={password}
@@ -59,10 +61,10 @@ function RegisterPage() {
                             required
                         />
                     </div>
-                    <button type="submit" className="auth-btn">Register</button>
+                    <button type="submit" className="auth-btn">{t('auth.register.button')}</button>
                 </form>
                 <p className="auth-link">
-                    Already have an account? <Link to="/login">Login</Link>
+                    {t('auth.register.loginLink')} <Link to="/login">{t('auth.login.button')}</Link>
                 </p>
             </div>
         </div>

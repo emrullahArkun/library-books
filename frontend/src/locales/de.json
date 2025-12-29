@@ -1,0 +1,66 @@
+{
+    "navbar": {
+        "brand": "Bibliothek",
+        "search": "Suche",
+        "myBooks": "Meine Bücher",
+        "logout": "Abmelden",
+        "login": "Anmelden"
+    },
+    "search": {
+        "placeholder": "Suche nach Titel, Autor, ISBN...",
+        "button": "Suchen",
+        "loading": "Lädt...",
+        "loadMore": "Mehr Ergebnisse laden",
+        "endResults": "Keine weiteren Ergebnisse",
+        "result": {
+            "by": "von",
+            "unknown": "Unbekannt",
+            "addToLibrary": "Zur Bibliothek hinzufügen",
+            "pages": "S."
+        }
+    },
+    "myBooks": {
+        "title": "Meine Bibliothek",
+        "deleteSelected": "Ausgewählte löschen",
+        "deleteAll": "Alle löschen",
+        "empty": {
+            "line1": "Noch keine Bücher in deiner Bibliothek.",
+            "line2": "Gehe zur Suche, um Bücher hinzuzufügen!"
+        }
+    },
+    "bookCard": {
+        "finished": "Fertig!",
+        "estFinish": "Voraussichtlich fertig: {{date}} ({{days}} Tage)",
+        "noCover": "Kein Cover",
+        "by": "von",
+        "markAsRead": "Als gelesen markieren",
+        "readProgress": "{{current}} von {{total}} Seiten gelesen",
+        "updateProgress": "Fortschritt aktualisieren",
+        "pagesUnknown": "Seiten: Unbekannt"
+    },
+    "modal": {
+        "title": "Fortschritt für \"{{title}}\" ändern",
+        "currentPage": "Aktuelle Seite",
+        "totalPages": "von {{count}} Seiten",
+        "cancel": "Abbrechen",
+        "save": "Fortschritt speichern",
+        "error": {
+            "negative": "Seitenzahl darf nicht negativ sein",
+            "exceed": "Seitenzahl darf {{count}} nicht überschreiten"
+        }
+    },
+    "auth": {
+        "login": {
+            "title": "Anmelden",
+            "button": "Anmelden"
+        },
+        "register": {
+            "title": "Registrieren",
+            "button": "Registrieren",
+            "link": "Noch kein Konto?",
+            "loginLink": "Bereits registriert?"
+        },
+        "email": "E-Mail",
+        "password": "Passwort"
+    }
+}

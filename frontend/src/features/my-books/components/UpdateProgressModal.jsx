@@ -1,6 +1,8 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 const UpdateProgressModal = ({ book, onClose, onUpdate }) => {
+    const { t } = useTranslation();
     const [page, setPage] = useState(book.currentPage || 0);
     const [error, setError] = useState('');
 
@@ -9,11 +11,11 @@ const UpdateProgressModal = ({ book, onClose, onUpdate }) => {
         const pageNum = parseInt(page);
 
         if (pageNum < 0) {
-            setError('Page number cannot be negative');
+            setError(t('modal.error.negative'));
             return;
         }
         if (book.pageCount && pageNum > book.pageCount) {
-            setError(`Page number cannot exceed ${book.pageCount}`);
+            setError(t('modal.error.exceed', { count: book.pageCount }));
             return;
         }
 
@@ -23,10 +25,10 @@ const UpdateProgressModal = ({ book, onClose, onUpdate }) => {
     return (
         <div className="modal-overlay">
             <div className="modal-content">
-                <h3>Update Progress for "{book.title}"</h3>
+                <h3>{t('modal.title', { title: book.title })}</h3>
                 <form onSubmit={handleSubmit}>
                     <div className="form-group">
-                        <label>Current Page:</label>
+                        <label>{t('modal.currentPage')}:</label>
                         <input
                             type="number"
                             value={page}
@@ -35,13 +37,13 @@ const UpdateProgressModal = ({ book, onClose, onUpdate }) => {
                             max={book.pageCount}
                         />
                         {book.pageCount > 0 && (
-                            <small>of {book.pageCount} pages</small>
+                            <small>{t('modal.totalPages', { count: book.pageCount })}</small>
                         )}
                     </div>
                     {error && <div className="error-message">{error}</div>}
                     <div className="modal-actions">
-                        <button type="button" onClick={onClose} className="cancel-btn">Cancel</button>
-                        <button type="submit" className="save-btn">Save Progress</button>
+                        <button type="button" onClick={onClose} className="cancel-btn">{t('modal.cancel')}</button>
+                        <button type="submit" className="save-btn">{t('modal.save')}</button>
                     </div>
                 </form>
             </div>

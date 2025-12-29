@@ -1,97 +1,61 @@
 import { useState } from 'react';
 import { useAuth } from '../../../context/AuthContext';
+import { useInfiniteQuery, useMutation } from '@tanstack/react-query';
 
 export const useBookSearch = () => {
     const [query, setQuery] = useState('');
-    const [results, setResults] = useState([]);
-    const [error, setError] = useState(null);
     const [message, setMessage] = useState('');
-    const [startIndex, setStartIndex] = useState(0);
-    const [hasMore, setHasMore] = useState(true);
-    const [loading, setLoading] = useState(false);
-    const [totalItems, setTotalItems] = useState(0);
     const { token } = useAuth();
 
-    const fetchBooks = async (index, isLoadMore) => {
-        if (loading) return;
-        setLoading(true);
-        try {
-            let searchUrl = 'https://www.googleapis.com/books/v1/volumes?q=';
-            const queryPart = query.trim();
-
-            if (!queryPart) {
-                setLoading(false);
-                return;
+    const {
+        data,
+        error,
+        fetchNextPage,
+        hasNextPage,
+        isFetching,
+        isLoading
+    } = useInfiniteQuery({
+        queryKey: ['books', query],
+        queryFn: async ({ pageParam = 0 }) => {
+            if (!query.trim()) return { items: [], totalItems: 0 };
+            const finalQuery = encodeURIComponent(query.trim());
+            const response = await fetch(`https://www.googleapis.com/books/v1/volumes?q=${finalQuery}&startIndex=${pageParam}&maxResults=20`);
+            if (!response.ok) throw new Error('Failed to fetch from Google Books');
+            return response.json();
+        },
+        getNextPageParam: (lastPage, allPages) => {
+            const loadedItems = allPages.flatMap(p => p.items || []).length;
+            if (loadedItems < (lastPage.totalItems || 0)) {
+                return loadedItems;
             }
+            return undefined;
+        },
+        enabled: !!query.trim(),
+        initialPageParam: 0
+    });
 
-            const finalQuery = encodeURIComponent(queryPart);
-            const response = await fetch(`${searchUrl}${finalQuery}&startIndex=${index}&maxResults=20`);
-            const data = await response.json();
+    const results = data ? data.pages.flatMap(page => page.items || []) : [];
+    const totalItems = data?.pages[0]?.totalItems || 0;
 
-            if (data.items) {
-                if (isLoadMore) {
-                    setResults(prev => [...prev, ...data.items]);
-                } else {
-                    setResults(data.items);
-                    setTotalItems(data.totalItems || 0);
-                }
-                if (data.items.length < 20) setHasMore(false);
-            } else {
-                if (!isLoadMore) {
-                    setResults([]);
-                    setTotalItems(0);
-                }
-                setHasMore(false);
-            }
-            setError(null);
-        } catch (err) {
-            setError('Failed to fetch from Google Books');
-        } finally {
-            setLoading(false);
-        }
-    };
+    const addBookMutation = useMutation({
+        mutationFn: async (book) => {
+            if (!token) throw new Error('Please login to add books');
 
-    const loadMore = () => {
-        if (hasMore && !loading) {
-            const nextIndex = startIndex + 20;
-            setStartIndex(nextIndex);
-            fetchBooks(nextIndex, true);
-        }
-    };
+            const volumeInfo = book.volumeInfo;
+            const isbnInfo = volumeInfo.industryIdentifiers?.find(id => id.type === 'ISBN_13')
+                || volumeInfo.industryIdentifiers?.find(id => id.type === 'ISBN_10');
 
-    const searchBooks = (e) => {
-        if (e) e.preventDefault();
-        setStartIndex(0);
-        setHasMore(true);
-        setResults([]);
-        fetchBooks(0, false);
-    };
+            if (!isbnInfo) throw new Error('Cannot add book: No ISBN found');
 
-    const addBookToLibrary = async (book) => {
-        if (!token) {
-            setMessage({ text: 'Please login to add books', type: 'error' });
-            return;
-        }
+            const newBook = {
+                title: volumeInfo.title,
+                isbn: isbnInfo.identifier,
+                authorName: volumeInfo.authors ? volumeInfo.authors[0] : 'Unknown Author',
+                publishDate: volumeInfo.publishedDate || 'Unknown Date',
+                coverUrl: volumeInfo.imageLinks?.thumbnail || '',
+                pageCount: volumeInfo.pageCount || 0
+            };
 
-        const volumeInfo = book.volumeInfo;
-        const isbnInfo = volumeInfo.industryIdentifiers?.find(id => id.type === 'ISBN_13')
-            || volumeInfo.industryIdentifiers?.find(id => id.type === 'ISBN_10');
-
-        if (!isbnInfo) {
-            setMessage({ text: 'Cannot add book: No ISBN found', type: 'error' });
-            return;
-        }
-
-        const newBook = {
-            title: volumeInfo.title,
-            isbn: isbnInfo.identifier,
-            authorName: volumeInfo.authors ? volumeInfo.authors[0] : 'Unknown Author',
-            publishDate: volumeInfo.publishedDate || 'Unknown Date',
-            coverUrl: volumeInfo.imageLinks?.thumbnail || '',
-            pageCount: volumeInfo.pageCount || 0
-        };
-
-        try {
             const response = await fetch('/api/books', {
                 method: 'POST',
                 headers: {
@@ -102,30 +66,35 @@ export const useBookSearch = () => {
             });
 
             if (response.ok) {
-                setMessage({ text: `Added "${newBook.title}" to library!`, type: 'success' });
-                return true; // Success signal
+                return newBook;
             } else if (response.status === 409) {
-                setMessage({ text: 'This book is already in your collection.', type: 'error' });
-                return false;
+                throw new Error('This book is already in your collection.');
             } else {
-                setMessage({ text: 'Failed to add book to library', type: 'error' });
-                return false;
+                throw new Error('Failed to add book to library');
             }
-        } catch (err) {
-            setMessage({ text: 'Error connecting to backend', type: 'error' });
-            return false;
+        },
+        onSuccess: (data) => {
+            setMessage({ text: `Added "${data.title}" to library!`, type: 'success' });
+        },
+        onError: (err) => {
+            setMessage({ text: err.message, type: 'error' });
         }
+    });
+
+    const searchBooks = (e) => {
+        if (e) e.preventDefault();
+        // Changing the query key (via setQuery) automatically triggers a refetch
     };
 
     return {
         query, setQuery,
         results,
-        error,
+        error: error ? error.message : null,
         message,
-        hasMore,
-        loading,
+        hasMore: hasNextPage,
+        loading: isLoading || isFetching,
         searchBooks,
-        loadMore,
-        addBookToLibrary
+        loadMore: fetchNextPage,
+        addBookToLibrary: addBookMutation.mutateAsync
     };
 };

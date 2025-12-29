@@ -1,10 +1,12 @@
 import React from 'react';
 import { FaTrash, FaTrashAlt } from 'react-icons/fa';
+import { useTranslation } from 'react-i18next';
 import './MyBooks.css';
 import { useMyBooks } from './hooks/useMyBooks';
 import MyBookCard from './components/MyBookCard';
 
 function MyBooks() {
+    const { t } = useTranslation();
     const {
         books,
         loading,
@@ -24,17 +26,17 @@ function MyBooks() {
     return (
         <div className="my-books-container">
             <div className="header-actions">
-                <h1>My Library</h1>
+                <h1>{t('myBooks.title')}</h1>
                 <div className="action-buttons">
                     <button
                         onClick={deleteSelected}
                         disabled={selectedBooks.size === 0}
                         className="delete-btn"
                     >
-                        <FaTrash /> Delete Selected ({selectedBooks.size})
+                        <FaTrash /> {t('myBooks.deleteSelected')} ({selectedBooks.size})
                     </button>
                     <button onClick={deleteAll} className="delete-all-btn">
-                        <FaTrashAlt /> Delete All
+                        <FaTrashAlt /> {t('myBooks.deleteAll')}
                     </button>
                 </div>
             </div>
@@ -42,8 +44,8 @@ function MyBooks() {
             <div className="books-grid">
                 {books.length === 0 && (
                     <div className="empty-state">
-                        <p>No books in your library yet.</p>
-                        <p>Go to Home to add books!</p>
+                        <p>{t('myBooks.empty.line1')}</p>
+                        <p>{t('myBooks.empty.line2')}</p>
                     </div>
                 )}
                 {books.map(book => (

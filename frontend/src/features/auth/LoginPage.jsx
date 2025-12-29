@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/AuthContext';
 import './Auth.css';
 
 function LoginPage() {
+    const { t } = useTranslation();
     const [email, setEmail] = useState(import.meta.env.VITE_TEST_EMAIL || '');
     const [password, setPassword] = useState(import.meta.env.VITE_TEST_PASSWORD || '');
     const [error, setError] = useState('');
@@ -35,11 +37,11 @@ function LoginPage() {
     return (
         <div className="auth-container">
             <div className="auth-card">
-                <h2>Login</h2>
+                <h2>{t('auth.login.title')}</h2>
                 {error && <div className="error-message">{error}</div>}
                 <form onSubmit={handleSubmit}>
                     <div className="form-group">
-                        <label>Email</label>
+                        <label>{t('auth.email')}</label>
                         <input
                             type="email"
                             value={email}
@@ -48,7 +50,7 @@ function LoginPage() {
                         />
                     </div>
                     <div className="form-group">
-                        <label>Password</label>
+                        <label>{t('auth.password')}</label>
                         <input
                             type="password"
                             value={password}
@@ -56,10 +58,10 @@ function LoginPage() {
                             required
                         />
                     </div>
-                    <button type="submit" className="auth-btn">Login</button>
+                    <button type="submit" className="auth-btn">{t('auth.login.button')}</button>
                 </form>
                 <p className="auth-link">
-                    Don't have an account? <Link to="/register">Register</Link>
+                    {t('auth.register.link')} <Link to="/register">{t('auth.register.button')}</Link>
                 </p>
             </div>
         </div>
