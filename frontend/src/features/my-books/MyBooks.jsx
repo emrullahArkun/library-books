@@ -3,6 +3,7 @@ import { FaTrash, FaTrashAlt } from 'react-icons/fa';
 import { useTranslation } from 'react-i18next';
 import './MyBooks.css';
 import { useMyBooks } from './hooks/useMyBooks';
+import { useReadingSession } from './hooks/useReadingSession';
 import MyBookCard from './components/MyBookCard';
 
 function MyBooks() {
@@ -13,12 +14,21 @@ function MyBooks() {
         error,
         selectedBooks,
         toggleSelection,
-        deleteBook, // Not used in layout directly anymore, but available if needed for single delete actions on card
+        deleteBook,
         deleteSelected,
         deleteAll,
         updateBookProgress,
         updateBookStatus
     } = useMyBooks();
+
+    const {
+        activeSession,
+        startSession,
+        stopSession,
+        formattedTime,
+        excludeTimeFromSession,
+        loading: sessionLoading
+    } = useReadingSession();
 
     if (loading) return <div className="loading">Loading library...</div>;
     if (error) return <div className="error">Error: {error}</div>;
@@ -56,6 +66,11 @@ function MyBooks() {
                         onToggleSelect={toggleSelection}
                         onUpdateProgress={updateBookProgress}
                         onUpdateStatus={updateBookStatus}
+                        activeSession={activeSession}
+                        onStartSession={startSession}
+                        onStopSession={stopSession}
+                        onExcludeTime={excludeTimeFromSession}
+                        timerTime={formattedTime}
                     />
                 ))}
             </div>

@@ -62,5 +62,24 @@
         },
         "email": "Email",
         "password": "Password"
+    },
+    "readingSession": {
+        "start": "▶ Start Reading",
+        "stop": "⏹",
+        "finishOther": "Finish your other session first",
+        "startReading": "Start Reading",
+        "failedStart": "Failed to start session",
+        "pagesReadAlert": "Great job! You read {{pages}} pages today.",
+        "stopModal": {
+            "title": "Finished Reading?",
+            "confirm": "Yes",
+            "cancel": "No",
+            "pageTitle": "What page are you on?",
+            "submit": "Confirm",
+            "abort": "Cancel",
+            "maxPagesHint": "Max: {{count}} pages",
+            "maxPagesError": "Page number cannot exceed {{count}}",
+            "finished": "Finished!"
+        }
     }
 }

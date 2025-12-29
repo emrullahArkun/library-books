@@ -3,8 +3,6 @@ package com.example.minilibrary.service;
 import com.example.minilibrary.model.Role;
 import com.example.minilibrary.model.User;
 import com.example.minilibrary.repository.UserRepository;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -16,12 +14,12 @@ public class AuthService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final JavaMailSender mailSender;
+    private final EmailService emailService;
 
-    public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder, JavaMailSender mailSender) {
+    public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder, EmailService emailService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
-        this.mailSender = mailSender;
+        this.emailService = emailService;
     }
 
     public User registerUser(String email, String password) {
@@ -38,21 +36,9 @@ public class AuthService {
 
         userRepository.save(user);
 
-        sendVerificationEmail(user);
+        emailService.sendVerificationEmail(user);
 
         return user;
-    }
-
-    private void sendVerificationEmail(User user) {
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom("noreply@library.local");
-        message.setTo(user.getEmail());
-        message.setSubject("Library Email Verification");
-        message.setText("Click here to verify your account:\nhttp://localhost:8080/api/auth/verify?token="
-                + user.getVerificationToken());
-
-        mailSender.send(message);
-        System.out.println(">>> EMAIL SENT TO " + user.getEmail() + " (Check MailHog at localhost:8025)");
     }
 
     public boolean verifyUser(String token) {

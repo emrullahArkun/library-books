@@ -2,10 +2,23 @@ import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import '../MyBooks.css';
 import UpdateProgressModal from './UpdateProgressModal';
+import StopSessionModal from './StopSessionModal';
 
-const MyBookCard = ({ book, isSelected, onToggleSelect, onUpdateProgress, onUpdateStatus }) => {
+const MyBookCard = ({
+    book,
+    isSelected,
+    onToggleSelect,
+    onUpdateProgress,
+    onUpdateStatus,
+    activeSession,
+    onStartSession,
+    onStopSession,
+    onExcludeTime,
+    timerTime
+}) => {
     const { t } = useTranslation();
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isStopModalOpen, setIsStopModalOpen] = useState(false);
 
     const calculateEstimate = () => {
         if (book.completed) return t('bookCard.finished');
@@ -32,6 +45,43 @@ const MyBookCard = ({ book, isSelected, onToggleSelect, onUpdateProgress, onUpda
     const handleUpdate = (id, page) => {
         onUpdateProgress(id, page);
         setIsModalOpen(false);
+    };
+
+    const [frozenTimerDisplay, setFrozenTimerDisplay] = useState(null);
+    const [stopTime, setStopTime] = useState(null);
+
+    const handleStopClick = () => {
+        setStopTime(new Date());
+        setFrozenTimerDisplay(timerTime);
+        setIsStopModalOpen(true);
+    };
+
+    const handleStopConfirm = (newPage) => {
+        const pagesRead = newPage - (book.currentPage || 0);
+        onUpdateProgress(book.id, newPage);
+        onStopSession(stopTime); // Pass the frozen time
+        setIsStopModalOpen(false);
+        setFrozenTimerDisplay(null);
+        if (pagesRead > 0) {
+            alert(t('readingSession.pagesReadAlert', { pages: pagesRead }));
+        }
+    };
+
+    const handleStopCancel = () => {
+        if (stopTime) {
+            const now = new Date();
+            const diff = now.getTime() - stopTime.getTime();
+            if (diff > 1000 && typeof onExcludeTime === 'function') { // Only if more than 1s passed
+                try {
+                    onExcludeTime(diff);
+                } catch (error) {
+                    console.error("Error calling onExcludeTime", error);
+                }
+            }
+        }
+        setIsStopModalOpen(false);
+        setFrozenTimerDisplay(null);
+        setStopTime(null);
     };
 
     return (
@@ -77,12 +127,35 @@ const MyBookCard = ({ book, isSelected, onToggleSelect, onUpdateProgress, onUpda
                             </div>
                         )}
                         {!book.completed && (
-                            <button
-                                className="update-progress-btn"
-                                onClick={() => setIsModalOpen(true)}
-                            >
-                                {t('bookCard.updateProgress')}
-                            </button>
+                            <div className="card-actions">
+                                <button
+                                    className="update-progress-btn"
+                                    onClick={() => setIsModalOpen(true)}
+                                >
+                                    {t('bookCard.updateProgress')}
+                                </button>
+
+                                {activeSession?.bookId === book.id ? (
+                                    <button
+                                        className="timer-btn stop"
+                                        onClick={handleStopClick}
+                                    >
+                                        {t('readingSession.stop')} {frozenTimerDisplay || timerTime}
+                                    </button>
+                                ) : (
+                                    <button
+                                        className="timer-btn start"
+                                        onClick={async () => {
+                                            const success = await onStartSession(book.id);
+                                            if (!success) alert(t('readingSession.failedStart'));
+                                        }}
+                                        disabled={!!activeSession} // Disable if another session is active
+                                        title={activeSession ? t('readingSession.finishOther') : t('readingSession.startReading')}
+                                    >
+                                        {t('readingSession.start')}
+                                    </button>
+                                )}
+                            </div>
                         )}
                     </div>
                 ) : (
@@ -95,6 +168,16 @@ const MyBookCard = ({ book, isSelected, onToggleSelect, onUpdateProgress, onUpda
                     book={book}
                     onClose={() => setIsModalOpen(false)}
                     onUpdate={handleUpdate}
+                />
+            )}
+
+            {isStopModalOpen && (
+                <StopSessionModal
+                    isOpen={isStopModalOpen}
+                    onClose={handleStopCancel}
+                    onConfirm={handleStopConfirm}
+                    currentBookPage={book.currentPage || 0}
+                    maxPages={book.pageCount}
                 />
             )}
         </div>

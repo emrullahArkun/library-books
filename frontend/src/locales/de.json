@@ -62,5 +62,24 @@
         },
         "email": "E-Mail",
         "password": "Passwort"
+    },
+    "readingSession": {
+        "start": "▶ Lesen starten",
+        "stop": "⏹",
+        "finishOther": "Beende erst deine andere Sitzung",
+        "startReading": "Lesen beginnen",
+        "failedStart": "Starten der Sitzung fehlgeschlagen",
+        "pagesReadAlert": "Gut gemacht! Du hast heute {{pages}} Seiten gelesen.",
+        "stopModal": {
+            "title": "Fertig mit Lesen?",
+            "confirm": "Ja",
+            "cancel": "Nein",
+            "pageTitle": "Auf welcher Seite bist du?",
+            "submit": "Bestätigen",
+            "abort": "Abbrechen",
+            "maxPagesHint": "Max: {{count}} Seiten",
+            "maxPagesError": "Du kannst nicht mehr als {{count}} Seiten haben!",
+            "finished": "Fertig!"
+        }
     }
 }
