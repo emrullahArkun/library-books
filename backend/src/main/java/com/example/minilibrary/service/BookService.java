@@ -15,15 +15,20 @@ public class BookService {
 
     private final BookRepository bookRepository;
 
-    public List<Book> findAll() {
-        return bookRepository.findAll();
+    public List<Book> findAllByUser(com.example.minilibrary.model.User user) {
+        return bookRepository.findByUser(user);
     }
 
-    public Optional<Book> findById(Long id) {
+    public Optional<Book> findByIdAndUser(Long id, com.example.minilibrary.model.User user) {
         if (id == null) {
             throw new IllegalArgumentException("ID cannot be null");
         }
-        return bookRepository.findById(id);
+        // Ensuring the user can only access their own book
+        return bookRepository.findById(id).filter(book -> book.getUser().equals(user));
+    }
+
+    public boolean existsByIsbnAndUser(String isbn, com.example.minilibrary.model.User user) {
+        return bookRepository.existsByIsbnAndUser(isbn, user);
     }
 
     @Transactional
@@ -35,15 +40,31 @@ public class BookService {
     }
 
     @Transactional
-    public void deleteById(Long id) {
+    public void deleteByIdAndUser(Long id, com.example.minilibrary.model.User user) {
         if (id == null) {
             throw new IllegalArgumentException("ID cannot be null");
         }
-        bookRepository.deleteById(id);
+        bookRepository.deleteByIdAndUser(id, user);
     }
 
     @Transactional
-    public void deleteAll() {
-        bookRepository.deleteAll();
+    public void deleteAllByUser(com.example.minilibrary.model.User user) {
+        bookRepository.deleteByUser(user);
+    }
+
+    @Transactional
+    public Book updateBookProgress(Long id, Integer currentPage, com.example.minilibrary.model.User user) {
+        Book book = findByIdAndUser(id, user)
+                .orElseThrow(() -> new com.example.minilibrary.exception.ResourceNotFoundException("Book not found"));
+
+        if (currentPage < 0) {
+            throw new IllegalArgumentException("Current page cannot be negative");
+        }
+        if (book.getPageCount() != null && currentPage > book.getPageCount()) {
+            throw new IllegalArgumentException("Current page cannot exceed total page count");
+        }
+
+        book.setCurrentPage(currentPage);
+        return bookRepository.save(book);
     }
 }

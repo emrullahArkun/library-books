@@ -7,6 +7,7 @@ import RegisterPage from '../features/auth/RegisterPage';
 import VerifyEmailPage from '../features/auth/VerifyEmailPage';
 import { AuthProvider } from '../context/AuthContext';
 import ProtectedRoute from '../components/ProtectedRoute';
+import PublicRoute from '../components/PublicRoute';
 import './App.css'
 
 function App() {
@@ -17,13 +18,23 @@ function App() {
           <Navbar />
           <Routes>
             <Route path="/" element={
-              <div className="home-content">
-                <h1>Welcome to Library Books</h1>
-                <BookSearch />
-              </div>
+              <ProtectedRoute>
+                <div className="home-content">
+                  <h1>Welcome to Library Books</h1>
+                  <BookSearch />
+                </div>
+              </ProtectedRoute>
             } />
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/register" element={<RegisterPage />} />
+            <Route path="/login" element={
+              <PublicRoute>
+                <LoginPage />
+              </PublicRoute>
+            } />
+            <Route path="/register" element={
+              <PublicRoute>
+                <RegisterPage />
+              </PublicRoute>
+            } />
             <Route path="/verify" element={<VerifyEmailPage />} />
             <Route path="/my-books" element={
               <ProtectedRoute>

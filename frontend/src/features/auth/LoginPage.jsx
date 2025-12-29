@@ -4,8 +4,8 @@ import { useAuth } from '../../context/AuthContext';
 import './Auth.css';
 
 function LoginPage() {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
+    const [email, setEmail] = useState(import.meta.env.VITE_TEST_EMAIL || '');
+    const [password, setPassword] = useState(import.meta.env.VITE_TEST_PASSWORD || '');
     const [error, setError] = useState('');
     const { login } = useAuth();
     const navigate = useNavigate();

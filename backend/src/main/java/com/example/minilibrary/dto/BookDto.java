@@ -10,5 +10,8 @@ public record BookDto(
                 @NotNull Long authorId,
                 String authorName,
                 String publishDate,
-                String coverUrl) {
+                String coverUrl,
+                Integer pageCount,
+                Integer currentPage,
+                String startDate) {
 }

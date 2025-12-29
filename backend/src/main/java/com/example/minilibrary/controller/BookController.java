@@ -23,24 +23,31 @@ public class BookController {
     private final BookService bookService;
     private final AuthorService authorService;
     private final BookMapper bookMapper;
+    private final com.example.minilibrary.repository.UserRepository userRepository;
+
+    private com.example.minilibrary.model.User getCurrentUser(java.security.Principal principal) {
+        return userRepository.findByEmail(principal.getName())
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+    }
 
     @GetMapping
-    public List<BookDto> getAllBooks() {
-        return bookService.findAll().stream()
+    public List<BookDto> getAllBooks(java.security.Principal principal) {
+        return bookService.findAllByUser(getCurrentUser(principal)).stream()
                 .map(bookMapper::toDto)
                 .collect(Collectors.toList());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<BookDto> getBookById(@PathVariable Long id) {
-        Book book = bookService.findById(id)
+    public ResponseEntity<BookDto> getBookById(@PathVariable Long id, java.security.Principal principal) {
+        Book book = bookService.findByIdAndUser(id, getCurrentUser(principal))
                 .orElseThrow(() -> new ResourceNotFoundException("Book not found with id: " + id));
         return ResponseEntity.ok(bookMapper.toDto(book));
     }
 
     @PostMapping
     public ResponseEntity<BookDto> createBook(
-            @RequestBody @jakarta.validation.Valid CreateBookRequest request) {
+            @RequestBody @jakarta.validation.Valid CreateBookRequest request,
+            java.security.Principal principal) {
         Author author;
         if (request.authorId() != null) {
             author = authorService.findById(request.authorId())
@@ -57,22 +64,45 @@ public class BookController {
             throw new IllegalArgumentException("Either authorId or authorName must be provided");
         }
 
+        com.example.minilibrary.model.User user = getCurrentUser(principal);
         Book book = bookMapper.toEntity(request);
-        book.setAuthor(author); // Set resolved author manually
+        book.setAuthor(author);
+        book.setUser(user);
 
+        if (bookService.existsByIsbnAndUser(book.getIsbn(), user)) {
+            throw new com.example.minilibrary.exception.DuplicateResourceException(
+                    "Book with ISBN " + book.getIsbn() + " already exists in your collection.");
+        }
+
+        if (book.getStartDate() == null) {
+            book.setStartDate(java.time.LocalDate.now());
+        }
         Book savedBook = bookService.save(book);
         return ResponseEntity.ok(bookMapper.toDto(savedBook));
     }
 
+    @PatchMapping("/{id}/progress")
+    public ResponseEntity<BookDto> updateBookProgress(
+            @PathVariable Long id,
+            @RequestBody java.util.Map<String, Integer> updateRequest,
+            java.security.Principal principal) {
+        Integer currentPage = updateRequest.get("currentPage");
+        if (currentPage == null) {
+            throw new IllegalArgumentException("currentPage is required");
+        }
+        Book updatedBook = bookService.updateBookProgress(id, currentPage, getCurrentUser(principal));
+        return ResponseEntity.ok(bookMapper.toDto(updatedBook));
+    }
+
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteBook(@PathVariable Long id) {
-        bookService.deleteById(id);
+    public ResponseEntity<Void> deleteBook(@PathVariable Long id, java.security.Principal principal) {
+        bookService.deleteByIdAndUser(id, getCurrentUser(principal));
         return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping
-    public ResponseEntity<Void> deleteAllBooks() {
-        bookService.deleteAll();
+    public ResponseEntity<Void> deleteAllBooks(java.security.Principal principal) {
+        bookService.deleteAllByUser(getCurrentUser(principal));
         return ResponseEntity.noContent().build();
     }
 }

@@ -87,7 +87,8 @@ export const useBookSearch = () => {
             isbn: isbnInfo.identifier,
             authorName: volumeInfo.authors ? volumeInfo.authors[0] : 'Unknown Author',
             publishDate: volumeInfo.publishedDate || 'Unknown Date',
-            coverUrl: volumeInfo.imageLinks?.thumbnail || ''
+            coverUrl: volumeInfo.imageLinks?.thumbnail || '',
+            pageCount: volumeInfo.pageCount || 0
         };
 
         try {
@@ -103,6 +104,9 @@ export const useBookSearch = () => {
             if (response.ok) {
                 setMessage({ text: `Added "${newBook.title}" to library!`, type: 'success' });
                 return true; // Success signal
+            } else if (response.status === 409) {
+                setMessage({ text: 'This book is already in your collection.', type: 'error' });
+                return false;
             } else {
                 setMessage({ text: 'Failed to add book to library', type: 'error' });
                 return false;

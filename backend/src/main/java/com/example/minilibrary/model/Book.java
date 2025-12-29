@@ -29,6 +29,14 @@ public class Book {
     @JoinColumn(name = "author_id", nullable = false)
     private Author author;
 
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
     private String publishDate;
     private String coverUrl;
+
+    private Integer pageCount;
+    private Integer currentPage = 0; // Default to 0
+    private java.time.LocalDate startDate = java.time.LocalDate.now(); // Default to today
 }

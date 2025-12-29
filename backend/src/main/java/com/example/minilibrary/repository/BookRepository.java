@@ -6,4 +6,13 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface BookRepository extends JpaRepository<Book, Long> {
+    boolean existsByIsbn(String isbn);
+
+    boolean existsByIsbnAndUser(String isbn, com.example.minilibrary.model.User user);
+
+    java.util.List<Book> findByUser(com.example.minilibrary.model.User user);
+
+    void deleteByIdAndUser(Long id, com.example.minilibrary.model.User user);
+
+    void deleteByUser(com.example.minilibrary.model.User user);
 }

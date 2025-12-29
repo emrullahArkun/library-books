@@ -11,9 +11,13 @@ public interface BookMapper {
 
     @Mapping(target = "authorId", source = "author.id")
     @Mapping(target = "authorName", source = "author.name")
+    @Mapping(target = "startDate", source = "startDate", dateFormat = "yyyy-MM-dd")
     BookDto toDto(Book book);
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "author", ignore = true) // Author is handled manually in service/controller
+    @Mapping(target = "currentPage", ignore = true)
+    @Mapping(target = "startDate", ignore = true)
+    @Mapping(target = "user", ignore = true)
     Book toEntity(CreateBookRequest request);
 }

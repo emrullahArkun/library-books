@@ -20,9 +20,9 @@ function Navbar() {
                 </Link>
             </div>
             <div className="navbar-menu">
-                <Link to="/" className="navbar-item">Home</Link>
                 {user ? (
                     <>
+                        <Link to="/" className="navbar-item">Search</Link>
                         <Link to="/my-books" className="navbar-item">My Books</Link>
                         <button onClick={handleLogout} className="navbar-item logout-btn">
                             <FaSignOutAlt /> Logout

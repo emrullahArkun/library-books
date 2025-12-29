@@ -93,6 +93,40 @@ export const useMyBooks = () => {
         }
     };
 
+    const updateBookProgress = async (id, currentPage) => {
+        console.log('Updating progress for book:', id, 'to page:', currentPage);
+        try {
+            const res = await fetch(`/api/books/${id}/progress`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Basic ${token}`
+                },
+                body: JSON.stringify({ currentPage })
+            });
+
+            if (res.ok) {
+                const updatedBook = await res.json();
+                console.log('Received updated book from backend:', updatedBook);
+                setBooks(prev => {
+                    const newBooks = prev.map(b => b.id === id ? updatedBook : b);
+                    console.log('New books state:', newBooks);
+                    return newBooks;
+                });
+                return true;
+            } else {
+                console.error('Update failed with status:', res.status);
+                const text = await res.text();
+                console.error('Error response:', text);
+                alert('Update failed: ' + text);
+            }
+        } catch (error) {
+            console.error('Failed to update progress', error);
+            alert('Failed to update progress: ' + error.message);
+        }
+        return false;
+    };
+
     return {
         books,
         loading,
@@ -101,6 +135,7 @@ export const useMyBooks = () => {
         toggleSelection,
         deleteBook,
         deleteSelected,
-        deleteAll
+        deleteAll,
+        updateBookProgress
     };
 };
