@@ -39,4 +39,5 @@ public class Book {
     private Integer pageCount;
     private Integer currentPage = 0; // Default to 0
     private java.time.LocalDate startDate = java.time.LocalDate.now(); // Default to today
+    private Boolean completed = false;
 }

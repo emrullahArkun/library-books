@@ -14,7 +14,8 @@ function MyBooks() {
         deleteBook, // Not used in layout directly anymore, but available if needed for single delete actions on card
         deleteSelected,
         deleteAll,
-        updateBookProgress
+        updateBookProgress,
+        updateBookStatus
     } = useMyBooks();
 
     if (loading) return <div className="loading">Loading library...</div>;
@@ -52,6 +53,7 @@ function MyBooks() {
                         isSelected={selectedBooks.has(book.id)}
                         onToggleSelect={toggleSelection}
                         onUpdateProgress={updateBookProgress}
+                        onUpdateStatus={updateBookStatus}
                     />
                 ))}
             </div>

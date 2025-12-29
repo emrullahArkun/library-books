@@ -2,10 +2,11 @@ import React, { useState } from 'react';
 import '../MyBooks.css';
 import UpdateProgressModal from './UpdateProgressModal';
 
-const MyBookCard = ({ book, isSelected, onToggleSelect, onUpdateProgress }) => {
+const MyBookCard = ({ book, isSelected, onToggleSelect, onUpdateProgress, onUpdateStatus }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     const calculateEstimate = () => {
+        if (book.completed) return "Finished!";
         if (!book.startDate || !book.currentPage || !book.pageCount) return null;
 
         const start = new Date(book.startDate);
@@ -32,7 +33,7 @@ const MyBookCard = ({ book, isSelected, onToggleSelect, onUpdateProgress }) => {
     };
 
     return (
-        <div className={`book-card-detail ${isSelected ? 'selected' : ''}`}>
+        <div className={`book-card-detail ${isSelected ? 'selected' : ''} ${book.completed ? 'completed' : ''}`}>
             <div className="selection-overlay">
                 <input
                     type="checkbox"
@@ -51,6 +52,17 @@ const MyBookCard = ({ book, isSelected, onToggleSelect, onUpdateProgress }) => {
                 <h3>{book.title}</h3>
                 <p className="author">by {book.authorName}</p>
 
+                <div className="status-toggle">
+                    <label>
+                        <input
+                            type="checkbox"
+                            checked={book.completed || false}
+                            onChange={(e) => onUpdateStatus(book.id, e.target.checked)}
+                        />
+                        Mark as Read
+                    </label>
+                </div>
+
                 {book.pageCount > 0 ? (
                     <div className="progress-section">
                         <progress value={book.currentPage || 0} max={book.pageCount}></progress>
@@ -62,12 +74,14 @@ const MyBookCard = ({ book, isSelected, onToggleSelect, onUpdateProgress }) => {
                                 {calculateEstimate()}
                             </div>
                         )}
-                        <button
-                            className="update-progress-btn"
-                            onClick={() => setIsModalOpen(true)}
-                        >
-                            Update Progress
-                        </button>
+                        {!book.completed && (
+                            <button
+                                className="update-progress-btn"
+                                onClick={() => setIsModalOpen(true)}
+                            >
+                                Update Progress
+                            </button>
+                        )}
                     </div>
                 ) : (
                     <p className="isbn">Pages: Unknown</p> // Fallback if no page count

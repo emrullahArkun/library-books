@@ -94,6 +94,19 @@ public class BookController {
         return ResponseEntity.ok(bookMapper.toDto(updatedBook));
     }
 
+    @PatchMapping("/{id}/status")
+    public ResponseEntity<BookDto> updateBookStatus(
+            @PathVariable Long id,
+            @RequestBody java.util.Map<String, Boolean> updateRequest,
+            java.security.Principal principal) {
+        Boolean completed = updateRequest.get("completed");
+        if (completed == null) {
+            throw new IllegalArgumentException("completed status is required");
+        }
+        Book updatedBook = bookService.updateBookStatus(id, completed, getCurrentUser(principal));
+        return ResponseEntity.ok(bookMapper.toDto(updatedBook));
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteBook(@PathVariable Long id, java.security.Principal principal) {
         bookService.deleteByIdAndUser(id, getCurrentUser(principal));

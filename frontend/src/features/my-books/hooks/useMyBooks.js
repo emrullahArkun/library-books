@@ -127,6 +127,32 @@ export const useMyBooks = () => {
         return false;
     };
 
+    const updateBookStatus = async (id, completed) => {
+        try {
+            const res = await fetch(`/api/books/${id}/status`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Basic ${token}`
+                },
+                body: JSON.stringify({ completed })
+            });
+
+            if (res.ok) {
+                const updatedBook = await res.json();
+                setBooks(prev => prev.map(b => b.id === id ? updatedBook : b));
+                return true;
+            } else {
+                const text = await res.text();
+                alert('Status update failed: ' + text);
+            }
+        } catch (error) {
+            console.error('Failed to update status', error);
+            alert('Failed to update status: ' + error.message);
+        }
+        return false;
+    };
+
     return {
         books,
         loading,
@@ -136,6 +162,7 @@ export const useMyBooks = () => {
         deleteBook,
         deleteSelected,
         deleteAll,
-        updateBookProgress
+        updateBookProgress,
+        updateBookStatus
     };
 };

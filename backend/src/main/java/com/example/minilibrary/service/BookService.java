@@ -67,4 +67,17 @@ public class BookService {
         book.setCurrentPage(currentPage);
         return bookRepository.save(book);
     }
+
+    @Transactional
+    public Book updateBookStatus(Long id, Boolean completed, com.example.minilibrary.model.User user) {
+        Book book = findByIdAndUser(id, user)
+                .orElseThrow(() -> new com.example.minilibrary.exception.ResourceNotFoundException("Book not found"));
+
+        if (completed == null) {
+            throw new IllegalArgumentException("Completed status cannot be null");
+        }
+
+        book.setCompleted(completed);
+        return bookRepository.save(book);
+    }
 }
