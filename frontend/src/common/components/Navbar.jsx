@@ -1,6 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { FaBook, FaSignOutAlt, FaSignInAlt } from 'react-icons/fa';
-import { useAuth } from './context/AuthContext';
+import { useAuth } from '../../context/AuthContext';
 import './Navbar.css';
 
 function Navbar() {
