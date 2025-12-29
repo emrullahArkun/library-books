@@ -1,64 +1,33 @@
 import { useState, useEffect } from 'react';
 import './BookSearch.css';
-
-const CATEGORIES = [
-    { id: 'all', label: 'All' },
-    { id: 'fiction', label: 'Fiction' },
-    { id: 'thriller', label: 'Thriller' },
-    { id: 'romance', label: 'Romance' },
-    { id: 'history', label: 'History' },
-    { id: 'science', label: 'Science' },
-    { id: 'fantasy', label: 'Fantasy' },
-    { id: 'biography', label: 'Biography' },
-];
+import { FaSearch, FaBookOpen, FaFileAlt, FaTag, FaStar } from 'react-icons/fa';
+import { useAuth } from './context/AuthContext';
 
 function BookSearch({ onBookAdded }) {
     const [query, setQuery] = useState('');
     const [results, setResults] = useState([]);
     const [error, setError] = useState(null);
     const [message, setMessage] = useState('');
-    const [activeCategory, setActiveCategory] = useState('all');
     const [startIndex, setStartIndex] = useState(0);
     const [hasMore, setHasMore] = useState(true);
     const [loading, setLoading] = useState(false);
-
-    // Effect only for category change if we want it to auto-trigger? 
-    // User asked for "manual trigger" essentially. 
-    // To match "results ... load ... after click on search", we should NOT trigger on category change automatically 
-    // UNLESS the user expects category filters to apply immediately. 
-    // Usually category filters are live. Let's make them part of the search query but only trigger when "Search" is clicked?
-    // OR: Trigger search immediately when Category is clicked (common pattern). 
-    // The prompt says "results ... not live load ... but after click on search".
-    // I will implement it such that changing category sets the state, but fetch is manual. 
-    // However, for UX, clicking a category usually refreshes results. I'll stick to strict interpretation: Manual, or only manual for text?
-    // "not live load ... but after click on search (or Enter)" implies the text input mostly.
-    // Let's safe bet: Category click triggers search immediately (it's a click interaction), text typing does not.
-
-    useEffect(() => {
-        // Only trigger search if activeCategory changes (and it's not the initial mount potentially, or just let it be)
-        // But wait, the user said "Results loaded ... after click on search". 
-        // If I make category click trigger search, that complies with "click".
-        // UseEffect to reset results when category changes? No, let's keep it simple.
-        // We will just clear results if they become invalid? No.
-        // Let's remove the live search useEffect entirely.
-    }, []);
+    const [totalItems, setTotalItems] = useState(0);
+    const { token } = useAuth();
 
     const fetchBooks = async (index, isLoadMore) => {
         if (loading) return;
         setLoading(true);
         try {
             let searchUrl = 'https://www.googleapis.com/books/v1/volumes?q=';
-            const queryPart = query.trim() || '';
-            const categoryPart = activeCategory !== 'all' ? `subject:${activeCategory}` : '';
+            const queryPart = query.trim();
 
             // If empty search, verify if we should return
-            if (!queryPart && !categoryPart) {
+            if (!queryPart) {
                 setLoading(false);
                 return;
             }
 
-            const combinedQuery = `${queryPart} ${categoryPart}`.trim();
-            const finalQuery = encodeURIComponent(combinedQuery);
+            const finalQuery = encodeURIComponent(queryPart);
 
             const response = await fetch(`${searchUrl}${finalQuery}&startIndex=${index}&maxResults=20`);
             const data = await response.json();
@@ -68,10 +37,14 @@ function BookSearch({ onBookAdded }) {
                     setResults(prev => [...prev, ...data.items]);
                 } else {
                     setResults(data.items);
+                    setTotalItems(data.totalItems || 0);
                 }
                 if (data.items.length < 20) setHasMore(false);
             } else {
-                if (!isLoadMore) setResults([]);
+                if (!isLoadMore) {
+                    setResults([]);
+                    setTotalItems(0);
+                }
                 setHasMore(false);
             }
             setError(null);
@@ -98,18 +71,13 @@ function BookSearch({ onBookAdded }) {
         fetchBooks(0, false);
     };
 
-    // Trigger search when category changes? 
-    // Let's do it. It feels broken otherwise if you click "Fiction" and nothing happens.
-    useEffect(() => {
-        if (activeCategory !== 'all' || query) {
-            // We can trigger it, but let's respect "not live". 
-            // Actually, clicking a category IS a "search action". 
-            // Typing is what usually annoys people with "live" search.
-            searchBooks();
-        }
-    }, [activeCategory]);
-
     const addBookToLibrary = async (book) => {
+        console.log('Attempting to add book. Token:', token);
+        if (!token) {
+            setMessage({ text: 'Please login to add books', type: 'error' });
+            return;
+        }
+
         const volumeInfo = book.volumeInfo;
         const isbnInfo = volumeInfo.industryIdentifiers?.find(id => id.type === 'ISBN_13')
             || volumeInfo.industryIdentifiers?.find(id => id.type === 'ISBN_10');
@@ -132,7 +100,7 @@ function BookSearch({ onBookAdded }) {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': 'Basic ' + btoa('admin:password')
+                    'Authorization': `Basic ${token}`
                 },
                 body: JSON.stringify(newBook)
             });
@@ -150,19 +118,6 @@ function BookSearch({ onBookAdded }) {
 
     return (
         <div className="search-container">
-            <div className="category-filters">
-                {CATEGORIES.map(cat => (
-                    <button
-                        key={cat.id}
-                        className={`category-chip ${activeCategory === cat.id ? 'active' : ''}`}
-                        onClick={() => setActiveCategory(cat.id)}
-                        type="button"
-                    >
-                        {cat.label}
-                    </button>
-                ))}
-            </div>
-
             <form onSubmit={searchBooks} className="search-form">
                 <input
                     type="text"
@@ -172,15 +127,15 @@ function BookSearch({ onBookAdded }) {
                     className="search-input"
                 />
                 <button type="submit" className="search-button">
-                    <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24" fill="currentColor">
-                        <path d="M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z" />
-                    </svg>
+                    <FaSearch />
                     Suchen
                 </button>
             </form>
 
             {message && <p className={`message ${message.type}`}>{message.text}</p>}
             {error && <p className="error">{error}</p>}
+
+
 
             <div className="results-grid">
                 {results.map((book, index) => {
@@ -192,7 +147,7 @@ function BookSearch({ onBookAdded }) {
                                     {info.imageLinks?.thumbnail ? (
                                         <img src={info.imageLinks.thumbnail} alt="" className="result-thumb" />
                                     ) : (
-                                        <div className="result-thumb-placeholder">📚</div>
+                                        <div className="result-thumb-placeholder"><FaBookOpen size={24} color="#ccc" /></div>
                                     )}
                                 </div>
                                 <div className="card-basic-info">
@@ -212,35 +167,18 @@ function BookSearch({ onBookAdded }) {
                                     </p>
                                 )}
                                 <div className="meta-row">
-                                    {info.pageCount && <span className="tag">📄 {info.pageCount} p.</span>}
-                                    {info.categories && <span className="tag">🏷️ {info.categories[0]}</span>}
-                                    {info.averageRating && <span className="tag">⭐ {info.averageRating}</span>}
+                                    {info.pageCount && <span className="tag"><FaFileAlt /> {info.pageCount} p.</span>}
+                                    {info.categories && (
+                                        <span className="tag">
+                                            <FaTag />
+                                            {info.categories[0]}
+                                        </span>
+                                    )}
+                                    {info.averageRating && <span className="tag"><FaStar color="#FFC107" /> {info.averageRating}</span>}
                                 </div>
                             </div>
 
-                            <div className="links-row">
-                                <span style={{ width: '100%', fontSize: '0.8em', color: '#999', marginBottom: '4px' }}>Links:</span>
-                                {book.accessInfo?.webReaderLink && (
-                                    <a href={book.accessInfo.webReaderLink} target="_blank" rel="noopener noreferrer" className="link-chip">
-                                        📖 Reader
-                                    </a>
-                                )}
-                                {info.previewLink && (
-                                    <a href={info.previewLink} target="_blank" rel="noopener noreferrer" className="link-chip">
-                                        👀 Preview
-                                    </a>
-                                )}
-                                {info.infoLink && (
-                                    <a href={info.infoLink} target="_blank" rel="noopener noreferrer" className="link-chip">
-                                        ℹ️ Info
-                                    </a>
-                                )}
-                                {info.canonicalVolumeLink && (
-                                    <a href={info.canonicalVolumeLink} target="_blank" rel="noopener noreferrer" className="link-chip">
-                                        🔗 Canonical
-                                    </a>
-                                )}
-                            </div>
+
 
                             <button onClick={() => addBookToLibrary(book)} className="add-button">
                                 Add to Library

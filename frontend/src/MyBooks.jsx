@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'react';
+import { FaTrash, FaTrashAlt } from 'react-icons/fa';
+import { useAuth } from './context/AuthContext';
 import './MyBooks.css';
 
 function MyBooks() {
@@ -6,12 +8,14 @@ function MyBooks() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [selectedBooks, setSelectedBooks] = useState(new Set());
+    const { token } = useAuth();
 
     const fetchBooks = () => {
+        if (!token) return;
         setLoading(true);
         fetch('/api/books', {
             headers: {
-                'Authorization': 'Basic ' + btoa('admin:password')
+                'Authorization': `Basic ${token}`
             }
         })
             .then(res => {
@@ -29,8 +33,8 @@ function MyBooks() {
     };
 
     useEffect(() => {
-        fetchBooks();
-    }, []);
+        if (token) fetchBooks();
+    }, [token]);
 
     const toggleSelection = (id) => {
         const newSelection = new Set(selectedBooks);
@@ -47,7 +51,7 @@ function MyBooks() {
         try {
             const res = await fetch(`/api/books/${id}`, {
                 method: 'DELETE',
-                headers: { 'Authorization': 'Basic ' + btoa('admin:password') }
+                headers: { 'Authorization': `Basic ${token}` }
             });
             if (res.ok) {
                 fetchBooks();
@@ -69,7 +73,7 @@ function MyBooks() {
         const promises = Array.from(selectedBooks).map(id =>
             fetch(`/api/books/${id}`, {
                 method: 'DELETE',
-                headers: { 'Authorization': 'Basic ' + btoa('admin:password') }
+                headers: { 'Authorization': `Basic ${token}` }
             })
         );
 
@@ -83,7 +87,7 @@ function MyBooks() {
         try {
             const res = await fetch('/api/books', {
                 method: 'DELETE',
-                headers: { 'Authorization': 'Basic ' + btoa('admin:password') }
+                headers: { 'Authorization': `Basic ${token}` }
             });
             if (res.ok) {
                 setBooks([]);
@@ -107,10 +111,10 @@ function MyBooks() {
                         disabled={selectedBooks.size === 0}
                         className="delete-btn"
                     >
-                        Delete Selected ({selectedBooks.size})
+                        <FaTrash /> Delete Selected ({selectedBooks.size})
                     </button>
                     <button onClick={deleteAll} className="delete-all-btn">
-                        Delete All
+                        <FaTrashAlt /> Delete All
                     </button>
                 </div>
             </div>

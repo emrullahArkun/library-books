@@ -19,14 +19,14 @@ public class DataInitializer {
     public CommandLineRunner initData() {
         return args -> {
             // Create default admin user if not exists
-            if (userRepository.findByUsername("admin").isEmpty()) {
+            if (userRepository.findByEmail("admin@example.com").isEmpty()) {
                 User admin = new User();
-                admin.setUsername("admin");
-                admin.setPassword(passwordEncoder.encode("password")); // Hardcoded for simplified demo
                 admin.setEmail("admin@example.com");
-                admin.setRole("ADMIN");
+                admin.setPassword(passwordEncoder.encode("password")); // Hardcoded for simplified demo
+                admin.setRole(com.example.minilibrary.model.Role.ADMIN);
+                admin.setEnabled(true); // Auto-enable admin
                 userRepository.save(admin);
-                System.out.println("Default admin user created: admin / password");
+                System.out.println("Default admin user created: admin@example.com / password");
             }
         };
     }
