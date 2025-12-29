@@ -1,8 +1,11 @@
 package com.example.minilibrary.controller;
 
 import com.example.minilibrary.model.Author;
+import com.example.minilibrary.model.User;
+import com.example.minilibrary.model.Role;
 import com.example.minilibrary.repository.AuthorRepository;
 import com.example.minilibrary.repository.BookRepository;
+import com.example.minilibrary.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -11,6 +14,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.mail.javamail.JavaMailSender;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -25,11 +30,17 @@ public class BookControllerIntegrationTest {
         @Autowired
         private MockMvc mockMvc;
 
+        @MockBean
+        private JavaMailSender mailSender;
+
         @Autowired
         private BookRepository bookRepository;
 
         @Autowired
         private AuthorRepository authorRepository;
+
+        @Autowired
+        private UserRepository userRepository;
 
         @Autowired
         private ObjectMapper objectMapper;
@@ -38,6 +49,14 @@ public class BookControllerIntegrationTest {
         void setUp() {
                 bookRepository.deleteAll();
                 authorRepository.deleteAll();
+                userRepository.deleteAll();
+
+                User admin = new User();
+                admin.setEmail("admin");
+                admin.setPassword("password");
+                admin.setRole(Role.USER);
+                admin.setEnabled(true);
+                userRepository.save(admin);
         }
 
         @Test
