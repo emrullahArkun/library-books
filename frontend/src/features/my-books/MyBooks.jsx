@@ -27,11 +27,11 @@ function MyBooks() {
         stopSession,
         formattedTime,
         excludeTimeFromSession,
-        loading: sessionLoading
+
     } = useReadingSession();
 
-    if (loading) return <div className="loading">Loading library...</div>;
-    if (error) return <div className="error">Error: {error}</div>;
+    if (loading) return <div className="loading">{t('myBooks.loading')}</div>;
+    if (error) return <div className="error">{t('myBooks.error', { message: error })}</div>;
 
     return (
         <div className="my-books-container">

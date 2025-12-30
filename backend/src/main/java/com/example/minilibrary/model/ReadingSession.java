@@ -1,10 +1,14 @@
 package com.example.minilibrary.model;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 import java.time.Instant;
 
-@Data
+@Getter
+@Setter
 @Entity
 @Table(name = "reading_session")
 public class ReadingSession {
@@ -30,4 +34,19 @@ public class ReadingSession {
     private SessionStatus status;
 
     private Integer endPage;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (!(o instanceof ReadingSession))
+            return false;
+        ReadingSession that = (ReadingSession) o;
+        return id != null && id.equals(that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
 }

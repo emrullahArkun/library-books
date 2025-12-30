@@ -30,8 +30,7 @@ public class BookService {
     }
 
     public Optional<Book> findByIdAndUser(@NotNull Long id, com.example.minilibrary.model.User user) {
-        // Ensuring the user can only access their own book
-        return bookRepository.findById(id).filter(book -> book.getUser().equals(user));
+        return bookRepository.findByIdAndUser(id, user);
     }
 
     public boolean existsByIsbnAndUser(String isbn, com.example.minilibrary.model.User user) {
@@ -79,16 +78,17 @@ public class BookService {
 
     @Transactional
     public void deleteByIdAndUser(@NotNull Long id, com.example.minilibrary.model.User user) {
-        Book book = bookRepository.findById(id)
-                .filter(b -> b.getUser().equals(user))
-                .orElseThrow(() -> new ResourceNotFoundException("Book not found"));
-        bookRepository.delete(book);
+        // We can just try to delete, but to throw 404 if not found we might want to
+        // check existence
+        if (!bookRepository.findByIdAndUser(id, user).isPresent()) {
+            throw new ResourceNotFoundException("Book not found");
+        }
+        bookRepository.deleteByIdAndUser(id, user);
     }
 
     @Transactional
     public void deleteAllByUser(com.example.minilibrary.model.User user) {
-        List<Book> books = bookRepository.findByUser(user);
-        bookRepository.deleteAll(books);
+        bookRepository.deleteByUser(user);
     }
 
     @Transactional
@@ -106,9 +106,13 @@ public class BookService {
 
         book.setCurrentPage(currentPage);
 
-        // Auto-complete logic
-        if (book.getPageCount() != null && currentPage >= book.getPageCount()) {
-            book.setCompleted(true);
+        // Auto-complete/un-complete logic
+        if (book.getPageCount() != null) {
+            if (currentPage >= book.getPageCount()) {
+                book.setCompleted(true);
+            } else {
+                book.setCompleted(false);
+            }
         }
 
         return bookRepository.save(book);

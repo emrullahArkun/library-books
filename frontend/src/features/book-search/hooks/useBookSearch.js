@@ -3,6 +3,7 @@ import { useAuth } from '../../../context/AuthContext';
 import { useInfiniteQuery, useMutation } from '@tanstack/react-query';
 import { useToast } from '@chakra-ui/react';
 import { useTranslation } from 'react-i18next';
+import { mapGoogleBookToNewBook } from '../../../utils/googleBooks';
 
 export const useBookSearch = () => {
     const [query, setQuery] = useState('');
@@ -37,12 +38,6 @@ export const useBookSearch = () => {
         initialPageParam: 0
     });
 
-    const getHighResImage = (url) => {
-        if (!url) return '';
-        return url.replace('http:', 'https:')
-            .replace('&edge=curl', '');
-    };
-
     const results = data ? data.pages.flatMap(page => page.items || []) : [];
 
     const totalItems = data?.pages[0]?.totalItems || 0;
@@ -57,17 +52,8 @@ export const useBookSearch = () => {
 
             if (!isbnInfo && !book.id) throw new Error(t('search.toast.noIsbn'));
 
-            const uniqueId = isbnInfo ? isbnInfo.identifier : `ID:${book.id}`;
-            const coverUrl = getHighResImage(volumeInfo.imageLinks?.thumbnail);
-
-            const newBook = {
-                title: volumeInfo.title,
-                isbn: uniqueId,
-                authorName: volumeInfo.authors ? volumeInfo.authors[0] : 'Unknown Author',
-                publishDate: volumeInfo.publishedDate || 'Unknown Date',
-                coverUrl: coverUrl,
-                pageCount: volumeInfo.pageCount || 0
-            };
+            // Use utility for mapping logic
+            const newBook = mapGoogleBookToNewBook(volumeInfo, isbnInfo, book.id);
 
             const response = await fetch('/api/books', {
                 method: 'POST',
@@ -130,3 +116,4 @@ export const useBookSearch = () => {
         addBookToLibrary: addBookMutation.mutateAsync
     };
 };
+

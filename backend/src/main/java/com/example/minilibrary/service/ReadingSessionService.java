@@ -58,10 +58,18 @@ public class ReadingSessionService {
     }
 
     @Transactional
-    public ReadingSession excludeTime(User user, long millis) {
+    public ReadingSession excludeTime(User user, Long millis) {
+        if (millis == null) {
+            throw new IllegalArgumentException("millis must not be null");
+        }
+        if (millis < 0) {
+            throw new IllegalArgumentException("millis must be >= 0");
+        }
         ReadingSession session = sessionRepository.findByUserAndStatus(user, SessionStatus.ACTIVE)
-                .orElseThrow(() -> new ResourceNotFoundException("No active reading session found"));
+                .orElseThrow(() -> new RuntimeException("No active session found"));
 
+        // Adjust start time to simulate "pause" or exclusion
+        // Moving start time FORWARD by millis reduces total duration
         session.setStartTime(session.getStartTime().plusMillis(millis));
         return sessionRepository.save(session);
     }

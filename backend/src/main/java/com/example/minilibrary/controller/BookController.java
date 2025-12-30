@@ -20,11 +20,12 @@ public class BookController {
 
     private final BookService bookService;
     private final BookMapper bookMapper;
-    private final com.example.minilibrary.repository.UserRepository userRepository;
+    private final com.example.minilibrary.service.AuthService authService;
 
     private com.example.minilibrary.model.User getCurrentUser(java.security.Principal principal) {
-        return userRepository.findByEmail(principal.getName())
-                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        if (principal == null)
+            throw new com.example.minilibrary.exception.ResourceNotFoundException("User not authenticated");
+        return authService.getUserByEmail(principal.getName());
     }
 
     @GetMapping

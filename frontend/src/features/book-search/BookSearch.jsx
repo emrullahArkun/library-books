@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import './BookSearch.css';
 import { useBookSearch } from './hooks/useBookSearch';
 import SearchForm from './components/SearchForm';
@@ -18,12 +18,12 @@ function BookSearch({ onBookAdded }) {
         addBookToLibrary
     } = useBookSearch();
 
-    const handleAddBook = async (book) => {
+    const handleAddBook = useCallback(async (book) => {
         const success = await addBookToLibrary(book);
         if (success && onBookAdded) {
             onBookAdded();
         }
-    };
+    }, [addBookToLibrary, onBookAdded]);
 
     return (
         <div className="search-container">
@@ -32,9 +32,9 @@ function BookSearch({ onBookAdded }) {
             {error && <p className="error">{error}</p>}
 
             <div className="results-grid">
-                {results.map((book, index) => (
+                {results.map((book) => (
                     <SearchResultCard
-                        key={`${book.id}-${index}`}
+                        key={book.id}
                         book={book}
                         onAdd={handleAddBook}
                     />

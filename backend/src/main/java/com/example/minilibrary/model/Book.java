@@ -41,10 +41,23 @@ public class Book {
     private String coverUrl;
 
     private Integer pageCount;
-    private Integer currentPage = 0; // Default to 0
-    private java.time.LocalDate startDate = java.time.LocalDate.now(); // Default to today
-    private Boolean completed = false;
+    private Integer currentPage;
+    private java.time.LocalDate startDate;
+    private Boolean completed;
 
     @OneToMany(mappedBy = "book", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ReadingSession> readingSessions = new ArrayList<>();
+
+    @jakarta.persistence.PrePersist
+    public void prePersist() {
+        if (currentPage == null) {
+            currentPage = 0;
+        }
+        if (startDate == null) {
+            startDate = java.time.LocalDate.now();
+        }
+        if (completed == null) {
+            completed = false;
+        }
+    }
 }

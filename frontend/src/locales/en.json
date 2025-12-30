@@ -35,6 +35,15 @@
         "title": "My Library",
         "deleteSelected": "Delete Selected",
         "deleteAll": "Delete All",
+        "loading": "Loading library...",
+        "confirmDelete": "Delete this book?",
+        "confirmDeleteSelected": "Delete {{count}} books?",
+        "confirmDeleteAll": "Delete ALL books? This cannot be undone.",
+        "deleteFailed": "Failed to delete book: {{message}}",
+        "deleteAllFailed": "Failed to delete all books: {{message}}",
+        "updateProgressFailed": "Failed to update progress: {{message}}",
+        "updateStatusFailed": "Failed to update status: {{message}}",
+        "error": "Error: {{message}}",
         "empty": {
             "line1": "No books in your library yet.",
             "line2": "Go to Home to add books!"
@@ -64,21 +73,37 @@
     "auth": {
         "login": {
             "title": "Login",
-            "button": "Login"
+            "button": "Login",
+            "success": "Successfully logged in.",
+            "loadingText": "Signing in..."
         },
         "register": {
             "title": "Register",
             "button": "Register",
             "link": "Don't have an account?",
-            "loginLink": "Already have an account?"
+            "loginLink": "Already have an account?",
+            "success": "Registration successful! Please check your email.",
+            "loadingText": "Creating account..."
+        },
+        "verify": {
+            "title": "Email Verification",
+            "verifying": "Verifying your account...",
+            "success": "Account verified successfully!",
+            "failed": "Verification failed.",
+            "noToken": "No verification token found.",
+            "connectionError": "Connection error.",
+            "goToLogin": "Go to Login",
+            "tryRegister": "Try Registering Again"
         },
         "email": "Email",
         "password": "Password",
         "confirmPassword": "Confirm Password",
         "passwordsDoNotMatch": "Passwords do not match",
         "required": "Please fill out this field",
+        "invalidEmail": "Invalid email format",
         "enterEmail": "Enter your email",
-        "enterPassword": "Enter your password"
+        "enterPassword": "Enter your password",
+        "errorTitle": "Error"
     },
     "readingSession": {
         "start": "▶ Start Reading",

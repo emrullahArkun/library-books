@@ -9,7 +9,11 @@ export const useReadingSession = () => {
 
     // Fetch active session on mount
     useEffect(() => {
-        if (!token) return;
+        if (!token) {
+            setActiveSession(null);
+            setLoading(false);
+            return;
+        }
 
         const fetchSession = async () => {
             try {

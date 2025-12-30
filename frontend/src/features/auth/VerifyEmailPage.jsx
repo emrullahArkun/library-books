@@ -1,58 +1,100 @@
 import { useEffect, useState } from 'react';
-import { useSearchParams, Link } from 'react-router-dom';
-import './Auth.css';
+import { useSearchParams, Link as RouterLink } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { Button, Heading, Text, VStack, Icon, Spinner } from '@chakra-ui/react';
+import { MdCheckCircle, MdError } from 'react-icons/md';
+import AuthShell from './components/AuthShell';
 
 function VerifyEmailPage() {
+    const { t } = useTranslation();
     const [searchParams] = useSearchParams();
     const [status, setStatus] = useState('verifying'); // verifying, success, error
     const [message, setMessage] = useState('');
 
+    const token = searchParams.get('token');
+
     useEffect(() => {
-        const token = searchParams.get('token');
         if (!token) {
             setStatus('error');
-            setMessage('No verification token found.');
+            setMessage(t('auth.verify.noToken', 'No verification token found.'));
             return;
         }
 
-        fetch(`/api/auth/verify?token=${token}`)
+        const encodedToken = encodeURIComponent(token);
+
+        fetch(`/api/auth/verify?token=${encodedToken}`)
             .then(async res => {
                 if (res.ok) {
                     setStatus('success');
-                    setMessage('Account verified successfully!');
+                    setMessage(t('auth.verify.success', 'Account verified successfully!'));
                 } else {
                     setStatus('error');
-                    const text = await res.text();
-                    setMessage(text || 'Verification failed.');
+                    let text = '';
+                    try {
+                        // try json first
+                        const data = await res.json();
+                        text = data.error || data.message;
+                    } catch {
+                        // fallback to text
+                        text = await res.text();
+                    }
+                    setMessage(text || t('auth.verify.failed', 'Verification failed.'));
                 }
             })
             .catch(() => {
                 setStatus('error');
-                setMessage('Connection error.');
+                setMessage(t('auth.verify.connectionError', 'Connection error.'));
             });
-    }, [searchParams]);
+    }, [token, t]);
 
     return (
-        <div className="auth-container">
-            <div className="auth-card">
-                <h2>Email Verification</h2>
-                {status === 'verifying' && <p>Verifying your account...</p>}
+        <AuthShell>
+            <VStack spacing={6} textAlign="center">
+                <Heading size="lg" color="gray.700">
+                    {t('auth.verify.title', 'Email Verification')}
+                </Heading>
+
+                {status === 'verifying' && (
+                    <VStack spacing={4}>
+                        <Spinner size="xl" color="teal.500" thickness="4px" />
+                        <Text color="gray.600">{t('auth.verify.verifying', 'Verifying your account...')}</Text>
+                    </VStack>
+                )}
+
                 {status === 'success' && (
-                    <div className="success-message">
-                        {message}
-                        <br />
-                        <Link to="/login" className="btn-link">Go to Login</Link>
-                    </div>
+                    <VStack spacing={4}>
+                        <Icon as={MdCheckCircle} w={16} h={16} color="green.500" />
+                        <Text fontSize="lg" color="gray.700">{message}</Text>
+                        <Button
+                            as={RouterLink}
+                            to="/login"
+                            colorScheme="teal"
+                            size="lg"
+                            w="full"
+                        >
+                            {t('auth.verify.goToLogin', 'Go to Login')}
+                        </Button>
+                    </VStack>
                 )}
+
                 {status === 'error' && (
-                    <div className="error-message">
-                        {message}
-                        <br />
-                        <Link to="/register">Try Registering Again</Link>
-                    </div>
+                    <VStack spacing={4}>
+                        <Icon as={MdError} w={16} h={16} color="red.500" />
+                        <Text fontSize="lg" color="red.600">{message}</Text>
+                        <Button
+                            as={RouterLink}
+                            to="/register"
+                            variant="outline"
+                            colorScheme="teal"
+                            size="lg"
+                            w="full"
+                        >
+                            {t('auth.verify.tryRegister', 'Try Registering Again')}
+                        </Button>
+                    </VStack>
                 )}
-            </div>
-        </div>
+            </VStack>
+        </AuthShell>
     );
 }
 

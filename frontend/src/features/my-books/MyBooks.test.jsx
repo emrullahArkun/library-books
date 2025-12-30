@@ -1,4 +1,5 @@
 import { render, screen, waitFor, within } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
 import userEvent from '@testing-library/user-event';
 import { describe, it, expect } from 'vitest';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -22,7 +23,9 @@ const createTestWrapper = () => {
     return ({ children }) => (
         <AuthContext.Provider value={{ token: 'fake-token', user: { email: 'test@example.com' } }}>
             <QueryClientProvider client={queryClient}>
-                {children}
+                <MemoryRouter>
+                    {children}
+                </MemoryRouter>
             </QueryClientProvider>
         </AuthContext.Provider>
     );
@@ -41,11 +44,11 @@ describe('MyBooks Component', () => {
         await waitFor(() => expect(screen.getByText(/My Library/i)).toBeInTheDocument());
 
         // Check if specific books are rendered using more specific selectors
-        const book1Title = await screen.findByRole('heading', { name: 'Test Book 1' });
-        expect(book1Title).toBeInTheDocument();
+        const book1Cover = await screen.findByAltText('Test Book 1');
+        expect(book1Cover).toBeInTheDocument();
 
-        const book2Title = await screen.findByRole('heading', { name: 'Test Book 2' });
-        expect(book2Title).toBeInTheDocument();
+        const book2Cover = await screen.findByAltText('Test Book 2');
+        expect(book2Cover).toBeInTheDocument();
     });
 
     it('optimistically updates "Mark as Read" status', async () => {
@@ -62,8 +65,8 @@ describe('MyBooks Component', () => {
         render(<MyBooks />, { wrapper: createTestWrapper() });
 
         // Wait for books to load
-        const bookTitle = await screen.findByRole('heading', { name: 'Test Book 1' });
-        const bookCard = bookTitle.closest('.book-card-detail');
+        const bookCover = await screen.findByAltText('Test Book 1');
+        const bookCard = bookCover.closest('.book-card-detail');
 
         // Scope interactions to this specific card
         const checkbox = within(bookCard).getByLabelText(/Mark as Read/i);

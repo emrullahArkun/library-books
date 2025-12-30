@@ -1,4 +1,4 @@
-import { createContext, useState, useContext, useEffect } from 'react';
+import { createContext, useState, useContext, useEffect, useMemo, useCallback } from 'react';
 
 export const AuthContext = createContext(null);
 
@@ -8,35 +8,73 @@ export const AuthProvider = ({ children }) => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        // Load from localStorage on mount
-        const storedToken = localStorage.getItem('token');
-        const storedUser = localStorage.getItem('user');
-        if (storedToken && storedUser) {
-            setToken(storedToken);
-            setUser(JSON.parse(storedUser));
-        }
-        setLoading(false);
+        const initAuth = async () => {
+            const storedToken = localStorage.getItem('token');
+            const storedUser = localStorage.getItem('user');
+
+            if (storedToken && storedUser) {
+                try {
+                    // 1. Optimistically set state
+                    const parsedUser = JSON.parse(storedUser);
+                    setUser(parsedUser);
+                    setToken(storedToken);
+
+                    // 2. Validate against server
+                    const res = await fetch('/api/auth/session', {
+                        headers: { 'Authorization': `Basic ${storedToken}` }
+                    });
+
+                    if (!res.ok) {
+                        throw new Error("Session invalid");
+                    }
+                } catch (error) {
+                    console.error("Session validation failed:", error);
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('user');
+                    setToken(null);
+                    setUser(null);
+                }
+            }
+            setLoading(false);
+        };
+        initAuth();
     }, []);
 
-    const login = (userData, authToken) => {
+
+    const login = useCallback((userData, authToken) => {
         setUser(userData);
         setToken(authToken);
         localStorage.setItem('user', JSON.stringify(userData));
         localStorage.setItem('token', authToken);
-    };
+    }, []);
 
-    const logout = () => {
+    const logout = useCallback(() => {
         setUser(null);
         setToken(null);
         localStorage.removeItem('user');
         localStorage.removeItem('token');
-    };
+    }, []);
+
+    const value = useMemo(() => ({
+        user,
+        token,
+        login,
+        logout,
+        loading
+    }), [user, token, login, logout, loading]);
 
     return (
-        <AuthContext.Provider value={{ user, token, login, logout, loading }}>
+        <AuthContext.Provider value={value}>
             {children}
         </AuthContext.Provider>
     );
 };
 
-export const useAuth = () => useContext(AuthContext);
+export const useAuth = () => {
+    const context = useContext(AuthContext);
+    if (!context) {
+        throw new Error('useAuth must be used within an AuthProvider');
+    }
+    return context;
+};
+

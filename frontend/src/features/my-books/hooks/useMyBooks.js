@@ -1,14 +1,16 @@
 import { useState } from 'react';
 import { useAuth } from '../../../context/AuthContext';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 
 export const useMyBooks = () => {
     const [selectedBooks, setSelectedBooks] = useState(new Set());
     const { token } = useAuth();
     const queryClient = useQueryClient();
+    const { t } = useTranslation();
 
     const { data: books = [], isLoading: loading, error } = useQuery({
-        queryKey: ['myBooks'],
+        queryKey: ['myBooks', token],
         queryFn: async () => {
             if (!token) return [];
             const response = await fetch('/api/books', {
@@ -29,17 +31,17 @@ export const useMyBooks = () => {
             if (!res.ok) throw new Error('Failed to delete book');
         },
         onMutate: async (id) => {
-            await queryClient.cancelQueries({ queryKey: ['myBooks'] });
-            const previousBooks = queryClient.getQueryData(['myBooks']);
-            queryClient.setQueryData(['myBooks'], (old) => old.filter(book => book.id !== id));
+            await queryClient.cancelQueries({ queryKey: ['myBooks', token] });
+            const previousBooks = queryClient.getQueryData(['myBooks', token]);
+            queryClient.setQueryData(['myBooks', token], (old = []) => old.filter(book => book.id !== id));
             return { previousBooks };
         },
         onError: (err, id, context) => {
-            queryClient.setQueryData(['myBooks'], context.previousBooks);
-            alert('Failed to delete book: ' + err.message);
+            queryClient.setQueryData(['myBooks', token], context.previousBooks);
+            alert(t('myBooks.deleteFailed', { message: err.message }));
         },
         onSettled: () => {
-            queryClient.invalidateQueries({ queryKey: ['myBooks'] });
+            queryClient.invalidateQueries({ queryKey: ['myBooks', token] });
         }
     });
 
@@ -52,17 +54,17 @@ export const useMyBooks = () => {
             if (!res.ok) throw new Error('Failed to delete all books');
         },
         onMutate: async () => {
-            await queryClient.cancelQueries({ queryKey: ['myBooks'] });
-            const previousBooks = queryClient.getQueryData(['myBooks']);
-            queryClient.setQueryData(['myBooks'], []);
+            await queryClient.cancelQueries({ queryKey: ['myBooks', token] });
+            const previousBooks = queryClient.getQueryData(['myBooks', token]);
+            queryClient.setQueryData(['myBooks', token], []);
             return { previousBooks };
         },
         onError: (err, variables, context) => {
-            queryClient.setQueryData(['myBooks'], context.previousBooks);
-            alert('Failed to delete all books: ' + err.message);
+            queryClient.setQueryData(['myBooks', token], context.previousBooks);
+            alert(t('myBooks.deleteAllFailed', { message: err.message }));
         },
         onSettled: () => {
-            queryClient.invalidateQueries({ queryKey: ['myBooks'] });
+            queryClient.invalidateQueries({ queryKey: ['myBooks', token] });
             setSelectedBooks(new Set());
         }
     });
@@ -85,19 +87,19 @@ export const useMyBooks = () => {
             return res.json();
         },
         onMutate: async ({ id, currentPage }) => {
-            await queryClient.cancelQueries({ queryKey: ['myBooks'] });
-            const previousBooks = queryClient.getQueryData(['myBooks']);
-            queryClient.setQueryData(['myBooks'], (old) =>
+            await queryClient.cancelQueries({ queryKey: ['myBooks', token] });
+            const previousBooks = queryClient.getQueryData(['myBooks', token]);
+            queryClient.setQueryData(['myBooks', token], (old = []) =>
                 old.map(book => book.id === id ? { ...book, currentPage } : book)
             );
             return { previousBooks };
         },
         onError: (err, variables, context) => {
-            queryClient.setQueryData(['myBooks'], context.previousBooks);
-            alert('Failed to update progress: ' + err.message);
+            queryClient.setQueryData(['myBooks', token], context.previousBooks);
+            alert(t('myBooks.updateProgressFailed', { message: err.message }));
         },
         onSettled: () => {
-            queryClient.invalidateQueries({ queryKey: ['myBooks'] });
+            queryClient.invalidateQueries({ queryKey: ['myBooks', token] });
         }
     });
 
@@ -119,65 +121,72 @@ export const useMyBooks = () => {
             return res.json();
         },
         onMutate: async ({ id, completed }) => {
-            await queryClient.cancelQueries({ queryKey: ['myBooks'] });
-            const previousBooks = queryClient.getQueryData(['myBooks']);
-            queryClient.setQueryData(['myBooks'], (old) =>
+            await queryClient.cancelQueries({ queryKey: ['myBooks', token] });
+            const previousBooks = queryClient.getQueryData(['myBooks', token]);
+            queryClient.setQueryData(['myBooks', token], (old = []) =>
                 old.map(book => book.id === id ? { ...book, completed } : book)
             );
             return { previousBooks };
         },
         onError: (err, variables, context) => {
-            queryClient.setQueryData(['myBooks'], context.previousBooks);
-            alert('Failed to update status: ' + err.message);
+            queryClient.setQueryData(['myBooks', token], context.previousBooks);
+            alert(t('myBooks.updateStatusFailed', { message: err.message }));
         },
         onSettled: () => {
-            queryClient.invalidateQueries({ queryKey: ['myBooks'] });
+            queryClient.invalidateQueries({ queryKey: ['myBooks', token] });
         }
     });
 
     const toggleSelection = (id) => {
-        const newSelection = new Set(selectedBooks);
-        if (newSelection.has(id)) {
-            newSelection.delete(id);
-        } else {
-            newSelection.add(id);
-        }
-        setSelectedBooks(newSelection);
+        setSelectedBooks(prev => {
+            const next = new Set(prev);
+            if (next.has(id)) {
+                next.delete(id);
+            } else {
+                next.add(id);
+            }
+            return next;
+        });
     };
 
     const deleteBook = async (id) => {
-        if (!window.confirm('Delete this book?')) return;
+        if (!window.confirm(t('myBooks.confirmDelete'))) return;
         deleteMutation.mutate(id);
         // Optimistically update selection
-        if (selectedBooks.has(id)) {
-            const newSelection = new Set(selectedBooks);
-            newSelection.delete(id);
-            setSelectedBooks(newSelection);
-        }
+        setSelectedBooks(prev => {
+            const next = new Set(prev);
+            next.delete(id);
+            return next;
+        });
     };
 
     const deleteSelected = async () => {
-        if (!window.confirm(`Delete ${selectedBooks.size} books?`)) return;
-        // Run all deletions
-        try {
-            await Promise.all(
-                Array.from(selectedBooks).map(id =>
-                    fetch(`/api/books/${id}`, {
-                        method: 'DELETE',
-                        headers: { 'Authorization': `Basic ${token}` }
-                    })
-                )
-            );
-            // Invalidate once
-            queryClient.invalidateQueries({ queryKey: ['myBooks'] });
-            setSelectedBooks(new Set());
-        } catch (err) {
-            console.error(err);
+        if (!window.confirm(t('myBooks.confirmDeleteSelected', { count: selectedBooks.size }))) return;
+
+        const ids = Array.from(selectedBooks);
+        const results = await Promise.allSettled(
+            ids.map(id =>
+                fetch(`/api/books/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Basic ${token}` }
+                })
+            )
+        );
+
+        const failed = results.some(r => r.status === 'fulfilled' && !r.value.ok) ||
+            results.some(r => r.status === 'rejected');
+
+        if (failed) {
+            console.error('Some deletions failed', results);
+            alert(t('myBooks.deleteFailed', { message: 'Some items could not be deleted.' }));
         }
+
+        queryClient.invalidateQueries({ queryKey: ['myBooks', token] });
+        setSelectedBooks(new Set());
     };
 
     const deleteAll = () => {
-        if (!window.confirm('Delete ALL books? This cannot be undone.')) return;
+        if (!window.confirm(t('myBooks.confirmDeleteAll'))) return;
         deleteAllMutation.mutate();
     };
 

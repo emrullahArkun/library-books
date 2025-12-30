@@ -1,11 +1,12 @@
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import AuthGateLoader from './AuthGateLoader';
 
 const PublicRoute = ({ children }) => {
     const { user, loading } = useAuth();
 
     if (loading) {
-        return null; // or a spinner could go here
+        return <AuthGateLoader />;
     }
 
     if (user) {
@@ -16,3 +17,4 @@ const PublicRoute = ({ children }) => {
 };
 
 export default PublicRoute;
+

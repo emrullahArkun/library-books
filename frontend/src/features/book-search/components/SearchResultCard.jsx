@@ -1,19 +1,11 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { FaBookOpen, FaFileAlt, FaTag, FaStar, FaPlus } from 'react-icons/fa';
 import { motion, useAnimation } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
-import {
-    Modal,
-    ModalOverlay,
-    ModalContent,
-    ModalHeader,
-    ModalBody,
-    ModalCloseButton,
-    useDisclosure,
-    Text,
-    Button
-} from '@chakra-ui/react';
+import { useDisclosure } from '@chakra-ui/react';
 import '../BookSearch.css';
+import { formatPublishedDate } from '../../../utils/formatDate';
+import SearchResultDetailsModal from './SearchResultDetailsModal';
 
 const SearchResultCard = ({ book, onAdd }) => {
     const { t } = useTranslation();
@@ -24,7 +16,7 @@ const SearchResultCard = ({ book, onAdd }) => {
     const handleMouseEnter = () => {
         controls.start({
             scale: 30,
-            opacity: 0.1, // Keep subtle overlay
+            opacity: 0.1,
             transition: { duration: 0.5, ease: "easeOut" }
         });
     };
@@ -45,6 +37,7 @@ const SearchResultCard = ({ book, onAdd }) => {
     const description = info.description || '';
     const isLongDescription = description.length > 150;
     const shortDescription = isLongDescription ? description.substring(0, 150) + '...' : description;
+    const published = formatPublishedDate(info.publishedDate);
 
     return (
         <>
@@ -55,15 +48,18 @@ const SearchResultCard = ({ book, onAdd }) => {
                 onMouseLeave={handleMouseLeave}
                 role="button"
                 tabIndex={0}
-                onKeyPress={(e) => {
-                    if (e.key === 'Enter' || e.key === ' ') onAdd(book);
+                onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        onAdd(book);
+                    }
                 }}
             >
                 <div style={{ position: 'relative', zIndex: 2, width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
                     <div className="card-header">
                         <div className="result-img-wrapper">
                             {info.imageLinks?.thumbnail ? (
-                                <img src={info.imageLinks.thumbnail} alt="" className="result-thumb" />
+                                <img src={info.imageLinks.thumbnail} alt={info.title} className="result-thumb" />
                             ) : (
                                 <div className="result-thumb-placeholder"><FaBookOpen size={24} color="#ccc" /></div>
                             )}
@@ -71,25 +67,7 @@ const SearchResultCard = ({ book, onAdd }) => {
                         <div className="card-basic-info">
                             <div className="book-title">{info.title}</div>
                             <div className="author">{t('search.result.by')} {info.authors?.join(', ') || t('search.result.unknown')}</div>
-                            {info.publishedDate && (
-                                <div className="meta-date">
-                                    {(() => {
-                                        const date = new Date(info.publishedDate);
-                                        if (isNaN(date.getTime())) return info.publishedDate;
-                                        // If it's just a year (e.g., "2005"), date parsing works, 
-                                        // but if the string doesn't have hyphens, we might want to keep it as is or format carefully.
-                                        // Google Books often returns "YYYY" or "YYYY-MM-DD".
-                                        // If input is "YYYY", we probably just want to show "YYYY".
-                                        if (info.publishedDate.length === 4) return info.publishedDate;
-
-                                        return new Intl.DateTimeFormat('de-DE', {
-                                            day: '2-digit',
-                                            month: '2-digit',
-                                            year: 'numeric'
-                                        }).format(date);
-                                    })()}
-                                </div>
-                            )}
+                            {published && <div className="meta-date">{published}</div>}
                             {info.publisher && <div className="meta-publisher">{info.publisher}</div>}
                         </div>
                     </div>
@@ -101,12 +79,14 @@ const SearchResultCard = ({ book, onAdd }) => {
                                     {shortDescription}
                                 </p>
                                 {isLongDescription && (
-                                    <span
+                                    <button
+                                        type="button"
                                         className="show-more-btn"
                                         onClick={handleShowMore}
+                                        style={{ background: 'none', border: 'none', padding: 0, font: 'inherit', cursor: 'pointer', textDecoration: 'underline' }}
                                     >
                                         {t('search.result.showMore')}
-                                    </span>
+                                    </button>
                                 )}
                             </div>
                         )}
@@ -147,17 +127,12 @@ const SearchResultCard = ({ book, onAdd }) => {
                 />
             </div>
 
-            <Modal isOpen={isOpen} onClose={onClose} size="xl" isCentered>
-                <ModalOverlay backdropFilter="blur(5px)" />
-                <ModalContent>
-                    <ModalHeader pr={10}>{info.title}</ModalHeader>
-                    <ModalCloseButton />
-                    <ModalBody pb={6}>
-                        <Text fontWeight="bold" mb={2}>{t('search.result.description')}:</Text>
-                        <Text whiteSpace="pre-wrap">{description}</Text>
-                    </ModalBody>
-                </ModalContent>
-            </Modal>
+            <SearchResultDetailsModal
+                isOpen={isOpen}
+                onClose={onClose}
+                title={info.title}
+                description={description}
+            />
         </>
     );
 };

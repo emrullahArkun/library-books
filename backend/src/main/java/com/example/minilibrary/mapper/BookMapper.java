@@ -11,7 +11,7 @@ public interface BookMapper {
 
     @Mapping(target = "authorId", source = "author.id")
     @Mapping(target = "authorName", source = "author.name")
-    @Mapping(target = "startDate", source = "startDate", dateFormat = "yyyy-MM-dd")
+    @Mapping(target = "startDate", source = "startDate")
     BookDto toDto(Book book);
 
     @Mapping(target = "id", ignore = true)
@@ -20,5 +20,6 @@ public interface BookMapper {
     @Mapping(target = "startDate", ignore = true)
     @Mapping(target = "user", ignore = true)
     @Mapping(target = "completed", ignore = true)
+    @Mapping(target = "readingSessions", ignore = true)
     Book toEntity(CreateBookRequest request);
 }

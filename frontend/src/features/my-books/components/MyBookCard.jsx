@@ -96,7 +96,7 @@ const MyBookCard = ({
                 />
             </div>
 
-            <div className="book-cover-container" onClick={() => window.location.href = `/books/${book.id}/stats`} style={{ cursor: 'pointer' }}>
+            <div className="book-cover-container" onClick={() => navigate(`/books/${book.id}/stats`)} style={{ cursor: 'pointer' }}>
                 <div className="book-cover">
                     {book.coverUrl ? (
                         <img src={book.coverUrl} alt={book.title} />
@@ -115,37 +115,50 @@ const MyBookCard = ({
 
             <div className="book-progress-info">
                 {book.pageCount > 0 ? (
-                    <div className="progress-section">
-                        <progress value={book.currentPage || 0} max={book.pageCount}></progress>
-                        <div className="progress-stats">
-                            {t('bookCard.readProgress', { current: book.currentPage || 0, total: book.pageCount })}
-                        </div>
-
-                        {!book.completed && (
-                            <div className="card-actions centered-action">
-                                {activeSession?.bookId === book.id ? (
-                                    <button
-                                        className="timer-btn stop"
-                                        onClick={handleStopClick}
-                                    >
-                                        {t('readingSession.stop')} {frozenTimerDisplay || timerTime}
-                                    </button>
-                                ) : (
-                                    <button
-                                        className="timer-btn start"
-                                        onClick={async () => {
-                                            const success = await onStartSession(book.id);
-                                            if (!success) alert(t('readingSession.failedStart'));
-                                        }}
-                                        disabled={!!activeSession}
-                                        title={activeSession ? t('readingSession.finishOther') : t('readingSession.startReading')}
-                                    >
-                                        {t('readingSession.start')}
-                                    </button>
-                                )}
+                    <>
+                        <div className="progress-section">
+                            <progress value={book.currentPage || 0} max={book.pageCount}></progress>
+                            <div className="progress-stats">
+                                {t('bookCard.readProgress', { current: book.currentPage || 0, total: book.pageCount })}
                             </div>
-                        )}
-                    </div>
+
+                            {!book.completed && (
+                                <div className="card-actions centered-action">
+                                    {activeSession?.bookId === book.id ? (
+                                        <button
+                                            className="timer-btn stop"
+                                            onClick={handleStopClick}
+                                        >
+                                            {t('readingSession.stop')} {frozenTimerDisplay || timerTime}
+                                        </button>
+                                    ) : (
+                                        <button
+                                            className="timer-btn start"
+                                            onClick={async () => {
+                                                const success = await onStartSession(book.id);
+                                                if (!success) alert(t('readingSession.failedStart'));
+                                            }}
+                                            disabled={!!activeSession}
+                                            title={activeSession ? t('readingSession.finishOther') : t('readingSession.startReading')}
+                                        >
+                                            {t('readingSession.start')}
+                                        </button>
+                                    )}
+                                </div>
+                            )}
+                        </div>
+                        <div className="status-toggle" style={{ marginTop: '10px', textAlign: 'center' }}>
+                            <label style={{ cursor: 'pointer', fontSize: '0.9em' }}>
+                                <input
+                                    type="checkbox"
+                                    checked={book.completed}
+                                    onChange={(e) => onUpdateStatus(book.id, e.target.checked)}
+                                    style={{ marginRight: '5px' }}
+                                />
+                                {t('bookCard.markAsRead')}
+                            </label>
+                        </div>
+                    </>
                 ) : (
                     <p className="isbn">{t('bookCard.pagesUnknown')}</p>
                 )}

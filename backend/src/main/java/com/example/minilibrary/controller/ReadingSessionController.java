@@ -4,10 +4,9 @@ import com.example.minilibrary.dto.ReadingSessionDto;
 import com.example.minilibrary.model.ReadingSession;
 import com.example.minilibrary.model.User;
 import com.example.minilibrary.service.ReadingSessionService;
-import com.example.minilibrary.repository.UserRepository;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -18,13 +17,12 @@ import java.util.Map;
 public class ReadingSessionController {
 
     private final ReadingSessionService sessionService;
-    private final UserRepository userRepository;
+    private final com.example.minilibrary.service.AuthService authService;
 
     private User getCurrentUser(java.security.Principal principal) {
         if (principal == null)
-            return null;
-        return userRepository.findByEmail(principal.getName())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+            throw new RuntimeException("User not authenticated");
+        return authService.getUserByEmail(principal.getName());
     }
 
     @PostMapping("/start")
@@ -52,7 +50,10 @@ public class ReadingSessionController {
                 endTime = java.time.Instant.parse((String) request.get("endTime"));
             }
             if (request.containsKey("endPage")) {
-                endPage = (Integer) request.get("endPage");
+                Object val = request.get("endPage");
+                if (val instanceof Number n) {
+                    endPage = n.intValue();
+                }
             }
         }
         ReadingSession session = sessionService.stopSession(user, endTime, endPage);

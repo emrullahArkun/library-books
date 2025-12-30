@@ -19,7 +19,7 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    private boolean enabled;
+    private boolean enabled = false;
 
     private String verificationToken;
 
@@ -30,7 +30,6 @@ public class User {
         this.email = email;
         this.password = password;
         this.role = role;
-        this.enabled = false; // Default disabled until verification
     }
 
     // Getters and Setters

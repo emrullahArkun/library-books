@@ -25,10 +25,14 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                        .requestMatchers("/api/auth/**").permitAll() // Login/Register is public
-                        .requestMatchers("/error").permitAll() // Allow error responses
-                        .requestMatchers("/api/books/**").authenticated() // Any authenticated user can manage books
+                        .requestMatchers("/api/auth/login", "/api/auth/register", "/api/auth/verify").permitAll() // Public
+                                                                                                                  // endpoints
+                        .requestMatchers("/api/auth/session").authenticated() // New session check - requires valid
+                                                                              // creds
+                        .requestMatchers("/error").permitAll()
+                        .requestMatchers("/api/books/**").authenticated()
                         .anyRequest().authenticated())
+
                 .httpBasic(basic -> basic.authenticationEntryPoint((request, response, authException) -> {
                     response.sendError(jakarta.servlet.http.HttpServletResponse.SC_UNAUTHORIZED,
                             authException.getMessage());

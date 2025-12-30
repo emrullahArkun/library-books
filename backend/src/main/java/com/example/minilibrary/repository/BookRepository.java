@@ -17,4 +17,6 @@ public interface BookRepository extends JpaRepository<Book, Long> {
     void deleteByIdAndUser(Long id, com.example.minilibrary.model.User user);
 
     void deleteByUser(com.example.minilibrary.model.User user);
+
+    java.util.Optional<Book> findByIdAndUser(Long id, com.example.minilibrary.model.User user);
 }

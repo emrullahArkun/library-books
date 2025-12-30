@@ -22,6 +22,9 @@ public class AuthService {
         this.emailService = emailService;
     }
 
+    @org.springframework.beans.factory.annotation.Value("${app.auth.require-verification:false}")
+    private boolean requireVerification;
+
     public User registerUser(String email, String password) {
         if (userRepository.findByEmail(email).isPresent()) {
             throw new RuntimeException("Email already taken");
@@ -31,12 +34,20 @@ public class AuthService {
         user.setEmail(email);
         user.setPassword(passwordEncoder.encode(password));
         user.setRole(Role.USER); // Default role
-        user.setEnabled(true); // Validated via email later -> Enabled by default for now
-        // user.setVerificationToken(UUID.randomUUID().toString());
+
+        // If verification is required, disable account initially
+        user.setEnabled(!requireVerification);
+        user.setVerificationToken(UUID.randomUUID().toString());
 
         userRepository.save(user);
 
-        // emailService.sendVerificationEmail(user);
+        // Only send email if verification is required (or maybe always send but allow
+        // login?
+        // User asked to disable it implies skipping the blocker.
+        // Let's always send for info, but allow login.)
+        if (requireVerification) {
+            emailService.sendVerificationEmail(user);
+        }
 
         return user;
     }
@@ -55,16 +66,23 @@ public class AuthService {
 
     public User login(String email, String password) {
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(
+                        () -> new com.example.minilibrary.exception.InvalidCredentialsException("Invalid credentials"));
 
         if (!user.isEnabled()) {
-            throw new RuntimeException("Account not verified. Please check your email.");
+            throw new com.example.minilibrary.exception.AccountNotVerifiedException(
+                    "Account not verified. Please check your email.");
         }
 
         if (!passwordEncoder.matches(password, user.getPassword())) {
-            throw new RuntimeException("Invalid credentials");
+            throw new com.example.minilibrary.exception.InvalidCredentialsException("Invalid credentials");
         }
 
         return user;
+    }
+
+    public User getUserByEmail(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
     }
 }

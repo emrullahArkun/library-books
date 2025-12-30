@@ -35,6 +35,15 @@
         "title": "Meine Bibliothek",
         "deleteSelected": "Ausgewählte löschen",
         "deleteAll": "Alle löschen",
+        "loading": "Bibliothek wird geladen...",
+        "confirmDelete": "Dieses Buch löschen?",
+        "confirmDeleteSelected": "{{count}} Bücher löschen?",
+        "confirmDeleteAll": "ALLE Bücher löschen? Dies kann nicht rückgängig gemacht werden.",
+        "deleteFailed": "Buch konnte nicht gelöscht werden: {{message}}",
+        "deleteAllFailed": "Alle Bücher konnten nicht gelöscht werden: {{message}}",
+        "updateProgressFailed": "Fortschritt konnte nicht aktualisiert werden: {{message}}",
+        "updateStatusFailed": "Status konnte nicht aktualisiert werden: {{message}}",
+        "error": "Fehler: {{message}}",
         "empty": {
             "line1": "Noch keine Bücher in deiner Bibliothek.",
             "line2": "Gehe zur Suche, um Bücher hinzuzufügen!"
@@ -64,21 +73,37 @@
     "auth": {
         "login": {
             "title": "Anmelden",
-            "button": "Anmelden"
+            "button": "Anmelden",
+            "success": "Erfolgreich angemeldet.",
+            "loadingText": "Anmeldung läuft..."
         },
         "register": {
             "title": "Registrieren",
             "button": "Registrieren",
             "link": "Noch kein Konto?",
-            "loginLink": "Bereits registriert?"
+            "loginLink": "Bereits registriert?",
+            "success": "Registrierung erfolgreich! Bitte prüfen Sie Ihre E-Mails.",
+            "loadingText": "Konto wird erstellt..."
+        },
+        "verify": {
+            "title": "E-Mail Verifizierung",
+            "verifying": "Konto wird verifiziert...",
+            "success": "Konto erfolgreich verifiziert!",
+            "failed": "Verifizierung fehlgeschlagen.",
+            "noToken": "Kein Verifizierungs-Token gefunden.",
+            "connectionError": "Verbindungsfehler.",
+            "goToLogin": "Zum Login",
+            "tryRegister": "Erneute Registrierung versuchen"
         },
         "email": "E-Mail",
         "password": "Passwort",
         "confirmPassword": "Passwort wiederholen",
         "passwordsDoNotMatch": "Passwörter stimmen nicht überein",
         "required": "Bitte füllen Sie dieses Feld aus",
+        "invalidEmail": "Ungültiges E-Mail Format",
         "enterEmail": "E-Mail eingeben",
-        "enterPassword": "Passwort eingeben"
+        "enterPassword": "Passwort eingeben",
+        "errorTitle": "Fehler"
     },
     "readingSession": {
         "start": "▶ Lesen starten",
