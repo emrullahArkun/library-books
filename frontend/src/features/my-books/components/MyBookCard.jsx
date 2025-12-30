@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import '../MyBooks.css';
 import UpdateProgressModal from './UpdateProgressModal';
 import StopSessionModal from './StopSessionModal';
@@ -17,6 +18,7 @@ const MyBookCard = ({
     timerTime
 }) => {
     const { t } = useTranslation();
+    const navigate = useNavigate();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isStopModalOpen, setIsStopModalOpen] = useState(false);
 
@@ -59,7 +61,7 @@ const MyBookCard = ({
     const handleStopConfirm = (newPage) => {
         const pagesRead = newPage - (book.currentPage || 0);
         onUpdateProgress(book.id, newPage);
-        onStopSession(stopTime); // Pass the frozen time
+        onStopSession(stopTime, newPage); // Pass frozen time AND endPage
         setIsStopModalOpen(false);
         setFrozenTimerDisplay(null);
         if (pagesRead > 0) {
@@ -93,48 +95,34 @@ const MyBookCard = ({
                     onChange={() => onToggleSelect(book.id)}
                 />
             </div>
-            <div className="book-cover">
-                {book.coverUrl ? (
-                    <img src={book.coverUrl} alt={book.title} />
-                ) : (
-                    <div className="no-cover">{t('bookCard.noCover')}</div>
-                )}
-            </div>
-            <div className="book-info">
-                <h3>{book.title}</h3>
-                <p className="author">{t('bookCard.by')} {book.authorName}</p>
 
-                <div className="status-toggle">
-                    <label>
-                        <input
-                            type="checkbox"
-                            checked={book.completed || false}
-                            onChange={(e) => onUpdateStatus(book.id, e.target.checked)}
-                        />
-                        {t('bookCard.markAsRead')}
-                    </label>
+            <div className="book-cover-container" onClick={() => window.location.href = `/books/${book.id}/stats`} style={{ cursor: 'pointer' }}>
+                <div className="book-cover">
+                    {book.coverUrl ? (
+                        <img src={book.coverUrl} alt={book.title} />
+                    ) : (
+                        <div className="no-cover">{t('bookCard.noCover')}</div>
+                    )}
+                    {book.completed && (
+                        <div className="completed-overlay">
+                            <div className="completed-badge">
+                                {t('bookCard.finished')}
+                            </div>
+                        </div>
+                    )}
                 </div>
+            </div>
 
+            <div className="book-progress-info">
                 {book.pageCount > 0 ? (
                     <div className="progress-section">
                         <progress value={book.currentPage || 0} max={book.pageCount}></progress>
                         <div className="progress-stats">
                             {t('bookCard.readProgress', { current: book.currentPage || 0, total: book.pageCount })}
                         </div>
-                        {calculateEstimate() && (
-                            <div className="progress-prediction">
-                                {calculateEstimate()}
-                            </div>
-                        )}
-                        {!book.completed && (
-                            <div className="card-actions">
-                                <button
-                                    className="update-progress-btn"
-                                    onClick={() => setIsModalOpen(true)}
-                                >
-                                    {t('bookCard.updateProgress')}
-                                </button>
 
+                        {!book.completed && (
+                            <div className="card-actions centered-action">
                                 {activeSession?.bookId === book.id ? (
                                     <button
                                         className="timer-btn stop"
@@ -149,7 +137,7 @@ const MyBookCard = ({
                                             const success = await onStartSession(book.id);
                                             if (!success) alert(t('readingSession.failedStart'));
                                         }}
-                                        disabled={!!activeSession} // Disable if another session is active
+                                        disabled={!!activeSession}
                                         title={activeSession ? t('readingSession.finishOther') : t('readingSession.startReading')}
                                     >
                                         {t('readingSession.start')}
@@ -159,7 +147,7 @@ const MyBookCard = ({
                         )}
                     </div>
                 ) : (
-                    <p className="isbn">{t('bookCard.pagesUnknown')}</p> // Fallback if no page count
+                    <p className="isbn">{t('bookCard.pagesUnknown')}</p>
                 )}
             </div>
 

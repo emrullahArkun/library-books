@@ -41,7 +41,7 @@
         }
     },
     "bookCard": {
-        "finished": "Fertig!",
+        "finished": "Gelesen",
         "estFinish": "Voraussichtlich fertig: {{date}} ({{days}} Tage)",
         "noCover": "Kein Cover",
         "by": "von",

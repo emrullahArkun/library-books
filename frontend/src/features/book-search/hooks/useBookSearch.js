@@ -37,15 +37,13 @@ export const useBookSearch = () => {
         initialPageParam: 0
     });
 
-    const results = data ? data.pages.flatMap(page => page.items || [])
-        .filter(book => {
-            const info = book.volumeInfo;
-            const hasAuthors = info.authors && info.authors.length > 0;
-            const hasISBN = info.industryIdentifiers?.some(id => id.type === 'ISBN_13' || id.type === 'ISBN_10');
-            const hasDescription = info.description && info.description.trim().length > 0;
-            return hasAuthors && hasISBN && hasDescription;
-        })
-        : [];
+    const getHighResImage = (url) => {
+        if (!url) return '';
+        return url.replace('http:', 'https:')
+            .replace('&edge=curl', '');
+    };
+
+    const results = data ? data.pages.flatMap(page => page.items || []) : [];
 
     const totalItems = data?.pages[0]?.totalItems || 0;
 
@@ -57,14 +55,17 @@ export const useBookSearch = () => {
             const isbnInfo = volumeInfo.industryIdentifiers?.find(id => id.type === 'ISBN_13')
                 || volumeInfo.industryIdentifiers?.find(id => id.type === 'ISBN_10');
 
-            if (!isbnInfo) throw new Error(t('search.toast.noIsbn'));
+            if (!isbnInfo && !book.id) throw new Error(t('search.toast.noIsbn'));
+
+            const uniqueId = isbnInfo ? isbnInfo.identifier : `ID:${book.id}`;
+            const coverUrl = getHighResImage(volumeInfo.imageLinks?.thumbnail);
 
             const newBook = {
                 title: volumeInfo.title,
-                isbn: isbnInfo.identifier,
+                isbn: uniqueId,
                 authorName: volumeInfo.authors ? volumeInfo.authors[0] : 'Unknown Author',
                 publishDate: volumeInfo.publishedDate || 'Unknown Date',
-                coverUrl: volumeInfo.imageLinks?.thumbnail || '',
+                coverUrl: coverUrl,
                 pageCount: volumeInfo.pageCount || 0
             };
 
@@ -92,7 +93,10 @@ export const useBookSearch = () => {
                 status: 'success',
                 duration: 3000,
                 isClosable: true,
-                position: 'top-right'
+                position: 'top-right',
+                containerStyle: {
+                    marginTop: '80px'
+                }
             });
         },
         onError: (err) => {
@@ -102,7 +106,10 @@ export const useBookSearch = () => {
                 status: 'error',
                 duration: 3000,
                 isClosable: true,
-                position: 'top-right'
+                position: 'top-right',
+                containerStyle: {
+                    marginTop: '80px'
+                }
             });
         }
     });

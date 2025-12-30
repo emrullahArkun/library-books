@@ -28,4 +28,6 @@ public class ReadingSession {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private SessionStatus status;
+
+    private Integer endPage;
 }

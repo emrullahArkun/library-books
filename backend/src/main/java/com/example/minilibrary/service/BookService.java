@@ -26,7 +26,7 @@ public class BookService {
     private final BookMapper bookMapper;
 
     public List<Book> findAllByUser(com.example.minilibrary.model.User user) {
-        return bookRepository.findByUser(user);
+        return bookRepository.findByUserOrderByCompletedAsc(user);
     }
 
     public Optional<Book> findByIdAndUser(@NotNull Long id, com.example.minilibrary.model.User user) {
@@ -79,12 +79,16 @@ public class BookService {
 
     @Transactional
     public void deleteByIdAndUser(@NotNull Long id, com.example.minilibrary.model.User user) {
-        bookRepository.deleteByIdAndUser(id, user);
+        Book book = bookRepository.findById(id)
+                .filter(b -> b.getUser().equals(user))
+                .orElseThrow(() -> new ResourceNotFoundException("Book not found"));
+        bookRepository.delete(book);
     }
 
     @Transactional
     public void deleteAllByUser(com.example.minilibrary.model.User user) {
-        bookRepository.deleteByUser(user);
+        List<Book> books = bookRepository.findByUser(user);
+        bookRepository.deleteAll(books);
     }
 
     @Transactional
@@ -101,6 +105,12 @@ public class BookService {
         }
 
         book.setCurrentPage(currentPage);
+
+        // Auto-complete logic
+        if (book.getPageCount() != null && currentPage >= book.getPageCount()) {
+            book.setCompleted(true);
+        }
+
         return bookRepository.save(book);
     }
 

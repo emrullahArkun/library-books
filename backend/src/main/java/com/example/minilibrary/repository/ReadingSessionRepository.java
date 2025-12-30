@@ -8,4 +8,6 @@ import java.util.Optional;
 
 public interface ReadingSessionRepository extends JpaRepository<ReadingSession, Long> {
     Optional<ReadingSession> findByUserAndStatus(User user, SessionStatus status);
+
+    java.util.List<ReadingSession> findByUserAndBook(User user, com.example.minilibrary.model.Book book);
 }

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Outlet } from 'react-router-dom';
 import Navbar from '../common/components/Navbar';
 import MyBooks from '../features/my-books/MyBooks';
+import BookStatsPage from '../features/my-books/pages/BookStatsPage';
 import BookSearch from '../features/book-search/BookSearch';
 import LoginPage from '../features/auth/LoginPage';
 import RegisterPage from '../features/auth/RegisterPage';
@@ -81,6 +82,11 @@ function App() {
               <Route path="/my-books" element={
                 <ProtectedRoute>
                   <MyBooks />
+                </ProtectedRoute>
+              } />
+              <Route path="/books/:id/stats" element={
+                <ProtectedRoute>
+                  <BookStatsPage />
                 </ProtectedRoute>
               } />
             </Route>

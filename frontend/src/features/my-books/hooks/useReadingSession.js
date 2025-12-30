@@ -79,16 +79,19 @@ export const useReadingSession = () => {
         }
     };
 
-    const stopSession = async (endTime) => {
+    const stopSession = async (endTime, endPage) => {
         try {
-            const body = endTime ? JSON.stringify({ endTime: endTime.toISOString() }) : '{}';
+            const bodyData = {};
+            if (endTime) bodyData.endTime = endTime.toISOString();
+            if (endPage !== undefined) bodyData.endPage = endPage;
+
             const response = await fetch('/api/sessions/stop', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Basic ${token}`
                 },
-                body: body
+                body: JSON.stringify(bodyData)
             });
 
             if (!response.ok) throw new Error('Failed to stop session');

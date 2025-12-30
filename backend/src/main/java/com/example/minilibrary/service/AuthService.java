@@ -31,12 +31,12 @@ public class AuthService {
         user.setEmail(email);
         user.setPassword(passwordEncoder.encode(password));
         user.setRole(Role.USER); // Default role
-        user.setEnabled(false); // Validated via email later
-        user.setVerificationToken(UUID.randomUUID().toString());
+        user.setEnabled(true); // Validated via email later -> Enabled by default for now
+        // user.setVerificationToken(UUID.randomUUID().toString());
 
         userRepository.save(user);
 
-        emailService.sendVerificationEmail(user);
+        // emailService.sendVerificationEmail(user);
 
         return user;
     }

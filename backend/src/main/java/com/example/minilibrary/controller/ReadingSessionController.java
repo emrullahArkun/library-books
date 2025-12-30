@@ -41,14 +41,21 @@ public class ReadingSessionController {
     }
 
     @PostMapping("/stop")
-    public ResponseEntity<ReadingSessionDto> stopSession(@RequestBody(required = false) Map<String, String> request,
+    public ResponseEntity<ReadingSessionDto> stopSession(@RequestBody(required = false) Map<String, Object> request,
             java.security.Principal principal) {
         User user = getCurrentUser(principal);
         java.time.Instant endTime = null;
-        if (request != null && request.containsKey("endTime")) {
-            endTime = java.time.Instant.parse(request.get("endTime"));
+        Integer endPage = null;
+
+        if (request != null) {
+            if (request.containsKey("endTime")) {
+                endTime = java.time.Instant.parse((String) request.get("endTime"));
+            }
+            if (request.containsKey("endPage")) {
+                endPage = (Integer) request.get("endPage");
+            }
         }
-        ReadingSession session = sessionService.stopSession(user, endTime);
+        ReadingSession session = sessionService.stopSession(user, endTime, endPage);
         return ResponseEntity.ok(mapToDto(session));
     }
 
@@ -73,12 +80,24 @@ public class ReadingSessionController {
         return ResponseEntity.ok(mapToDto(session));
     }
 
+    @GetMapping("/book/{bookId}")
+    public ResponseEntity<java.util.List<ReadingSessionDto>> getSessionsByBook(@PathVariable Long bookId,
+            java.security.Principal principal) {
+        User user = getCurrentUser(principal);
+        java.util.List<ReadingSessionDto> sessions = sessionService.getSessionsByBook(user, bookId)
+                .stream()
+                .map(this::mapToDto)
+                .collect(java.util.stream.Collectors.toList());
+        return ResponseEntity.ok(sessions);
+    }
+
     private ReadingSessionDto mapToDto(ReadingSession session) {
         return new ReadingSessionDto(
                 session.getId(),
                 session.getBook().getId(),
                 session.getStartTime(),
                 session.getEndTime(),
-                session.getStatus());
+                session.getStatus(),
+                session.getEndPage());
     }
 }

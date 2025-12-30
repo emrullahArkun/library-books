@@ -42,11 +42,12 @@ public class ReadingSessionService {
     }
 
     @Transactional
-    public ReadingSession stopSession(User user, Instant endTime) {
+    public ReadingSession stopSession(User user, Instant endTime, Integer endPage) {
         ReadingSession session = sessionRepository.findByUserAndStatus(user, SessionStatus.ACTIVE)
                 .orElseThrow(() -> new ResourceNotFoundException("No active reading session found"));
 
         session.setEndTime(endTime != null ? endTime : Instant.now());
+        session.setEndPage(endPage);
         session.setStatus(SessionStatus.COMPLETED);
 
         return sessionRepository.save(session);
@@ -63,5 +64,12 @@ public class ReadingSessionService {
 
         session.setStartTime(session.getStartTime().plusMillis(millis));
         return sessionRepository.save(session);
+    }
+
+    public java.util.List<ReadingSession> getSessionsByBook(User user, Long bookId) {
+        Book book = bookRepository.findById(bookId)
+                .filter(b -> b.getUser().equals(user))
+                .orElseThrow(() -> new ResourceNotFoundException("Book not found"));
+        return sessionRepository.findByUserAndBook(user, book);
     }
 }

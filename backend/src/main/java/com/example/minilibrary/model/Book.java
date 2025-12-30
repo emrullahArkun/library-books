@@ -6,6 +6,10 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.CascadeType;
+import java.util.List;
+import java.util.ArrayList;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.NoArgsConstructor;
@@ -40,4 +44,7 @@ public class Book {
     private Integer currentPage = 0; // Default to 0
     private java.time.LocalDate startDate = java.time.LocalDate.now(); // Default to today
     private Boolean completed = false;
+
+    @OneToMany(mappedBy = "book", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ReadingSession> readingSessions = new ArrayList<>();
 }
