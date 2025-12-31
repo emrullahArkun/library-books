@@ -25,8 +25,9 @@ public class BookService {
     private final AuthorService authorService;
     private final BookMapper bookMapper;
 
-    public List<Book> findAllByUser(com.example.minilibrary.model.User user) {
-        return bookRepository.findByUserOrderByCompletedAsc(user);
+    public org.springframework.data.domain.Page<Book> findAllByUser(com.example.minilibrary.model.User user,
+            org.springframework.data.domain.Pageable pageable) {
+        return bookRepository.findByUserOrderByCompletedAsc(user, pageable);
     }
 
     public Optional<Book> findByIdAndUser(@NotNull Long id, com.example.minilibrary.model.User user) {

@@ -1,7 +1,20 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import '../MyBooks.css';
+import {
+    Box,
+    Image,
+    Text,
+    Badge,
+    Progress,
+    Button,
+    Checkbox,
+    VStack,
+    Center,
+    useColorModeValue,
+    Flex,
+    Tooltip
+} from '@chakra-ui/react';
 import UpdateProgressModal from './UpdateProgressModal';
 import StopSessionModal from './StopSessionModal';
 
@@ -22,35 +35,11 @@ const MyBookCard = ({
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isStopModalOpen, setIsStopModalOpen] = useState(false);
 
-    const calculateEstimate = () => {
-        if (book.completed) return t('bookCard.finished');
-        if (!book.startDate || !book.currentPage || !book.pageCount) return null;
-
-        const start = new Date(book.startDate);
-        const now = new Date();
-        const daysSinceStart = Math.max(1, Math.floor((now - start) / (1000 * 60 * 60 * 24))); // Avoid div by 0
-
-        if (book.currentPage === 0) return null;
-
-        const pagesPerDay = book.currentPage / daysSinceStart;
-        const pagesLeft = book.pageCount - book.currentPage;
-        const daysLeft = Math.ceil(pagesLeft / pagesPerDay);
-
-        if (daysLeft <= 0) return t('bookCard.finished');
-
-        const finishDate = new Date();
-        finishDate.setDate(finishDate.getDate() + daysLeft);
-
-        return t('bookCard.estFinish', { date: finishDate.toLocaleDateString(), days: daysLeft });
-    };
-
-    const handleUpdate = (id, page) => {
-        onUpdateProgress(id, page);
-        setIsModalOpen(false);
-    };
-
     const [frozenTimerDisplay, setFrozenTimerDisplay] = useState(null);
     const [stopTime, setStopTime] = useState(null);
+
+    const cardBg = useColorModeValue('white', 'gray.700');
+    const hoverTransform = 'translateY(-5px)';
 
     const handleStopClick = () => {
         setStopTime(new Date());
@@ -61,7 +50,7 @@ const MyBookCard = ({
     const handleStopConfirm = (newPage) => {
         const pagesRead = newPage - (book.currentPage || 0);
         onUpdateProgress(book.id, newPage);
-        onStopSession(stopTime, newPage); // Pass frozen time AND endPage
+        onStopSession(stopTime, newPage);
         setIsStopModalOpen(false);
         setFrozenTimerDisplay(null);
         if (pagesRead > 0) {
@@ -73,7 +62,7 @@ const MyBookCard = ({
         if (stopTime) {
             const now = new Date();
             const diff = now.getTime() - stopTime.getTime();
-            if (diff > 1000 && typeof onExcludeTime === 'function') { // Only if more than 1s passed
+            if (diff > 1000 && typeof onExcludeTime === 'function') {
                 try {
                     onExcludeTime(diff);
                 } catch (error) {
@@ -86,83 +75,156 @@ const MyBookCard = ({
         setStopTime(null);
     };
 
+    const handleUpdate = (id, page) => {
+        onUpdateProgress(id, page);
+        setIsModalOpen(false);
+    };
+
     return (
-        <div className={`book-card-detail ${isSelected ? 'selected' : ''} ${book.completed ? 'completed' : ''}`}>
-            <div className="selection-overlay">
-                <input
-                    type="checkbox"
-                    checked={isSelected}
+        <Box
+            position="relative"
+            transition="transform 0.2s"
+            _hover={{ transform: hoverTransform }}
+            maxW="240px"
+            w="100%"
+            m="0 auto"
+        >
+            <Box position="absolute" top="5px" right="5px" zIndex="20">
+                <Checkbox
+                    isChecked={isSelected}
                     onChange={() => onToggleSelect(book.id)}
+                    size="lg"
+                    colorScheme="blue"
+                    bg="white"
+                    rounded="md"
                 />
-            </div>
+            </Box>
 
-            <div className="book-cover-container" onClick={() => navigate(`/books/${book.id}/stats`)} style={{ cursor: 'pointer' }}>
-                <div className="book-cover">
-                    {book.coverUrl ? (
-                        <img src={book.coverUrl} alt={book.title} />
-                    ) : (
-                        <div className="no-cover">{t('bookCard.noCover')}</div>
-                    )}
-                    {book.completed && (
-                        <div className="completed-overlay">
-                            <div className="completed-badge">
-                                {t('bookCard.finished')}
-                            </div>
-                        </div>
-                    )}
-                </div>
-            </div>
+            <Box
+                h="320px"
+                mb="10px"
+                cursor="pointer"
+                onClick={() => navigate(`/books/${book.id}/stats`)}
+                position="relative"
+            >
+                {book.coverUrl ? (
+                    <Image
+                        src={book.coverUrl}
+                        alt={book.title}
+                        w="100%"
+                        h="100%"
+                        objectFit="cover"
+                        borderRadius="md"
+                        boxShadow="md"
+                    />
+                ) : (
+                    <Center
+                        w="100%"
+                        h="100%"
+                        borderRadius="md"
+                        bg="gray.100"
+                        color="gray.500"
+                        boxShadow="md"
+                    >
+                        {t('bookCard.noCover')}
+                    </Center>
+                )}
 
-            <div className="book-progress-info">
+                {book.completed && (
+                    <Center
+                        position="absolute"
+                        top="0"
+                        left="0"
+                        w="100%"
+                        h="100%"
+                        bg="rgba(0, 0, 0, 0.4)"
+                        borderRadius="md"
+                        alignItems="flex-end"
+                        pb="20px"
+                    >
+                        <Badge
+                            bg="white"
+                            color="black"
+                            fontSize="0.9rem"
+                            px="3"
+                            py="1"
+                            borderRadius="md"
+                            boxShadow="base"
+                        >
+                            {t('bookCard.finished')}
+                        </Badge>
+                    </Center>
+                )}
+            </Box>
+
+            <VStack align="stretch" spacing={2}>
                 {book.pageCount > 0 ? (
                     <>
-                        <div className="progress-section">
-                            <progress value={book.currentPage || 0} max={book.pageCount}></progress>
-                            <div className="progress-stats">
+                        <Box>
+                            <Progress
+                                value={((book.currentPage || 0) / book.pageCount) * 100}
+                                size="sm"
+                                colorScheme="green"
+                                borderRadius="full"
+                            />
+                            <Text fontSize="xs" textAlign="center" mt={1} fontWeight="semibold" color="gray.600">
                                 {t('bookCard.readProgress', { current: book.currentPage || 0, total: book.pageCount })}
-                            </div>
+                            </Text>
 
                             {!book.completed && (
-                                <div className="card-actions centered-action">
+                                <Box mt={2}>
                                     {activeSession?.bookId === book.id ? (
-                                        <button
-                                            className="timer-btn stop"
+                                        <Button
+                                            w="100%"
+                                            size="sm"
+                                            colorScheme="red"
                                             onClick={handleStopClick}
+                                            animation="pulse 2s infinite"
+                                            sx={{
+                                                '@keyframes pulse': {
+                                                    '0%': { boxShadow: '0 0 0 0 rgba(244, 67, 54, 0.7)' },
+                                                    '70%': { boxShadow: '0 0 0 6px rgba(244, 67, 54, 0)' },
+                                                    '100%': { boxShadow: '0 0 0 0 rgba(244, 67, 54, 0)' },
+                                                }
+                                            }}
                                         >
                                             {t('readingSession.stop')} {frozenTimerDisplay || timerTime}
-                                        </button>
+                                        </Button>
                                     ) : (
-                                        <button
-                                            className="timer-btn start"
-                                            onClick={async () => {
-                                                const success = await onStartSession(book.id);
-                                                if (!success) alert(t('readingSession.failedStart'));
-                                            }}
-                                            disabled={!!activeSession}
-                                            title={activeSession ? t('readingSession.finishOther') : t('readingSession.startReading')}
-                                        >
-                                            {t('readingSession.start')}
-                                        </button>
+                                        <Tooltip label={activeSession ? t('readingSession.finishOther') : t('readingSession.startReading')}>
+                                            <Button
+                                                w="100%"
+                                                size="sm"
+                                                variant="outline"
+                                                colorScheme="teal"
+                                                isDisabled={!!activeSession}
+                                                onClick={async () => {
+                                                    const success = await onStartSession(book.id);
+                                                    if (!success) alert(t('readingSession.failedStart'));
+                                                }}
+                                            >
+                                                {t('readingSession.start')}
+                                            </Button>
+                                        </Tooltip>
                                     )}
-                                </div>
+                                </Box>
                             )}
-                        </div>
-                        <div className="status-toggle" style={{ marginTop: '10px', textAlign: 'center' }}>
-                            <label style={{ cursor: 'pointer', fontSize: '0.9em' }}>
-                                <input
-                                    type="checkbox"
-                                    checked={book.completed}
-                                    onChange={(e) => onUpdateStatus(book.id, e.target.checked)}
-                                    style={{ marginRight: '5px' }}
-                                />
-                                {t('bookCard.markAsRead')}
-                            </label>
-                        </div>
+                        </Box>
+
+                        <Flex justify="center" align="center" mt={2}>
+                            <Checkbox
+                                isChecked={book.completed}
+                                onChange={(e) => onUpdateStatus(book.id, e.target.checked)}
+                                size="sm"
+                            >
+                                <Text fontSize="sm" fontWeight="medium">{t('bookCard.markAsRead')}</Text>
+                            </Checkbox>
+                        </Flex>
                     </>
                 ) : (
-                    <p className="isbn">{t('bookCard.pagesUnknown')}</p>
+                    <Text fontSize="sm" color="gray.500" textAlign="center">{t('bookCard.pagesUnknown')}</Text>
                 )}
-            </div>
+            </VStack>
 
             {isModalOpen && (
                 <UpdateProgressModal
@@ -181,7 +243,7 @@ const MyBookCard = ({
                     maxPages={book.pageCount}
                 />
             )}
-        </div>
+        </Box>
     );
 };
 

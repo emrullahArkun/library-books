@@ -20,10 +20,12 @@ import lombok.AllArgsConstructor;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@lombok.EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Book {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @lombok.EqualsAndHashCode.Include
     private Long id;
 
     private String isbn;

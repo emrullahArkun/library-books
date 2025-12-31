@@ -10,9 +10,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 @RestController
 @RequestMapping("/api/books")
 @RequiredArgsConstructor
@@ -29,10 +26,13 @@ public class BookController {
     }
 
     @GetMapping
-    public List<BookDto> getAllBooks(java.security.Principal principal) {
-        return bookService.findAllByUser(getCurrentUser(principal)).stream()
-                .map(bookMapper::toDto)
-                .collect(Collectors.toList());
+    public org.springframework.data.domain.Page<BookDto> getAllBooks(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            java.security.Principal principal) {
+        org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(page, size);
+        return bookService.findAllByUser(getCurrentUser(principal), pageable)
+                .map(bookMapper::toDto);
     }
 
     @GetMapping("/{id}")
