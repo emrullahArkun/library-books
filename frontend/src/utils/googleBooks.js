@@ -1,7 +1,6 @@
 export const getHighResImage = (url) => {
     if (!url) return '';
-    return url.replace('http:', 'https:')
-        .replace('&edge=curl', '');
+    return url.replace('http:', 'https:');
 };
 
 export const mapGoogleBookToNewBook = (volumeInfo, isbnInfo, id) => {

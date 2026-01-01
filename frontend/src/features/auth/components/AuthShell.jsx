@@ -2,7 +2,7 @@ import { Box, Flex } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
 import LanguageSwitcher from './LanguageSwitcher';
 
-const MotionBox = motion(Box);
+const MotionBox = motion.create(Box);
 
 function AuthShell({ children }) {
     return (

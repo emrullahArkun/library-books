@@ -23,7 +23,7 @@ export const useBookSearch = () => {
         queryFn: async ({ pageParam = 0 }) => {
             if (!query.trim()) return { items: [], totalItems: 0 };
             const finalQuery = encodeURIComponent(query.trim());
-            const response = await fetch(`https://www.googleapis.com/books/v1/volumes?q=${finalQuery}&startIndex=${pageParam}&maxResults=20`);
+            const response = await fetch(`https://www.googleapis.com/books/v1/volumes?q=${finalQuery}&startIndex=${pageParam}&maxResults=36`);
             if (!response.ok) throw new Error('Failed to fetch from Google Books');
             return response.json();
         },
@@ -38,7 +38,15 @@ export const useBookSearch = () => {
         initialPageParam: 0
     });
 
-    const results = data ? data.pages.flatMap(page => page.items || []) : [];
+    const allRawItems = data ? data.pages.flatMap(page => page.items || []) : [];
+    // Filter out items without IDs or volumeInfo, and deduplicate by ID
+    const results = Array.from(
+        new Map(
+            allRawItems
+                .filter(item => item.id && item.volumeInfo)
+                .map(item => [item.id, item])
+        ).values()
+    );
 
     const totalItems = data?.pages[0]?.totalItems || 0;
 

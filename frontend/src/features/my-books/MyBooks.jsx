@@ -51,15 +51,16 @@ function MyBooks() {
             <Flex justify="space-between" align="center" mb={6} wrap="wrap" gap={4}>
                 <Heading as="h1" size="xl">{t('myBooks.title')}</Heading>
                 <HStack spacing={4}>
-                    <Button
-                        leftIcon={<FaTrash />}
-                        onClick={deleteSelected}
-                        isDisabled={selectedBooks.size === 0}
-                        colorScheme="red"
-                        variant="outline"
-                    >
-                        {t('myBooks.deleteSelected')} ({selectedBooks.size})
-                    </Button>
+                    {selectedBooks.size > 0 && (
+                        <Button
+                            leftIcon={<FaTrash />}
+                            onClick={deleteSelected}
+                            colorScheme="red"
+                            variant="outline"
+                        >
+                            {t('common.delete', 'Löschen')}
+                        </Button>
+                    )}
                     <Button
                         leftIcon={<FaTrashAlt />}
                         onClick={deleteAll}

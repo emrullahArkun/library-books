@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
+import { getHighResImage } from '../../../utils/googleBooks';
 import {
     Box,
     Image,
@@ -80,6 +81,14 @@ const MyBookCard = ({
         setIsModalOpen(false);
     };
 
+    const safeUrl = book.coverUrl ? getHighResImage(book.coverUrl) : '';
+
+    const [imgSrc, setImgSrc] = useState(safeUrl);
+
+    const handleImageError = () => {
+        // Fallback logic
+    };
+
     return (
         <Box
             position="relative"
@@ -109,7 +118,8 @@ const MyBookCard = ({
             >
                 {book.coverUrl ? (
                     <Image
-                        src={book.coverUrl}
+                        src={imgSrc}
+                        onError={handleImageError}
                         alt={book.title}
                         w="100%"
                         h="100%"
@@ -210,16 +220,6 @@ const MyBookCard = ({
                                 </Box>
                             )}
                         </Box>
-
-                        <Flex justify="center" align="center" mt={2}>
-                            <Checkbox
-                                isChecked={book.completed}
-                                onChange={(e) => onUpdateStatus(book.id, e.target.checked)}
-                                size="sm"
-                            >
-                                <Text fontSize="sm" fontWeight="medium">{t('bookCard.markAsRead')}</Text>
-                            </Checkbox>
-                        </Flex>
                     </>
                 ) : (
                     <Text fontSize="sm" color="gray.500" textAlign="center">{t('bookCard.pagesUnknown')}</Text>

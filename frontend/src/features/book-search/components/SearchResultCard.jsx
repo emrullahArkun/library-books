@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { useDisclosure } from '@chakra-ui/react';
 import '../BookSearch.css';
 import { formatPublishedDate } from '../../../utils/formatDate';
+import { getHighResImage } from '../../../utils/googleBooks';
 import SearchResultDetailsModal from './SearchResultDetailsModal';
 
 const SearchResultCard = ({ book, onAdd }) => {
@@ -12,6 +13,15 @@ const SearchResultCard = ({ book, onAdd }) => {
     const info = book.volumeInfo;
     const controls = useAnimation();
     const { isOpen, onOpen, onClose } = useDisclosure();
+
+    const initialThumb = info.imageLinks?.thumbnail || info.imageLinks?.smallThumbnail;
+    const safeUrl = initialThumb ? getHighResImage(initialThumb) : '';
+
+    const [imgSrc, setImgSrc] = React.useState(safeUrl);
+
+    const handleImageError = () => {
+        // Fallback logic could go here if we had an alternative source
+    };
 
     const handleMouseEnter = () => {
         controls.start({
@@ -58,8 +68,13 @@ const SearchResultCard = ({ book, onAdd }) => {
                 <div style={{ position: 'relative', zIndex: 2, width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
                     <div className="card-header">
                         <div className="result-img-wrapper">
-                            {info.imageLinks?.thumbnail ? (
-                                <img src={info.imageLinks.thumbnail} alt={info.title} className="result-thumb" />
+                            {initialThumb ? (
+                                <img
+                                    src={imgSrc}
+                                    onError={handleImageError}
+                                    alt={info.title}
+                                    className="result-thumb"
+                                />
                             ) : (
                                 <div className="result-thumb-placeholder"><FaBookOpen size={24} color="#ccc" /></div>
                             )}
