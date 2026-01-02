@@ -73,7 +73,10 @@ function RegisterPage() {
                 status: "success",
                 duration: 5000,
                 isClosable: true,
-                position: "top-right"
+                position: "top-right",
+                containerStyle: {
+                    marginTop: "80px"
+                }
             });
             // Proceed to login immediately, or stay here? 
             // The user suggested maybe no timeout or handle unmount. 

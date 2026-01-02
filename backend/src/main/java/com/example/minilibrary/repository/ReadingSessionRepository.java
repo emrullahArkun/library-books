@@ -4,10 +4,9 @@ import com.example.minilibrary.model.ReadingSession;
 import com.example.minilibrary.model.SessionStatus;
 import com.example.minilibrary.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
-import java.util.Optional;
 
 public interface ReadingSessionRepository extends JpaRepository<ReadingSession, Long> {
-    Optional<ReadingSession> findByUserAndStatus(User user, SessionStatus status);
+    java.util.List<ReadingSession> findByUserAndStatus(User user, SessionStatus status);
 
     java.util.List<ReadingSession> findByUserAndBook(User user, com.example.minilibrary.model.Book book);
 }

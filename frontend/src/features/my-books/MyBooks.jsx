@@ -58,7 +58,7 @@ function MyBooks() {
                             colorScheme="red"
                             variant="outline"
                         >
-                            {t('common.delete', 'Löschen')}
+                            {t('myBooks.deleteSelectedCount', { count: selectedBooks.size, defaultValue: `Löschen (${selectedBooks.size})` })}
                         </Button>
                     )}
                     <Button

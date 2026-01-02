@@ -106,11 +106,23 @@ const BookStatsPage = () => {
         formattedHoursLeft = `${h}h ${m}m`;
     }
 
-    const graphData = sessions
-        .filter(s => s.endPage !== null && s.endTime)
+    // Aggregate sessions by day (taking the latest endPage for that day)
+    const sessionsByDay = sessions.reduce((acc, session) => {
+        if (!session.endTime || session.endPage === null) return acc;
+
+        const dateObj = new Date(session.endTime);
+        const dateKey = dateObj.toLocaleDateString(); // Group by full date string (local)
+
+        if (!acc[dateKey] || new Date(acc[dateKey].endTime) < dateObj) {
+            acc[dateKey] = session;
+        }
+        return acc;
+    }, {});
+
+    const graphData = Object.values(sessionsByDay)
         .sort((a, b) => new Date(a.endTime) - new Date(b.endTime))
         .map(s => ({
-            date: new Date(s.endTime).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }),
+            date: new Date(s.endTime).toLocaleDateString(undefined, { month: '2-digit', day: '2-digit' }),
             page: s.endPage
         }));
 

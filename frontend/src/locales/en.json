@@ -34,6 +34,7 @@
     "myBooks": {
         "title": "My Library",
         "deleteSelected": "Delete Selected",
+        "deleteSelectedCount": "Delete ({{count}})",
         "deleteAll": "Delete All",
         "loading": "Loading library...",
         "confirmDelete": "Delete this book?",

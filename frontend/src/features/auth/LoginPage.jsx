@@ -53,7 +53,10 @@ function LoginPage() {
                 status: "success",
                 duration: 3000,
                 isClosable: true,
-                position: "top-right"
+                position: "top-right",
+                containerStyle: {
+                    marginTop: "80px"
+                }
             });
             // Redirect to original route if available, otherwise home
             const from = location.state?.from?.pathname || '/';

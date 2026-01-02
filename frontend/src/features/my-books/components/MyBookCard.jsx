@@ -17,7 +17,7 @@ import {
     Tooltip
 } from '@chakra-ui/react';
 import UpdateProgressModal from './UpdateProgressModal';
-import StopSessionModal from './StopSessionModal';
+
 
 const MyBookCard = ({
     book,
@@ -34,7 +34,7 @@ const MyBookCard = ({
     const { t } = useTranslation();
     const navigate = useNavigate();
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [isStopModalOpen, setIsStopModalOpen] = useState(false);
+
 
     const [frozenTimerDisplay, setFrozenTimerDisplay] = useState(null);
     const [stopTime, setStopTime] = useState(null);
@@ -42,39 +42,42 @@ const MyBookCard = ({
     const cardBg = useColorModeValue('white', 'gray.700');
     const hoverTransform = 'translateY(-5px)';
 
-    const handleStopClick = () => {
-        setStopTime(new Date());
-        setFrozenTimerDisplay(timerTime);
-        setIsStopModalOpen(true);
-    };
-
-    const handleStopConfirm = (newPage) => {
-        const pagesRead = newPage - (book.currentPage || 0);
-        onUpdateProgress(book.id, newPage);
-        onStopSession(stopTime, newPage);
-        setIsStopModalOpen(false);
-        setFrozenTimerDisplay(null);
-        if (pagesRead > 0) {
-            alert(t('readingSession.pagesReadAlert', { pages: pagesRead }));
-        }
-    };
-
-    const handleStopCancel = () => {
-        if (stopTime) {
-            const now = new Date();
-            const diff = now.getTime() - stopTime.getTime();
-            if (diff > 1000 && typeof onExcludeTime === 'function') {
-                try {
-                    onExcludeTime(diff);
-                } catch (error) {
-                    console.error("Error calling onExcludeTime", error);
+    // Removed inline stop logic as it is now handled in ReadingSessionPage
+    /*
+        const handleStopClick = () => {
+            setStopTime(new Date());
+            setFrozenTimerDisplay(timerTime);
+            setIsStopModalOpen(true);
+        };
+    
+        const handleStopConfirm = (newPage) => {
+            const pagesRead = newPage - (book.currentPage || 0);
+            onUpdateProgress(book.id, newPage);
+            onStopSession(stopTime, newPage);
+            setIsStopModalOpen(false);
+            setFrozenTimerDisplay(null);
+            if (pagesRead > 0) {
+                alert(t('readingSession.pagesReadAlert', { pages: pagesRead }));
+            }
+        };
+    
+        const handleStopCancel = () => {
+            if (stopTime) {
+                const now = new Date();
+                const diff = now.getTime() - stopTime.getTime();
+                if (diff > 1000 && typeof onExcludeTime === 'function') {
+                    try {
+                        onExcludeTime(diff);
+                    } catch (error) {
+                        console.error("Error calling onExcludeTime", error);
+                    }
                 }
             }
-        }
-        setIsStopModalOpen(false);
-        setFrozenTimerDisplay(null);
-        setStopTime(null);
-    };
+            setIsStopModalOpen(false);
+            setFrozenTimerDisplay(null);
+            setStopTime(null);
+        };
+    */
 
     const handleUpdate = (id, page) => {
         onUpdateProgress(id, page);
@@ -181,44 +184,15 @@ const MyBookCard = ({
                                 {t('bookCard.readProgress', { current: book.currentPage || 0, total: book.pageCount })}
                             </Text>
 
-                            {!book.completed && (
-                                <Box mt={2}>
-                                    {activeSession?.bookId === book.id ? (
-                                        <Button
-                                            w="100%"
-                                            size="sm"
-                                            colorScheme="red"
-                                            onClick={handleStopClick}
-                                            animation="pulse 2s infinite"
-                                            sx={{
-                                                '@keyframes pulse': {
-                                                    '0%': { boxShadow: '0 0 0 0 rgba(244, 67, 54, 0.7)' },
-                                                    '70%': { boxShadow: '0 0 0 6px rgba(244, 67, 54, 0)' },
-                                                    '100%': { boxShadow: '0 0 0 0 rgba(244, 67, 54, 0)' },
-                                                }
-                                            }}
-                                        >
-                                            {t('readingSession.stop')} {frozenTimerDisplay || timerTime}
-                                        </Button>
-                                    ) : (
-                                        <Tooltip label={activeSession ? t('readingSession.finishOther') : t('readingSession.startReading')}>
-                                            <Button
-                                                w="100%"
-                                                size="sm"
-                                                variant="outline"
-                                                colorScheme="teal"
-                                                isDisabled={!!activeSession}
-                                                onClick={async () => {
-                                                    const success = await onStartSession(book.id);
-                                                    if (!success) alert(t('readingSession.failedStart'));
-                                                }}
-                                            >
-                                                {t('readingSession.start')}
-                                            </Button>
-                                        </Tooltip>
-                                    )}
-                                </Box>
-                            )}
+                            <Button
+                                w="100%"
+                                size="sm"
+                                variant="outline"
+                                colorScheme="teal"
+                                onClick={() => navigate(`/books/${book.id}/session`)}
+                            >
+                                {t('readingSession.start')}
+                            </Button>
                         </Box>
                     </>
                 ) : (
@@ -234,15 +208,7 @@ const MyBookCard = ({
                 />
             )}
 
-            {isStopModalOpen && (
-                <StopSessionModal
-                    isOpen={isStopModalOpen}
-                    onClose={handleStopCancel}
-                    onConfirm={handleStopConfirm}
-                    currentBookPage={book.currentPage || 0}
-                    maxPages={book.pageCount}
-                />
-            )}
+
         </Box>
     );
 };

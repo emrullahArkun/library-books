@@ -23,9 +23,34 @@ public class ReadingSessionService {
 
     @Transactional
     public ReadingSession startSession(User user, Long bookId) {
-        // Ensure no other active session exists for this user
-        if (sessionRepository.findByUserAndStatus(user, SessionStatus.ACTIVE).isPresent()) {
-            throw new IllegalStateException("You already have an active reading session.");
+        // Idempotency: If active session exists, return it.
+        // We should check if it's for the same book. If not, maybe we should stop it?
+        // For simplicity and user friendliness: if active session exists, return it
+        // regardless of bookId requested?
+        // Or better: valid active session means user is reading.
+        java.util.List<ReadingSession> activeSessions = sessionRepository.findByUserAndStatus(user,
+                SessionStatus.ACTIVE);
+
+        // Enforce Single Active Session: Close any existing sessions
+        if (!activeSessions.isEmpty()) {
+            Instant now = Instant.now();
+            for (ReadingSession s : activeSessions) {
+                // If it's already the requested book, maybe we could just return it?
+                // But better to restart or just return it ONLY if it matches?
+                // User requirement: "Lesen starten" always starts new.
+                // So if I click Start, I probably want a fresh start or at least to switch to
+                // this book.
+                // If I am already reading THIS book, arguably I should just continue.
+                // But if I am reading ANOTHER book, I must close that one.
+
+                // Let's go with: Close EVERYTHING to be strict and simple?
+                // Or: If same book, return valid session?
+                // User said "Lesen starten always starts new session from 0".
+                // So we should CLOSE even if it is the same book (effectively a restart).
+                s.setEndTime(now);
+                s.setStatus(SessionStatus.COMPLETED);
+                sessionRepository.save(s);
+            }
         }
 
         Book book = bookRepository.findById(bookId)
@@ -43,18 +68,27 @@ public class ReadingSessionService {
 
     @Transactional
     public ReadingSession stopSession(User user, Instant endTime, Integer endPage) {
-        ReadingSession session = sessionRepository.findByUserAndStatus(user, SessionStatus.ACTIVE)
-                .orElseThrow(() -> new ResourceNotFoundException("No active reading session found"));
+        java.util.List<ReadingSession> sessions = sessionRepository.findByUserAndStatus(user, SessionStatus.ACTIVE);
+        if (sessions.isEmpty()) {
+            throw new ResourceNotFoundException("No active reading session found");
+        }
 
-        session.setEndTime(endTime != null ? endTime : Instant.now());
-        session.setEndPage(endPage);
-        session.setStatus(SessionStatus.COMPLETED);
+        Instant safeEndTime = endTime != null ? endTime : Instant.now();
+        ReadingSession lastSaved = null;
 
-        return sessionRepository.save(session);
+        // Close ALL active sessions to ensure clean state
+        for (ReadingSession session : sessions) {
+            session.setEndTime(safeEndTime);
+            session.setEndPage(endPage);
+            session.setStatus(SessionStatus.COMPLETED);
+            lastSaved = sessionRepository.save(session);
+        }
+
+        return lastSaved;
     }
 
     public Optional<ReadingSession> getActiveSession(User user) {
-        return sessionRepository.findByUserAndStatus(user, SessionStatus.ACTIVE);
+        return sessionRepository.findByUserAndStatus(user, SessionStatus.ACTIVE).stream().findFirst();
     }
 
     @Transactional
@@ -65,8 +99,11 @@ public class ReadingSessionService {
         if (millis < 0) {
             throw new IllegalArgumentException("millis must be >= 0");
         }
-        ReadingSession session = sessionRepository.findByUserAndStatus(user, SessionStatus.ACTIVE)
-                .orElseThrow(() -> new RuntimeException("No active session found"));
+        java.util.List<ReadingSession> sessions = sessionRepository.findByUserAndStatus(user, SessionStatus.ACTIVE);
+        if (sessions.isEmpty()) {
+            throw new RuntimeException("No active session found");
+        }
+        ReadingSession session = sessions.get(0);
 
         // Adjust start time to simulate "pause" or exclusion
         // Moving start time FORWARD by millis reduces total duration
