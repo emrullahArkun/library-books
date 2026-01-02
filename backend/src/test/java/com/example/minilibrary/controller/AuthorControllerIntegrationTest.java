@@ -29,6 +29,9 @@ public class AuthorControllerIntegrationTest {
     private AuthorRepository authorRepository;
 
     @Autowired
+    private com.example.minilibrary.repository.BookRepository bookRepository;
+
+    @Autowired
     private ObjectMapper objectMapper;
 
     @org.springframework.boot.test.mock.mockito.MockBean
@@ -36,6 +39,7 @@ public class AuthorControllerIntegrationTest {
 
     @BeforeEach
     void setUp() {
+        bookRepository.deleteAll();
         authorRepository.deleteAll();
     }
 

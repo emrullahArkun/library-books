@@ -100,6 +100,7 @@ const MyBookCard = ({
             maxW="240px"
             w="100%"
             m="0 auto"
+            className="book-card-detail"
         >
             <Box position="absolute" top="5px" right="5px" zIndex="20">
                 <Checkbox
@@ -109,6 +110,7 @@ const MyBookCard = ({
                     colorScheme="blue"
                     bg="white"
                     rounded="md"
+                    aria-label={t('myBooks.markAsRead') || 'Mark as Read'}
                 />
             </Box>
 

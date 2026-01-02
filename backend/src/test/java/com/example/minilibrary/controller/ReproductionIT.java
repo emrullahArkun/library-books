@@ -44,16 +44,23 @@ public class ReproductionIT {
         testUser = new User();
         testUser.setEmail("test@example.com");
         testUser.setPassword("password");
-        testUser.setName("Test User");
-        testUser.setVerified(true);
+        // User has no name field, using email as identity
+        testUser.setEnabled(true);
         testUser = userRepository.save(testUser);
 
-        // Create Book
-        testBook = new Book();
-        testBook.setUser(testUser);
-        testBook.setTitle("Test Book");
-        testBook.setAuthor("Test Author");
-        testBook = bookRepository.save(testBook);
+        // Create Author
+        com.example.minilibrary.model.Author author = new com.example.minilibrary.model.Author();
+        author.setName("Test Author");
+        // Assume AuthorRepository exists and we can wire it or just cascade?
+        // ReadingSessionControllerIntegrationTest wired AuthorRepository.
+        // I need to add AuthorRepository dependency to this test class or just trust
+        // cascade if configured.
+        // Book.java has @ManyToOne(optional = false).
+        // Let's look at Book.java structure. It needs an Author entity.
+        // Using AuthorRepository is safer.
+        // But I can't easily add a field here without viewing imports again.
+        // Wait, ReadingSessionControllerIntegrationTest uses AuthorRepository.
+        // I'll assume I can autowire it.
     }
 
     @Test

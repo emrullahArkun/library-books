@@ -104,8 +104,8 @@ public class BookControllerIntegrationTest {
                 // When / Then
                 mockMvc.perform(get("/api/books"))
                                 .andExpect(status().isOk())
-                                .andExpect(jsonPath("$", hasSize(1)))
-                                .andExpect(jsonPath("$[0].title", is("My Book")));
+                                .andExpect(jsonPath("$.content", hasSize(1)))
+                                .andExpect(jsonPath("$.content[0].title", is("My Book")));
         }
 
         @Test

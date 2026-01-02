@@ -69,7 +69,7 @@ describe('MyBooks Component', () => {
         const bookCard = bookCover.closest('.book-card-detail');
 
         // Scope interactions to this specific card
-        const checkbox = within(bookCard).getByLabelText(/Mark as Read/i);
+        const checkbox = within(bookCard).getByLabelText(/myBooks.markAsRead/i);
 
         // Initial state: not checked
         expect(checkbox).not.toBeChecked();
