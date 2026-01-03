@@ -92,6 +92,7 @@ function MyBooks() {
                                     onStopSession={stopSession}
                                     onExcludeTime={excludeTimeFromSession}
                                     timerTime={formattedTime}
+                                    onDelete={deleteBook}
                                 />
                             </Box>
                         ))}

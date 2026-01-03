@@ -108,7 +108,7 @@
     },
     "readingSession": {
         "start": "▶ Lesen starten",
-        "stop": "⏹",
+        "stop": "Stop",
         "finishOther": "Beende erst deine andere Sitzung",
         "startReading": "Lesen beginnen",
         "failedStart": "Starten der Sitzung fehlgeschlagen",

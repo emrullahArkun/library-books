@@ -6,6 +6,7 @@ import LoginPage from '../features/auth/LoginPage';
 import RegisterPage from '../features/auth/RegisterPage';
 import VerifyEmailPage from '../features/auth/VerifyEmailPage';
 import { AuthProvider } from '../context/AuthContext';
+import { ReadingSessionProvider } from '../context/ReadingSessionContext';
 import ProtectedRoute from '../components/ProtectedRoute';
 import PublicRoute from '../components/PublicRoute';
 import MainLayout from '../layouts/MainLayout';
@@ -15,34 +16,36 @@ import './App.css'
 function App() {
   return (
     <AuthProvider>
-      <Router>
-        <div className="app-container">
-          <Routes>
-            {/* Protected Routes Layout */}
-            <Route element={<ProtectedRoute />}>
-              <Route element={<MainLayout />}>
-                <Route path="/" element={<HomePage />} />
-                <Route path="/my-books" element={<MyBooks />} />
-                <Route path="/books/:id/stats" element={<BookStatsPage />} />
-                <Route path="/books/:id/session" element={<ReadingSessionPage />} />
+      <ReadingSessionProvider>
+        <Router>
+          <div className="app-container">
+            <Routes>
+              {/* Protected Routes Layout */}
+              <Route element={<ProtectedRoute />}>
+                <Route element={<MainLayout />}>
+                  <Route path="/" element={<HomePage />} />
+                  <Route path="/my-books" element={<MyBooks />} />
+                  <Route path="/books/:id/stats" element={<BookStatsPage />} />
+                  <Route path="/books/:id/session" element={<ReadingSessionPage />} />
+                </Route>
               </Route>
-            </Route>
 
-            {/* Public Routes */}
-            <Route path="/login" element={
-              <PublicRoute>
-                <LoginPage />
-              </PublicRoute>
-            } />
-            <Route path="/register" element={
-              <PublicRoute>
-                <RegisterPage />
-              </PublicRoute>
-            } />
-            <Route path="/verify" element={<VerifyEmailPage />} />
-          </Routes>
-        </div>
-      </Router>
+              {/* Public Routes */}
+              <Route path="/login" element={
+                <PublicRoute>
+                  <LoginPage />
+                </PublicRoute>
+              } />
+              <Route path="/register" element={
+                <PublicRoute>
+                  <RegisterPage />
+                </PublicRoute>
+              } />
+              <Route path="/verify" element={<VerifyEmailPage />} />
+            </Routes>
+          </div>
+        </Router>
+      </ReadingSessionProvider>
     </AuthProvider>
   )
 }

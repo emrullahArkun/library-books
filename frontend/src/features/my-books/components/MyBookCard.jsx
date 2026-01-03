@@ -14,7 +14,8 @@ import {
     Center,
     useColorModeValue,
     Flex,
-    Tooltip
+    Tooltip,
+    HStack
 } from '@chakra-ui/react';
 import UpdateProgressModal from './UpdateProgressModal';
 

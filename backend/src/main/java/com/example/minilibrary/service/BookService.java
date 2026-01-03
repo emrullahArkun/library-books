@@ -79,12 +79,9 @@ public class BookService {
 
     @Transactional
     public void deleteByIdAndUser(@NotNull Long id, com.example.minilibrary.model.User user) {
-        // We can just try to delete, but to throw 404 if not found we might want to
-        // check existence
-        if (!bookRepository.findByIdAndUser(id, user).isPresent()) {
-            throw new ResourceNotFoundException("Book not found");
-        }
-        bookRepository.deleteByIdAndUser(id, user);
+        Book book = bookRepository.findByIdAndUser(id, user)
+                .orElseThrow(() -> new ResourceNotFoundException("Book not found"));
+        bookRepository.delete(book);
     }
 
     @Transactional

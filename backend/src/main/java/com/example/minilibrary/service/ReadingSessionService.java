@@ -81,6 +81,18 @@ public class ReadingSessionService {
             session.setEndTime(safeEndTime);
             session.setEndPage(endPage);
             session.setStatus(SessionStatus.COMPLETED);
+
+            // Transactional update of Book
+            if (endPage != null) {
+                Book book = session.getBook();
+                book.setCurrentPage(endPage);
+                // Auto-complete if endPage reaches pageCount
+                if (book.getPageCount() != null && endPage >= book.getPageCount()) {
+                    book.setCompleted(true);
+                }
+                bookRepository.save(book);
+            }
+
             lastSaved = sessionRepository.save(session);
         }
 
@@ -105,9 +117,9 @@ public class ReadingSessionService {
         }
         ReadingSession session = sessions.get(0);
 
-        // Adjust start time to simulate "pause" or exclusion
-        // Moving start time FORWARD by millis reduces total duration
-        session.setStartTime(session.getStartTime().plusMillis(millis));
+        // Update pausedMillis instead of modifying startTime
+        long currentPaused = session.getPausedMillis() != null ? session.getPausedMillis() : 0L;
+        session.setPausedMillis(currentPaused + millis);
         return sessionRepository.save(session);
     }
 

@@ -4,10 +4,11 @@ import com.example.minilibrary.model.ReadingSession;
 import com.example.minilibrary.model.SessionStatus;
 import com.example.minilibrary.model.User;
 import com.example.minilibrary.model.Book;
+import com.example.minilibrary.repository.AuthorRepository;
 import com.example.minilibrary.repository.BookRepository;
 import com.example.minilibrary.repository.ReadingSessionRepository;
 import com.example.minilibrary.repository.UserRepository;
-import com.example.minilibrary.service.AuthService;
+
 import com.example.minilibrary.service.ReadingSessionService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -33,34 +34,42 @@ public class ReproductionIT {
     @Autowired
     private BookRepository bookRepository;
     @Autowired
-    private AuthService authService; // Assuming auth logic if needed, but we can bypass
+    private AuthorRepository authorRepository; // Wired
 
     private User testUser;
     private Book testBook;
 
     @BeforeEach
     void setUp() {
+        // Clear DB
+        sessionRepository.deleteAll();
+        bookRepository.deleteAll();
+        authorRepository.deleteAll();
+        userRepository.deleteAll();
+
         // Create User
         testUser = new User();
         testUser.setEmail("test@example.com");
         testUser.setPassword("password");
-        // User has no name field, using email as identity
+        testUser.setRole(com.example.minilibrary.model.Role.USER);
         testUser.setEnabled(true);
         testUser = userRepository.save(testUser);
 
         // Create Author
         com.example.minilibrary.model.Author author = new com.example.minilibrary.model.Author();
         author.setName("Test Author");
-        // Assume AuthorRepository exists and we can wire it or just cascade?
-        // ReadingSessionControllerIntegrationTest wired AuthorRepository.
-        // I need to add AuthorRepository dependency to this test class or just trust
-        // cascade if configured.
-        // Book.java has @ManyToOne(optional = false).
-        // Let's look at Book.java structure. It needs an Author entity.
-        // Using AuthorRepository is safer.
-        // But I can't easily add a field here without viewing imports again.
-        // Wait, ReadingSessionControllerIntegrationTest uses AuthorRepository.
-        // I'll assume I can autowire it.
+        author = authorRepository.save(author);
+
+        // Create Book
+        testBook = new Book();
+        testBook.setTitle("Integration Book");
+        testBook.setIsbn("123-456");
+        testBook.setAuthor(author);
+        testBook.setUser(testUser);
+        testBook.setPageCount(100);
+        testBook.setCurrentPage(0);
+        testBook.setStartDate(java.time.LocalDate.now());
+        testBook = bookRepository.save(testBook);
     }
 
     @Test

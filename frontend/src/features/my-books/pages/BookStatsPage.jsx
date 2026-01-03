@@ -151,7 +151,7 @@ const BookStatsPage = () => {
                     </Box>
                     <Box flex="1">
                         <Heading size="xl" mb={2}>{book.title}</Heading>
-                        <Text fontSize="lg" color="gray.500" mb={4}>{book.author?.name}</Text>
+                        <Text fontSize="lg" color="gray.500" mb={4}>{book.authorName}</Text>
 
                         {book.completed && (
                             <Box display="inline-flex" alignItems="center" bg="teal.100" color="teal.800" px={3} py={1} borderRadius="full">

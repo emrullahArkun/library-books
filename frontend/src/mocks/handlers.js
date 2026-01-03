@@ -70,6 +70,11 @@ export const handlers = [
         });
     }),
 
+    // Mock GET /api/sessions/active
+    http.get('/api/sessions/active', () => {
+        return new HttpResponse(null, { status: 204 });
+    }),
+
     // Mock DELETE /api/books/:id
     http.delete('/api/books/:id', () => {
         return new HttpResponse(null, { status: 204 });

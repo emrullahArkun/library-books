@@ -108,7 +108,7 @@
     },
     "readingSession": {
         "start": "▶ Start Reading",
-        "stop": "⏹",
+        "stop": "Stop",
         "finishOther": "Finish your other session first",
         "startReading": "Start Reading",
         "failedStart": "Failed to start session",

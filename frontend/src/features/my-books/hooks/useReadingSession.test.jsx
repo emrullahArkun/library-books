@@ -1,5 +1,6 @@
 import { renderHook, act, waitFor } from '@testing-library/react';
 import { useReadingSession } from './useReadingSession';
+import { ReadingSessionProvider } from '../../../context/ReadingSessionContext';
 import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 
 // Mock AuthContext
@@ -31,7 +32,11 @@ describe('useReadingSession', () => {
             })
         });
 
-        const { result } = renderHook(() => useReadingSession());
+        const wrapper = ({ children }) => (
+            <ReadingSessionProvider>{children}</ReadingSessionProvider>
+        );
+
+        const { result } = renderHook(() => useReadingSession(), { wrapper });
 
         // Wait for fetch to complete
         await waitFor(() => expect(result.current.loading).toBe(false));
@@ -49,7 +54,11 @@ describe('useReadingSession', () => {
             status: 204
         });
 
-        const { result } = renderHook(() => useReadingSession());
+        const wrapper = ({ children }) => (
+            <ReadingSessionProvider>{children}</ReadingSessionProvider>
+        );
+
+        const { result } = renderHook(() => useReadingSession(), { wrapper });
         await waitFor(() => expect(result.current.loading).toBe(false));
 
         expect(result.current.activeSession).toBeNull();
@@ -60,7 +69,11 @@ describe('useReadingSession', () => {
         // Mock initial fetch as empty
         global.fetch.mockResolvedValueOnce({ ok: true, status: 204 });
 
-        const { result } = renderHook(() => useReadingSession());
+        const wrapper = ({ children }) => (
+            <ReadingSessionProvider>{children}</ReadingSessionProvider>
+        );
+
+        const { result } = renderHook(() => useReadingSession(), { wrapper });
         await waitFor(() => expect(result.current.loading).toBe(false));
 
         // Mock start response

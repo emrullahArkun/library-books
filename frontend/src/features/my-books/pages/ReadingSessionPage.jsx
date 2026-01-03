@@ -184,15 +184,7 @@ const ReadingSessionPage = () => {
             // ...
             // So we probably need to update progress too.
 
-            try {
-                await fetch(`/api/books/${id}/progress`, {
-                    method: 'PATCH',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': `Basic ${token}` },
-                    body: JSON.stringify({ currentPage: pageNum })
-                });
-            } catch (e) {
-                console.error("Failed to update progress", e);
-            }
+            // Progress is updated transactionally in stopSession backend endpoint.
 
             alert(t('readingSession.sessionSummary', { pages: pagesRead > 0 ? pagesRead : 0, defaultValue: `Du hast ${pagesRead > 0 ? pagesRead : 0} Seiten gelesen!` }));
             navigate('/my-books');

@@ -97,9 +97,10 @@ class ReadingSessionControllerIntegrationTest {
         @Test
         @WithMockUser(username = "reader@example.com")
         void testStartSession_Success() throws Exception {
+                var request = new com.example.minilibrary.dto.StartSessionRequest(testBook.getId());
                 mockMvc.perform(post("/api/sessions/start")
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(Map.of("bookId", testBook.getId()))))
+                                .content(objectMapper.writeValueAsString(request)))
                                 .andExpect(status().isOk())
                                 .andExpect(jsonPath("$.status", is("ACTIVE")))
                                 .andExpect(jsonPath("$.bookId", is(testBook.getId().intValue())))
@@ -109,16 +110,17 @@ class ReadingSessionControllerIntegrationTest {
         @Test
         @WithMockUser(username = "reader@example.com")
         void testStartSession_AlreadyActive_ShouldRestart() throws Exception {
+                var request = new com.example.minilibrary.dto.StartSessionRequest(testBook.getId());
                 // Start first session
                 mockMvc.perform(post("/api/sessions/start")
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(Map.of("bookId", testBook.getId()))))
+                                .content(objectMapper.writeValueAsString(request)))
                                 .andExpect(status().isOk());
 
                 // Start second session (should succeed and close the previous one implicitly)
                 mockMvc.perform(post("/api/sessions/start")
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(Map.of("bookId", testBook.getId()))))
+                                .content(objectMapper.writeValueAsString(request)))
                                 .andExpect(status().isOk())
                                 .andExpect(jsonPath("$.status", is("ACTIVE")));
         }
@@ -129,11 +131,15 @@ class ReadingSessionControllerIntegrationTest {
                 // Start session
                 mockMvc.perform(post("/api/sessions/start")
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(Map.of("bookId", testBook.getId()))))
+                                .content(objectMapper.writeValueAsString(
+                                                new com.example.minilibrary.dto.StartSessionRequest(testBook.getId()))))
                                 .andExpect(status().isOk());
 
                 // Stop session
-                mockMvc.perform(post("/api/sessions/stop"))
+                var stopRequest = new com.example.minilibrary.dto.StopSessionRequest(null, null);
+                mockMvc.perform(post("/api/sessions/stop")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(stopRequest)))
                                 .andExpect(status().isOk())
                                 .andExpect(jsonPath("$.status", is("COMPLETED")))
                                 .andExpect(jsonPath("$.endTime", notNullValue()));

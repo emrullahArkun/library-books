@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { describe, it, expect } from 'vitest';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AuthContext } from '../../context/AuthContext';
+import { ReadingSessionProvider } from '../../context/ReadingSessionContext';
 import MyBooks from './MyBooks';
 import { server } from '../../mocks/server';
 import { http, HttpResponse, delay } from 'msw';
@@ -22,11 +23,13 @@ const createTestWrapper = () => {
 
     return ({ children }) => (
         <AuthContext.Provider value={{ token: 'fake-token', user: { email: 'test@example.com' } }}>
-            <QueryClientProvider client={queryClient}>
-                <MemoryRouter>
-                    {children}
-                </MemoryRouter>
-            </QueryClientProvider>
+            <ReadingSessionProvider>
+                <QueryClientProvider client={queryClient}>
+                    <MemoryRouter>
+                        {children}
+                    </MemoryRouter>
+                </QueryClientProvider>
+            </ReadingSessionProvider>
         </AuthContext.Provider>
     );
 };

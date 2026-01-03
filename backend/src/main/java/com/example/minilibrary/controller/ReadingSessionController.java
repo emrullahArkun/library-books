@@ -9,8 +9,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
-
 @RestController
 @RequestMapping("/api/sessions")
 @RequiredArgsConstructor
@@ -26,35 +24,25 @@ public class ReadingSessionController {
     }
 
     @PostMapping("/start")
-    public ResponseEntity<ReadingSessionDto> startSession(@RequestBody Map<String, Long> request,
+    public ResponseEntity<ReadingSessionDto> startSession(
+            @RequestBody @jakarta.validation.Valid com.example.minilibrary.dto.StartSessionRequest request,
             java.security.Principal principal) {
         User user = getCurrentUser(principal);
-        Long bookId = request.get("bookId");
-        if (bookId == null) {
-            throw new IllegalArgumentException("bookId is required");
-        }
-
-        ReadingSession session = sessionService.startSession(user, bookId);
+        ReadingSession session = sessionService.startSession(user, request.bookId());
         return ResponseEntity.ok(mapToDto(session));
     }
 
     @PostMapping("/stop")
-    public ResponseEntity<ReadingSessionDto> stopSession(@RequestBody(required = false) Map<String, Object> request,
+    public ResponseEntity<ReadingSessionDto> stopSession(
+            @RequestBody(required = false) @jakarta.validation.Valid com.example.minilibrary.dto.StopSessionRequest request,
             java.security.Principal principal) {
         User user = getCurrentUser(principal);
         java.time.Instant endTime = null;
         Integer endPage = null;
 
         if (request != null) {
-            if (request.containsKey("endTime")) {
-                endTime = java.time.Instant.parse((String) request.get("endTime"));
-            }
-            if (request.containsKey("endPage")) {
-                Object val = request.get("endPage");
-                if (val instanceof Number n) {
-                    endPage = n.intValue();
-                }
-            }
+            endTime = request.endTime();
+            endPage = request.endPage();
         }
         ReadingSession session = sessionService.stopSession(user, endTime, endPage);
         return ResponseEntity.ok(mapToDto(session));
@@ -70,14 +58,11 @@ public class ReadingSessionController {
     }
 
     @PostMapping("/active/exclude-time")
-    public ResponseEntity<ReadingSessionDto> excludeTime(@RequestBody Map<String, Long> request,
+    public ResponseEntity<ReadingSessionDto> excludeTime(
+            @RequestBody @jakarta.validation.Valid com.example.minilibrary.dto.ExcludeTimeRequest request,
             java.security.Principal principal) {
         User user = getCurrentUser(principal);
-        Long millis = request.get("millis");
-        if (millis == null) {
-            throw new IllegalArgumentException("millis is required");
-        }
-        ReadingSession session = sessionService.excludeTime(user, millis);
+        ReadingSession session = sessionService.excludeTime(user, request.millis());
         return ResponseEntity.ok(mapToDto(session));
     }
 
@@ -99,6 +84,7 @@ public class ReadingSessionController {
                 session.getStartTime(),
                 session.getEndTime(),
                 session.getStatus(),
-                session.getEndPage());
+                session.getEndPage(),
+                session.getPausedMillis());
     }
 }
