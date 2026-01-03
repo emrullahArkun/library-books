@@ -18,6 +18,7 @@ import {
 } from '@chakra-ui/react';
 import { MdEmail, MdLock, MdAppRegistration } from 'react-icons/md';
 import AuthShell from './components/AuthShell';
+import { api } from '../../api/api';
 
 function RegisterPage() {
     const { t } = useTranslation();
@@ -54,11 +55,7 @@ function RegisterPage() {
         setIsLoading(true);
 
         try {
-            const response = await fetch('/api/auth/register', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, password })
-            });
+            const response = await api.auth.register(email, password);
 
             let data = null;
             try { data = await response.json(); } catch { /* ignore */ }

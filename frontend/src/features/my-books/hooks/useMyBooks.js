@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useAuth } from '../../../context/AuthContext';
 import { useQuery, useMutation, useQueryClient, keepPreviousData } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
+import { api } from '../../../api/api';
 
 export const useMyBooks = (pageSize = 12) => {
     const [page, setPage] = useState(0);
@@ -14,9 +15,7 @@ export const useMyBooks = (pageSize = 12) => {
         queryKey: ['myBooks', token, page, pageSize],
         queryFn: async () => {
             if (!token) return { content: [], totalPages: 0 };
-            const response = await fetch(`/api/books?page=${page}&size=${pageSize}`, {
-                headers: { 'Authorization': `Basic ${token}` }
-            });
+            const response = await api.books.getAll(page, pageSize);
             if (!response.ok) throw new Error('Failed to fetch books');
             return response.json();
         },
@@ -29,10 +28,7 @@ export const useMyBooks = (pageSize = 12) => {
 
     const deleteMutation = useMutation({
         mutationFn: async (id) => {
-            const res = await fetch(`/api/books/${id}`, {
-                method: 'DELETE',
-                headers: { 'Authorization': `Basic ${token}` }
-            });
+            const res = await api.books.delete(id);
             if (!res.ok) throw new Error('Failed to delete book');
         },
         onMutate: async (id) => {
@@ -61,10 +57,7 @@ export const useMyBooks = (pageSize = 12) => {
 
     const deleteAllMutation = useMutation({
         mutationFn: async () => {
-            const res = await fetch('/api/books', {
-                method: 'DELETE',
-                headers: { 'Authorization': `Basic ${token}` }
-            });
+            const res = await api.books.deleteAll();
             if (!res.ok) throw new Error('Failed to delete all books');
         },
         onMutate: async () => {
@@ -87,14 +80,7 @@ export const useMyBooks = (pageSize = 12) => {
 
     const updateProgressMutation = useMutation({
         mutationFn: async ({ id, currentPage }) => {
-            const res = await fetch(`/api/books/${id}/progress`, {
-                method: 'PATCH',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Basic ${token}`
-                },
-                body: JSON.stringify({ currentPage })
-            });
+            const res = await api.books.updateProgress(id, currentPage);
 
             if (!res.ok) {
                 const text = await res.text();
@@ -127,14 +113,7 @@ export const useMyBooks = (pageSize = 12) => {
 
     const updateStatusMutation = useMutation({
         mutationFn: async ({ id, completed }) => {
-            const res = await fetch(`/api/books/${id}/status`, {
-                method: 'PATCH',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Basic ${token}`
-                },
-                body: JSON.stringify({ completed })
-            });
+            const res = await api.books.updateStatus(id, completed);
 
             if (!res.ok) {
                 const text = await res.text();
@@ -193,10 +172,7 @@ export const useMyBooks = (pageSize = 12) => {
         const ids = Array.from(selectedBooks);
         const results = await Promise.allSettled(
             ids.map(id =>
-                fetch(`/api/books/${id}`, {
-                    method: 'DELETE',
-                    headers: { 'Authorization': `Basic ${token}` }
-                })
+                api.books.delete(id)
             )
         );
 

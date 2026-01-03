@@ -12,6 +12,7 @@ vi.mock('../../../context/AuthContext', () => ({
 describe('useReadingSession', () => {
     beforeEach(() => {
         global.fetch = vi.fn();
+        vi.spyOn(Storage.prototype, 'getItem').mockReturnValue(mockToken);
     });
 
     afterEach(() => {

@@ -31,22 +31,9 @@ public class ReadingSessionService {
         java.util.List<ReadingSession> activeSessions = sessionRepository.findByUserAndStatus(user,
                 SessionStatus.ACTIVE);
 
-        // Enforce Single Active Session: Close any existing sessions
         if (!activeSessions.isEmpty()) {
             Instant now = Instant.now();
             for (ReadingSession s : activeSessions) {
-                // If it's already the requested book, maybe we could just return it?
-                // But better to restart or just return it ONLY if it matches?
-                // User requirement: "Lesen starten" always starts new.
-                // So if I click Start, I probably want a fresh start or at least to switch to
-                // this book.
-                // If I am already reading THIS book, arguably I should just continue.
-                // But if I am reading ANOTHER book, I must close that one.
-
-                // Let's go with: Close EVERYTHING to be strict and simple?
-                // Or: If same book, return valid session?
-                // User said "Lesen starten always starts new session from 0".
-                // So we should CLOSE even if it is the same book (effectively a restart).
                 s.setEndTime(now);
                 s.setStatus(SessionStatus.COMPLETED);
                 sessionRepository.save(s);

@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect, useRef, useCallback } from 'react';
 import { useAuth } from './AuthContext';
+import { api } from '../api/api';
 
 const ReadingSessionContext = createContext(null);
 
@@ -26,9 +27,7 @@ export const ReadingSessionProvider = ({ children }) => {
 
         const fetchSession = async () => {
             try {
-                const response = await fetch(`/api/sessions/active?_t=${new Date().getTime()}`, {
-                    headers: { 'Authorization': `Basic ${token}` }
-                });
+                const response = await api.sessions.getActive();
 
                 if (response.status === 204) {
                     setActiveSession(null);
@@ -74,21 +73,6 @@ export const ReadingSessionProvider = ({ children }) => {
                 return;
             }
 
-            // Simple diff, assuming pausedMillis logic is handled by backend shifting startTime
-            // User requested: "Besseres Domain-Modell... pausedMillis... startTime bleibt sauber"
-            // Backend update IS modifying readingSession.pausedMillis now.
-            // BUT: modifying startTime was the OLD way. New way uses pausedMillis.
-            // Wait, I updated backend to modify pausedMillis.
-            // Does the frontend receive pausedMillis? ReadingSessionDto needs it?
-            // I did NOT update ReadingSessionDto to include pausedMillis.
-            // If I don't send pausedMillis to frontend, how does frontend calculate duration?
-            // "Dauer = (endOrNow - startTime) - excludedMillis"
-            // I MUST update ReadingSessionDto to include pausedMillis.
-
-            // CRITICAL: readingSessionDto needs pausedMillis.
-            // I will fix DTO in backend first or calculation will be wrong.
-            // For now, I'll assume I update DTO.
-
             const pausedMillis = activeSession.pausedMillis || 0;
             const diff = Math.floor((now - start - pausedMillis) / 1000);
             setElapsedSeconds(Math.max(0, diff));
@@ -103,14 +87,7 @@ export const ReadingSessionProvider = ({ children }) => {
 
     const startSession = async (bookId) => {
         try {
-            const response = await fetch('/api/sessions/start', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Basic ${token}`
-                },
-                body: JSON.stringify({ bookId })
-            });
+            const response = await api.sessions.start(bookId);
 
             if (!response.ok) throw new Error('Failed to start session');
             const session = await response.json();
@@ -126,18 +103,7 @@ export const ReadingSessionProvider = ({ children }) => {
 
     const stopSession = async (endTime, endPage) => {
         try {
-            const bodyData = {};
-            if (endTime) bodyData.endTime = endTime.toISOString();
-            if (endPage !== undefined) bodyData.endPage = endPage;
-
-            const response = await fetch('/api/sessions/stop', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Basic ${token}`
-                },
-                body: JSON.stringify(bodyData)
-            });
+            const response = await api.sessions.stop(endTime, endPage);
 
             if (!response.ok) throw new Error('Failed to stop session');
 
@@ -162,6 +128,16 @@ export const ReadingSessionProvider = ({ children }) => {
             const now = new Date();
             const diff = now.getTime() - new Date(pausedAt).getTime();
             if (diff > 0) {
+                // Optimistic update: update local state immediately to prevent timer flicker
+                setActiveSession(prev => {
+                    if (!prev) return prev;
+                    return {
+                        ...prev,
+                        pausedMillis: (prev.pausedMillis || 0) + diff
+                    };
+                });
+
+                // Sync with backend
                 excludeTimeFromSession(diff);
             }
         }
@@ -171,22 +147,7 @@ export const ReadingSessionProvider = ({ children }) => {
 
     const excludeTimeFromSession = async (millis) => {
         try {
-            // Optimistic update
-            if (activeSession) {
-                setActiveSession(prev => ({
-                    ...prev,
-                    pausedMillis: (prev.pausedMillis || 0) + millis
-                }));
-            }
-
-            const response = await fetch('/api/sessions/active/exclude-time', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Basic ${token}`
-                },
-                body: JSON.stringify({ millis })
-            });
+            const response = await api.sessions.excludeTime(millis);
 
             if (response.ok) {
                 const data = await response.json();

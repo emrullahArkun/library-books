@@ -22,6 +22,7 @@ import {
 import { FaPlay, FaPause, FaStop, FaArrowLeft, FaCheck } from 'react-icons/fa';
 import { useAuth } from '../../../context/AuthContext';
 import { useReadingSession } from '../hooks/useReadingSession';
+import { api } from '../../../api/api';
 
 const ReadingSessionPage = () => {
     const { t } = useTranslation();
@@ -58,9 +59,7 @@ const ReadingSessionPage = () => {
         if (!token) return;
         const fetchBook = async () => {
             try {
-                const res = await fetch(`/api/books/${id}`, {
-                    headers: { 'Authorization': `Basic ${token}` }
-                });
+                const res = await api.books.getById(id);
                 if (res.ok) {
                     const data = await res.json();
                     setBook(data);
@@ -140,9 +139,6 @@ const ReadingSessionPage = () => {
     const handleBackClick = () => {
         if (activeSession) {
             if (window.confirm(t('readingSession.exitConfirm', 'Beende erst die Session bevor du verlässt. Wirklich verlassen?'))) {
-                // Actually user said: "soll eine Meldung kommen mit 'Beende erst die Session bevor du verlässt' weil es ... nicht möglich sein soll die Seite zu verlassen außer wenn man fertig ist"
-                // So we should strictly BLOCK or just show Alert.
-                // "nicht möglich sein soll" implies we shouldn't let them leave via this button.
                 alert(t('readingSession.exitWarning', 'Beende erst die Session bevor du verlässt!'));
                 return;
             }
@@ -162,30 +158,6 @@ const ReadingSessionPage = () => {
         setHasStopped(true); // Prevent auto-restart
         const success = await stopSession(new Date(), pageNum);
         if (success) {
-            // Show summary or redirect
-            // Requirement: "einträgt auf welcher Seite man ist und dann kommt eine kurze Nachricht wieviel Seiten man heute gelesen hat und danach wird man auf die mybooks seite zurückgeleitet"
-
-            // We can use a toast or just a quick alert before navigate, or navigate with state.
-            // For simplicity and matching current style, alert then navigate or navigate then toast.
-            // Converting existing modal logic: update progress is implicit in stopSession if backend handles it?
-            // Wait, existing MyBookCard calls `onUpdateProgress` AND `onStopSession`.
-            // Backend `stopSession` might not update the book progress automatically?
-            // Let's check `BookController` or assume we need to call update progress too.
-            // `useReadingSession` `stopSession` sends `endPage`. If backend uses it to update book, good.
-            // Otherwise we might need to call update manually.
-            // Let's assume for now we might need to update progress separately if `stopSession` doesn't do it.
-            // But `activeSession` likely has the bookId.
-
-            // To be safe, let's update progress if necessary. 
-            // Checking `MyBookCard.jsx`:
-            // const handleStopConfirm = (newPage) => {
-            //    onUpdateProgress(book.id, newPage);
-            //    onStopSession(stopTime, newPage);
-            // ...
-            // So we probably need to update progress too.
-
-            // Progress is updated transactionally in stopSession backend endpoint.
-
             alert(t('readingSession.sessionSummary', { pages: pagesRead > 0 ? pagesRead : 0, defaultValue: `Du hast ${pagesRead > 0 ? pagesRead : 0} Seiten gelesen!` }));
             navigate('/my-books');
         }
