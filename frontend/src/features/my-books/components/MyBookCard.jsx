@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
+import { FaPlay } from 'react-icons/fa';
 import { getHighResImage } from '../../../utils/googleBooks';
 import {
     Box,
@@ -192,6 +193,7 @@ const MyBookCard = ({
                                 size="sm"
                                 variant="outline"
                                 colorScheme="teal"
+                                leftIcon={<FaPlay />}
                                 onClick={() => navigate(`/books/${book.id}/session`)}
                             >
                                 {t('readingSession.start')}

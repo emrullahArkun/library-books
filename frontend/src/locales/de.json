@@ -107,7 +107,7 @@
         "errorTitle": "Fehler"
     },
     "readingSession": {
-        "start": "▶ Lesen starten",
+        "start": "Lesen starten",
         "stop": "Stop",
         "finishOther": "Beende erst deine andere Sitzung",
         "startReading": "Lesen beginnen",

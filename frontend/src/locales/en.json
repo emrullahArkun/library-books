@@ -107,7 +107,7 @@
         "errorTitle": "Error"
     },
     "readingSession": {
-        "start": "▶ Start Reading",
+        "start": "Start Reading",
         "stop": "Stop",
         "finishOther": "Finish your other session first",
         "startReading": "Start Reading",
