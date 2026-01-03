@@ -4,6 +4,7 @@ import { useInfiniteQuery, useMutation } from '@tanstack/react-query';
 import { useToast } from '@chakra-ui/react';
 import { useTranslation } from 'react-i18next';
 import { mapGoogleBookToNewBook } from '../../../utils/googleBooks';
+import { api } from '../../../api/api';
 
 export const useBookSearch = () => {
     const [query, setQuery] = useState('');
@@ -63,14 +64,7 @@ export const useBookSearch = () => {
             // Use utility for mapping logic
             const newBook = mapGoogleBookToNewBook(volumeInfo, isbnInfo, book.id);
 
-            const response = await fetch('/api/books', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Basic ${token}`
-                },
-                body: JSON.stringify(newBook)
-            });
+            const response = await api.books.create(newBook);
 
             if (response.ok) {
                 return newBook;

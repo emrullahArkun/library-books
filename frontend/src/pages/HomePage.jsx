@@ -1,5 +1,5 @@
 import React from 'react';
-import TypewriterTitle from '../components/TypewriterTitle';
+import TypewriterTitle from '../shared/components/TypewriterTitle';
 import BookSearch from '../features/book-search/BookSearch';
 
 const HomePage = () => {

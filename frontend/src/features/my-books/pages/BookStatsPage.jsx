@@ -22,46 +22,19 @@ import {
     Icon
 } from '@chakra-ui/react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area } from 'recharts';
-import { useAuth } from '../../../context/AuthContext';
+import { useBookStats } from '../hooks/useBookStats';
 import { FaBookOpen, FaChartLine, FaCheck, FaArrowLeft, FaClock } from 'react-icons/fa';
 
 const BookStatsPage = () => {
     const { t } = useTranslation();
     const { id } = useParams();
     const navigate = useNavigate();
-    const { token } = useAuth();
-    const [book, setBook] = useState(null);
-    const [sessions, setSessions] = useState([]);
-    const [loading, setLoading] = useState(true);
+
+    // Custom Hook
+    const { book, sessions, loading } = useBookStats(id);
 
     const bgColor = useColorModeValue('gray.50', 'gray.900');
     const cardBg = useColorModeValue('white', 'gray.800');
-
-    useEffect(() => {
-        if (!token) return;
-
-        const fetchData = async () => {
-            try {
-                const headers = { 'Authorization': `Basic ${token}` };
-
-                const bookRes = await fetch(`/api/books/${id}`, { headers });
-                if (!bookRes.ok) throw new Error("Failed to fetch book");
-                const bookData = await bookRes.json();
-                setBook(bookData);
-
-                const sessionsRes = await fetch(`/api/sessions/book/${id}`, { headers });
-                if (sessionsRes.ok) {
-                    const sessionsData = await sessionsRes.json();
-                    setSessions(sessionsData);
-                }
-            } catch (error) {
-                console.error("Error fetching stats:", error);
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchData();
-    }, [id, token]);
 
     if (loading) return (
         <Flex justify="center" align="center" h="100vh">

@@ -1,4 +1,5 @@
 import { createContext, useState, useContext, useEffect, useMemo, useCallback } from 'react';
+import { api } from '../api/api';
 
 export const AuthContext = createContext(null);
 
@@ -20,9 +21,7 @@ export const AuthProvider = ({ children }) => {
                     setToken(storedToken);
 
                     // 2. Validate against server
-                    const res = await fetch('/api/auth/session', {
-                        headers: { 'Authorization': `Basic ${storedToken}` }
-                    });
+                    const res = await api.auth.getSession();
 
                     if (!res.ok) {
                         throw new Error("Session invalid");

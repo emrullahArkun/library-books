@@ -1,5 +1,5 @@
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
-import Navbar from '../common/components/Navbar';
+import Navbar from '../shared/components/Navbar';
 import { Box } from '@chakra-ui/react';
 import { useReadingSession } from '../features/my-books/hooks/useReadingSession';
 

@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Button, Heading, Text, VStack, Icon, Spinner } from '@chakra-ui/react';
 import { MdCheckCircle, MdError } from 'react-icons/md';
 import AuthShell from './components/AuthShell';
+import { api } from '../../api/api';
 
 function VerifyEmailPage() {
     const { t } = useTranslation();
@@ -22,7 +23,7 @@ function VerifyEmailPage() {
 
         const encodedToken = encodeURIComponent(token);
 
-        fetch(`/api/auth/verify?token=${encodedToken}`)
+        api.auth.verify(encodedToken)
             .then(async res => {
                 if (res.ok) {
                     setStatus('success');
@@ -31,11 +32,9 @@ function VerifyEmailPage() {
                     setStatus('error');
                     let text = '';
                     try {
-                        // try json first
                         const data = await res.json();
                         text = data.error || data.message;
                     } catch {
-                        // fallback to text
                         text = await res.text();
                     }
                     setMessage(text || t('auth.verify.failed', 'Verification failed.'));

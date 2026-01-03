@@ -7,8 +7,8 @@ import RegisterPage from '../features/auth/RegisterPage';
 import VerifyEmailPage from '../features/auth/VerifyEmailPage';
 import { AuthProvider } from '../context/AuthContext';
 import { ReadingSessionProvider } from '../context/ReadingSessionContext';
-import ProtectedRoute from '../components/ProtectedRoute';
-import PublicRoute from '../components/PublicRoute';
+import ProtectedRoute from '../shared/components/ProtectedRoute';
+import PublicRoute from '../shared/components/PublicRoute';
 import MainLayout from '../layouts/MainLayout';
 import HomePage from '../pages/HomePage';
 import './App.css'
