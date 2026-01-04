@@ -12,9 +12,11 @@ import java.util.Map;
 public class AuthController {
 
     private final AuthService authService;
+    private final com.example.minilibrary.security.JwtTokenService jwtTokenService;
 
-    public AuthController(AuthService authService) {
+    public AuthController(AuthService authService, com.example.minilibrary.security.JwtTokenService jwtTokenService) {
         this.authService = authService;
+        this.jwtTokenService = jwtTokenService;
     }
 
     @PostMapping("/register")
@@ -38,12 +40,12 @@ public class AuthController {
     public ResponseEntity<?> login(
             @RequestBody @jakarta.validation.Valid com.example.minilibrary.dto.auth.LoginRequest request) {
         User user = authService.login(request.email(), request.password());
-        // For Basic Auth, the token is base64(email:password)
-        String basicToken = java.util.Base64.getEncoder()
-                .encodeToString((request.email() + ":" + request.password()).getBytes());
+
+        String jwt = jwtTokenService.createToken(user);
 
         return ResponseEntity.ok(Map.of(
-                "token", basicToken,
+                "token", jwt,
+                "tokenType", "Bearer",
                 "role", user.getRole(),
                 "email", user.getEmail()));
     }

@@ -6,7 +6,7 @@ const apiClient = {
         };
 
         if (token) {
-            defaultHeaders['Authorization'] = `Basic ${token}`;
+            defaultHeaders['Authorization'] = `Bearer ${token}`;
         }
 
         const config = {

@@ -30,7 +30,10 @@ export const ReadingSessionProvider = ({ children }) => {
 
         // Fallback for storage event (if BroadcastChannel fails or for some browsers)
         const handleStorage = (e) => {
-            // we can just refresh on any storage event or specific key
+            // Ignore lock updates to prevent API flooding (heartbeat writes every 2s)
+            if (e.key === 'reading_session_controller_lock') return;
+
+            // Refresh on other relevant changes
             refreshSession();
         };
         window.addEventListener('storage', handleStorage);

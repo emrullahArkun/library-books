@@ -18,27 +18,32 @@ import java.util.List;
 @EnableWebSecurity
 public class SecurityConfig {
 
+    @org.springframework.beans.factory.annotation.Value("${app.jwt.secret}")
+    private String jwtSecret;
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .sessionManagement(sm -> sm.sessionCreationPolicy(
+                        org.springframework.security.config.http.SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                        .requestMatchers("/api/auth/login", "/api/auth/register", "/api/auth/verify").permitAll() // Public
-                                                                                                                  // endpoints
-                        .requestMatchers("/api/auth/session").authenticated() // New session check - requires valid
-                                                                              // creds
+                        .requestMatchers("/api/auth/login", "/api/auth/register", "/api/auth/verify").permitAll()
                         .requestMatchers("/error").permitAll()
-                        .requestMatchers("/api/books/**").authenticated()
                         .anyRequest().authenticated())
-
-                .httpBasic(basic -> basic.authenticationEntryPoint((request, response, authException) -> {
-                    response.sendError(jakarta.servlet.http.HttpServletResponse.SC_UNAUTHORIZED,
-                            authException.getMessage());
-                }));
+                .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> jwt.decoder(jwtDecoder())));
 
         return http.build();
+    }
+
+    @Bean
+    public org.springframework.security.oauth2.jwt.JwtDecoder jwtDecoder() {
+        javax.crypto.spec.SecretKeySpec secretKey = new javax.crypto.spec.SecretKeySpec(jwtSecret.getBytes(),
+                "HmacSHA256");
+        return org.springframework.security.oauth2.jwt.NimbusJwtDecoder.withSecretKey(secretKey)
+                .macAlgorithm(org.springframework.security.oauth2.jose.jws.MacAlgorithm.HS256).build();
     }
 
     @Bean
@@ -49,8 +54,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:5173", "http://localhost:4173")); // Frontend URL
-                                                                                                    // through Vite
+        configuration.setAllowedOrigins(List.of("http://localhost:5173", "http://localhost:4173"));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
