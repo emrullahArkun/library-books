@@ -38,6 +38,9 @@ public class ReadingSession {
     @Column(name = "paused_millis", columnDefinition = "bigint default 0")
     private Long pausedMillis = 0L;
 
+    @Column(name = "paused_at")
+    private Instant pausedAt;
+
     @Override
     public boolean equals(Object o) {
         if (this == o)

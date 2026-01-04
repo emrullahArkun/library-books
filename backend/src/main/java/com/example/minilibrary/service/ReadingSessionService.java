@@ -56,6 +56,9 @@ public class ReadingSessionService {
     @Transactional
     public ReadingSession stopSession(User user, Instant endTime, Integer endPage) {
         java.util.List<ReadingSession> sessions = sessionRepository.findByUserAndStatus(user, SessionStatus.ACTIVE);
+        // Also find PAUSED sessions (they are technically active but paused)
+        sessions.addAll(sessionRepository.findByUserAndStatus(user, SessionStatus.PAUSED));
+
         if (sessions.isEmpty()) {
             throw new ResourceNotFoundException("No active reading session found");
         }
@@ -63,8 +66,30 @@ public class ReadingSessionService {
         Instant safeEndTime = endTime != null ? endTime : Instant.now();
         ReadingSession lastSaved = null;
 
-        // Close ALL active sessions to ensure clean state
+        // Close ALL active/paused sessions to ensure clean state
         for (ReadingSession session : sessions) {
+            // Check if paused, need to account for time since pausedAt?
+            // Actually if it was PAUSED, the duration doesn't increase anymore.
+            // But we might want to set endTime = pausedAt? Or safeEndTime?
+            // If user stops while paused, the real end time was effectively pausedAt.
+            // But usually stop is an explicit action.
+            // Let's assume stopped time is NOW (or passed time).
+
+            // If session was PAUSED, we need to add the duration from pausedAt to now to
+            // pausedMillis?
+            // NO. If it is paused, the "clock" stopped at pausedAt.
+            // So effective active duration is: (endTime - startTime) - pausedMillis
+            // But if we stop NOW, and we were paused since 10 mins ago.
+            // The "gap" between pausedAt and NOW is technically part of pausedMillis.
+            if (session.getStatus() == SessionStatus.PAUSED && session.getPausedAt() != null) {
+                long additionalPause = java.time.Duration.between(session.getPausedAt(), safeEndTime).toMillis();
+                if (additionalPause > 0) {
+                    session.setPausedMillis(
+                            (session.getPausedMillis() != null ? session.getPausedMillis() : 0) + additionalPause);
+                }
+                session.setPausedAt(null);
+            }
+
             session.setEndTime(safeEndTime);
             session.setEndPage(endPage);
             session.setStatus(SessionStatus.COMPLETED);
@@ -87,9 +112,57 @@ public class ReadingSessionService {
     }
 
     public Optional<ReadingSession> getActiveSession(User user) {
-        return sessionRepository.findByUserAndStatus(user, SessionStatus.ACTIVE).stream().findFirst();
+        // Return ACTIVE or PAUSED session
+        return sessionRepository.findByUserAndStatus(user, SessionStatus.ACTIVE).stream().findFirst()
+                .or(() -> sessionRepository.findByUserAndStatus(user, SessionStatus.PAUSED).stream().findFirst());
     }
 
+    @Transactional
+    public ReadingSession pauseSession(User user) {
+        java.util.List<ReadingSession> sessions = sessionRepository.findByUserAndStatus(user, SessionStatus.ACTIVE);
+        if (sessions.isEmpty()) {
+            // check if already paused?
+            if (!sessionRepository.findByUserAndStatus(user, SessionStatus.PAUSED).isEmpty()) {
+                throw new RuntimeException("Session already paused");
+            }
+            throw new RuntimeException("No active session found to pause");
+        }
+
+        ReadingSession session = sessions.get(0);
+        session.setStatus(SessionStatus.PAUSED);
+        session.setPausedAt(Instant.now());
+
+        return sessionRepository.save(session);
+    }
+
+    @Transactional
+    public ReadingSession resumeSession(User user) {
+        java.util.List<ReadingSession> sessions = sessionRepository.findByUserAndStatus(user, SessionStatus.PAUSED);
+        if (sessions.isEmpty()) {
+            if (!sessionRepository.findByUserAndStatus(user, SessionStatus.ACTIVE).isEmpty()) {
+                throw new RuntimeException("Session already active");
+            }
+            throw new RuntimeException("No paused session found to resume");
+        }
+
+        ReadingSession session = sessions.get(0);
+        Instant now = Instant.now();
+
+        if (session.getPausedAt() != null) {
+            long diff = java.time.Duration.between(session.getPausedAt(), now).toMillis();
+            if (diff > 0) {
+                session.setPausedMillis((session.getPausedMillis() != null ? session.getPausedMillis() : 0) + diff);
+            }
+        }
+
+        session.setStatus(SessionStatus.ACTIVE);
+        session.setPausedAt(null);
+
+        return sessionRepository.save(session);
+    }
+
+    // Deprecated/Legacy support or removed? Keeping generic excludeTime if needed,
+    // but pause/resume should replace it.
     @Transactional
     public ReadingSession excludeTime(User user, Long millis) {
         if (millis == null) {

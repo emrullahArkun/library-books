@@ -10,5 +10,7 @@ export const sessionsApi = {
         if (endPage !== undefined) body.endPage = endPage;
         return apiClient.post('/api/sessions/stop', body);
     },
+    pause: () => apiClient.post('/api/sessions/active/pause'),
+    resume: () => apiClient.post('/api/sessions/active/resume'),
     excludeTime: (millis) => apiClient.post('/api/sessions/active/exclude-time', { millis }),
 };

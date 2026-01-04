@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useEffect, useRef, useCallback } from 'react';
 import { useAuth } from './AuthContext';
 import { api } from '../api/api';
+import { useControllerLock } from '../features/my-books/hooks/useControllerLock';
 
 const ReadingSessionContext = createContext(null);
 
@@ -10,12 +11,53 @@ export const ReadingSessionProvider = ({ children }) => {
     const [loading, setLoading] = useState(true);
     const [elapsedSeconds, setElapsedSeconds] = useState(0);
 
-    // Pause state
-    const [isPaused, setIsPaused] = useState(false);
-    const [pausedAt, setPausedAt] = useState(null);
+    // Pause state derived from activeSession
+    const isPaused = activeSession?.status === 'PAUSED';
+    const pausedAt = activeSession?.pausedAt ? new Date(activeSession.pausedAt) : null;
 
     // Refs for timer logic to avoid dependecy/closure issues
     const timerIntervalRef = useRef(null);
+    const broadcastChannelRef = useRef(null);
+
+    // Initialize BroadcastChannel
+    useEffect(() => {
+        broadcastChannelRef.current = new BroadcastChannel('reading_session_sync');
+        broadcastChannelRef.current.onmessage = (event) => {
+            if (event.data === 'REFRESH_SESSION') {
+                refreshSession();
+            }
+        };
+
+        // Fallback for storage event (if BroadcastChannel fails or for some browsers)
+        const handleStorage = (e) => {
+            // we can just refresh on any storage event or specific key
+            refreshSession();
+        };
+        window.addEventListener('storage', handleStorage);
+        window.addEventListener('focus', refreshSession); // Also refresh on focus to be sure
+
+        return () => {
+            if (broadcastChannelRef.current) broadcastChannelRef.current.close();
+            window.removeEventListener('storage', handleStorage);
+            window.removeEventListener('focus', refreshSession);
+        };
+    }, [token]);
+
+    const refreshSession = async () => {
+        if (!token) return;
+        try {
+            // Don't set loading to true here to avoid flickering UI
+            const response = await api.sessions.getActive();
+            if (response.status === 204) {
+                setActiveSession(null);
+            } else if (response.ok) {
+                const session = await response.json();
+                setActiveSession(session);
+            }
+        } catch (err) {
+            console.error("Failed to refresh session", err);
+        }
+    };
 
     // Fetch active session on mount/token change
     useEffect(() => {
@@ -24,42 +66,19 @@ export const ReadingSessionProvider = ({ children }) => {
             setLoading(false);
             return;
         }
-
-        const fetchSession = async () => {
-            try {
-                const response = await api.sessions.getActive();
-
-                if (response.status === 204) {
-                    setActiveSession(null);
-                } else if (response.ok) {
-                    const session = await response.json();
-                    setActiveSession(session);
-                }
-            } catch (err) {
-                console.error("Failed to fetch active session", err);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchSession();
+        refreshSession().finally(() => setLoading(false));
     }, [token]);
+
+    const broadcastUpdate = () => {
+        if (broadcastChannelRef.current) {
+            broadcastChannelRef.current.postMessage('REFRESH_SESSION');
+        }
+    };
 
     // Timer Logic
     useEffect(() => {
-        if (!activeSession?.startTime || isPaused) {
-            setElapsedSeconds(0); // Optional: keep last known time if paused?
-            if (activeSession && isPaused && pausedAt) {
-                // Calculate static elapsed time up to pause
-                const start = new Date(activeSession.startTime).getTime();
-                const pauseTime = new Date(pausedAt).getTime();
-                const pausedMillis = activeSession.pausedMillis || 0;
-                if (!isNaN(start) && !isNaN(pauseTime)) {
-                    setElapsedSeconds(Math.max(0, Math.floor((pauseTime - start - pausedMillis) / 1000)));
-                }
-            } else if (!activeSession) {
-                setElapsedSeconds(0);
-            }
+        if (!activeSession) {
+            setElapsedSeconds(0);
             return;
         }
 
@@ -74,16 +93,31 @@ export const ReadingSessionProvider = ({ children }) => {
             }
 
             const pausedMillis = activeSession.pausedMillis || 0;
-            const diff = Math.floor((now - start - pausedMillis) / 1000);
-            setElapsedSeconds(Math.max(0, diff));
+
+            if (activeSession.status === 'PAUSED' && activeSession.pausedAt) {
+                // Static time: pausedAt - startTime - pausedMillis
+                const pAt = new Date(activeSession.pausedAt).getTime();
+                const diff = Math.floor((pAt - start - pausedMillis) / 1000);
+                setElapsedSeconds(Math.max(0, diff));
+            } else {
+                // Active time: now - startTime - pausedMillis
+                const diff = Math.floor((now - start - pausedMillis) / 1000);
+                setElapsedSeconds(Math.max(0, diff));
+            }
         };
 
-        tick();
-        timerIntervalRef.current = setInterval(tick, 1000);
+        tick(); // Valid initial state immediately
+
+        if (activeSession.status === 'ACTIVE') {
+            timerIntervalRef.current = setInterval(tick, 1000);
+        }
 
         return () => clearInterval(timerIntervalRef.current);
-    }, [activeSession, isPaused, pausedAt]);
+    }, [activeSession]);
 
+
+    // Controller Lock
+    const { isController, takeControl } = useControllerLock(activeSession);
 
     const startSession = async (bookId) => {
         try {
@@ -92,8 +126,8 @@ export const ReadingSessionProvider = ({ children }) => {
             if (!response.ok) throw new Error('Failed to start session');
             const session = await response.json();
             setActiveSession(session);
-            setIsPaused(false);
-            setPausedAt(null);
+            takeControl(); // Auto-take control on start
+            broadcastUpdate();
             return true;
         } catch (err) {
             console.error(err);
@@ -108,8 +142,7 @@ export const ReadingSessionProvider = ({ children }) => {
             if (!response.ok) throw new Error('Failed to stop session');
 
             setActiveSession(null);
-            setIsPaused(false);
-            setPausedAt(null);
+            broadcastUpdate();
             return true;
         } catch (err) {
             console.error(err);
@@ -117,44 +150,31 @@ export const ReadingSessionProvider = ({ children }) => {
         }
     };
 
-    const pauseSession = () => {
-        setIsPaused(true);
-        setPausedAt(new Date());
-        // Simple local pause, sync with backend on resume?
+    const pauseSession = async () => {
+        if (!isController) return;
+        try {
+            const response = await api.sessions.pause();
+            if (response.ok) {
+                const session = await response.json();
+                setActiveSession(session);
+                broadcastUpdate();
+            }
+        } catch (err) {
+            console.error("Failed to pause session", err);
+        }
     };
 
     const resumeSession = async () => {
-        if (pausedAt) {
-            const now = new Date();
-            const diff = now.getTime() - new Date(pausedAt).getTime();
-            if (diff > 0) {
-                // Optimistic update: update local state immediately to prevent timer flicker
-                setActiveSession(prev => {
-                    if (!prev) return prev;
-                    return {
-                        ...prev,
-                        pausedMillis: (prev.pausedMillis || 0) + diff
-                    };
-                });
-
-                // Sync with backend
-                excludeTimeFromSession(diff);
-            }
-        }
-        setIsPaused(false);
-        setPausedAt(null);
-    };
-
-    const excludeTimeFromSession = async (millis) => {
+        if (!isController) return;
         try {
-            const response = await api.sessions.excludeTime(millis);
-
+            const response = await api.sessions.resume();
             if (response.ok) {
-                const data = await response.json();
-                setActiveSession(data);
+                const session = await response.json();
+                setActiveSession(session);
+                broadcastUpdate();
             }
         } catch (err) {
-            console.error("Failed to exclude time", err);
+            console.error("Failed to resume session", err);
         }
     };
 
@@ -176,7 +196,9 @@ export const ReadingSessionProvider = ({ children }) => {
             startSession,
             stopSession,
             pauseSession,
-            resumeSession
+            resumeSession,
+            isController,
+            takeControl
         }}>
             {children}
         </ReadingSessionContext.Provider>

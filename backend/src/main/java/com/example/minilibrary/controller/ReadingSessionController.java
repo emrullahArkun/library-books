@@ -66,6 +66,20 @@ public class ReadingSessionController {
         return ResponseEntity.ok(mapToDto(session));
     }
 
+    @PostMapping("/active/pause")
+    public ResponseEntity<ReadingSessionDto> pauseSession(java.security.Principal principal) {
+        User user = getCurrentUser(principal);
+        ReadingSession session = sessionService.pauseSession(user);
+        return ResponseEntity.ok(mapToDto(session));
+    }
+
+    @PostMapping("/active/resume")
+    public ResponseEntity<ReadingSessionDto> resumeSession(java.security.Principal principal) {
+        User user = getCurrentUser(principal);
+        ReadingSession session = sessionService.resumeSession(user);
+        return ResponseEntity.ok(mapToDto(session));
+    }
+
     @GetMapping("/book/{bookId}")
     public ResponseEntity<java.util.List<ReadingSessionDto>> getSessionsByBook(@PathVariable Long bookId,
             java.security.Principal principal) {
@@ -85,6 +99,7 @@ public class ReadingSessionController {
                 session.getEndTime(),
                 session.getStatus(),
                 session.getEndPage(),
-                session.getPausedMillis());
+                session.getPausedMillis(),
+                session.getPausedAt());
     }
 }

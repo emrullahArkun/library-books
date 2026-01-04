@@ -37,19 +37,28 @@ const ReadingSessionPage = () => {
         startSession,
         stopSession,
         formattedTime,
-        excludeTimeFromSession,
         loading: sessionLoading,
         isPaused,
-        pausedAt,
-        frozenTime,
         pauseSession,
-        resumeSession
+        resumeSession,
+        isController,
+        takeControl
     } = useReadingSession();
+
+    // Check for session mismatch
+    useEffect(() => {
+        if (activeSession && book && activeSession.bookId !== book.id) {
+            alert(t('readingSession.sessionMismatch', 'Es läuft bereits eine Session für ein anderes Buch!'));
+            navigate('/my-books');
+        }
+    }, [activeSession, book, navigate, t]);
 
     // Local state for UI flow
     const [showStopConfirm, setShowStopConfirm] = useState(false);
     const [endPage, setEndPage] = useState('');
     const [hasStopped, setHasStopped] = useState(false);
+    // Track if we ever had an active session to distinguish initial load from remote stop
+    const [wasActive, setWasActive] = useState(false);
 
     const bgColor = useColorModeValue('gray.50', 'gray.900');
     const cardBg = useColorModeValue('white', 'gray.800');
@@ -75,13 +84,26 @@ const ReadingSessionPage = () => {
         fetchBook();
     }, [id, token]);
 
+    // Track active session history (for remote stop detection)
+    useEffect(() => {
+        if (activeSession) {
+            setWasActive(true);
+        } else if (wasActive && !activeSession && !hasStopped) {
+            // Session was active, now it's gone, and we didn't stop it intentionally.
+            // This means it was stopped remotely.
+            alert(t('readingSession.sessionEndedRemote', 'Die Session wurde in einem anderen Tab beendet.'));
+            navigate('/my-books');
+        }
+    }, [activeSession, wasActive, hasStopped, navigate, t]);
+
     // Auto-start session if not active
     useEffect(() => {
-        if (!sessionLoading && !activeSession && book && !hasStopped) {
-            // Only auto-start if we are sure there is no session and we haven't just stopped one
+        // Only auto-start if we have NO history of an active session (wasActive is false)
+        // AND we aren't currently stopping one interactively.
+        if (!sessionLoading && !activeSession && book && !hasStopped && !wasActive) {
             startSession(id);
         }
-    }, [sessionLoading, activeSession, book, id, startSession, hasStopped]);
+    }, [sessionLoading, activeSession, book, id, startSession, hasStopped, wasActive]);
 
     // Handlers using Hook Methods
     const handlePause = () => {
@@ -195,8 +217,23 @@ const ReadingSessionPage = () => {
                         fontFamily="monospace"
                         color={isPaused ? "gray.400" : "teal.500"}
                     >
-                        {frozenTime || formattedTime}
+                        {formattedTime}
                     </Box>
+
+                    {!isController && (
+                        <Alert status="warning" borderRadius="md" flexDirection="column" alignItems="center" justifyContent="center" textAlign="center">
+                            <AlertIcon boxSize="40px" mr={0} />
+                            <Text mt={4} mb={1} fontSize="lg">
+                                {t('readingSession.controlledByOther', 'Session läuft in einem anderen Tab')}
+                            </Text>
+                            <Text mb={4}>
+                                {t('readingSession.controlledByOtherDesc', 'Du kannst die Session hier nicht steuern.')}
+                            </Text>
+                            <Button colorScheme="orange" onClick={takeControl} size="sm">
+                                {t('readingSession.takeControl', 'Steuerung übernehmen')}
+                            </Button>
+                        </Alert>
+                    )}
 
                     {showStopConfirm ? (
                         <VStack spacing={4} w="100%" maxW="md">
@@ -221,7 +258,7 @@ const ReadingSessionPage = () => {
                                     colorScheme="red"
                                     onClick={handleConfirmStop}
                                     leftIcon={<FaCheck />}
-                                    isDisabled={!endPage || isNaN(parseInt(endPage, 10))}
+                                    isDisabled={!endPage || isNaN(parseInt(endPage, 10)) || !isController}
                                 >
                                     {t('readingSession.confirmStop', 'Fertig')}
                                 </Button>
@@ -241,6 +278,7 @@ const ReadingSessionPage = () => {
                                     h="60px"
                                     leftIcon={<FaPlay />}
                                     onClick={handleResume}
+                                    isDisabled={!isController}
                                 >
                                     {t('readingSession.resume', 'Weiter')}
                                 </Button>
@@ -253,6 +291,7 @@ const ReadingSessionPage = () => {
                                     h="60px"
                                     leftIcon={<FaPause />}
                                     onClick={handlePause}
+                                    isDisabled={!isController}
                                 >
                                     {t('readingSession.pause', 'Pause')}
                                 </Button>
@@ -267,6 +306,7 @@ const ReadingSessionPage = () => {
                                 h="60px"
                                 leftIcon={<FaStop />}
                                 onClick={handleStopClick}
+                                isDisabled={!isController}
                             >
                                 {t('readingSession.stop', 'Stop')}
                             </Button>

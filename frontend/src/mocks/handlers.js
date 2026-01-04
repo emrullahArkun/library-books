@@ -78,5 +78,24 @@ export const handlers = [
     // Mock DELETE /api/books/:id
     http.delete('/api/books/:id', () => {
         return new HttpResponse(null, { status: 204 });
+    }),
+    // Mock POST /api/sessions/active/pause
+    http.post('/api/sessions/active/pause', () => {
+        return HttpResponse.json({
+            status: 'PAUSED',
+            pausedAt: new Date().toISOString(),
+            pausedMillis: 0,
+            startTime: new Date().toISOString()
+        });
+    }),
+
+    // Mock POST /api/sessions/active/resume
+    http.post('/api/sessions/active/resume', () => {
+        return HttpResponse.json({
+            status: 'ACTIVE',
+            pausedAt: null,
+            pausedMillis: 1000,
+            startTime: new Date().toISOString()
+        });
     })
 ];
