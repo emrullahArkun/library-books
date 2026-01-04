@@ -1,0 +1,130 @@
+.ui-field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    width: 100%;
+}
+
+.ui-field__label {
+    position: absolute;
+    left: var(--space-4);
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    pointer-events: none;
+    transition: all var(--duration-fast) var(--ease-spring);
+    background-color: transparent;
+    padding: 0 4px;
+    z-index: 10;
+}
+
+.ui-field__label--has-left-icon {
+    left: 48px;
+}
+
+/* Floating State: Active (focused) or Filled (not showing placeholder) */
+.ui-field__input:focus~.ui-field__label,
+.ui-field__input:not(:placeholder-shown)~.ui-field__label {
+    top: 0;
+    transform: translateY(-50%) scale(0.85);
+    left: var(--space-2);
+    /* Move slightly left to align nicely */
+    background-color: var(--bg-surface-2);
+    /* Match input bg to cover border if needed */
+    color: var(--primary-base);
+    font-weight: 600;
+}
+
+/* If input has left icon, keep floating label aligned correctly */
+.ui-field__input:focus~.ui-field__label--has-left-icon,
+.ui-field__input:not(:placeholder-shown)~.ui-field__label--has-left-icon {
+    left: 14px;
+    /* Adjust as needed */
+}
+
+/* Ensure placeholder is hidden */
+.ui-field__input::placeholder {
+    color: transparent;
+}
+
+.ui-field__input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    border-radius: var(--radius-lg);
+    background-color: var(--bg-surface-2);
+    border: 1px solid transparent;
+    transition: all var(--duration-fast) ease;
+    height: 56px;
+    /* Increased height for floating label */
+}
+
+.ui-field__input-wrapper:focus-within {
+    background-color: var(--bg-app);
+    border-color: var(--primary-base);
+    box-shadow: var(--focus-ring);
+}
+
+/* Update background of label when focused-within to match new input bg */
+.ui-field__input-wrapper:focus-within .ui-field__label {
+    background-color: var(--bg-app);
+}
+
+.ui-field__input-wrapper--error {
+    border-color: var(--color-error);
+}
+
+.ui-field__input-wrapper--error:focus-within {
+    box-shadow: 0 0 0 3px rgba(214, 69, 69, 0.2);
+}
+
+.ui-field__input {
+    width: 100%;
+    height: 100%;
+    padding: var(--space-4);
+    padding-top: var(--space-6);
+    /* Push text down strictly */
+    background: transparent;
+    border: none;
+    font-family: inherit;
+    font-size: 1rem;
+    color: var(--text-primary);
+    border-radius: var(--radius-lg);
+    outline: none;
+}
+
+.ui-field__input--has-left-icon {
+    padding-left: 48px;
+}
+
+.ui-field__icon {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-secondary);
+    pointer-events: none;
+    z-index: 1;
+    /* Below floating label active state if overlap, but label usually above */
+}
+
+.ui-field__icon--left {
+    left: var(--space-4);
+    width: 24px;
+    height: 24px;
+}
+
+.ui-field__right-element {
+    position: absolute;
+    right: var(--space-2);
+    display: flex;
+    align-items: center;
+}
+
+.ui-field__error {
+    font-size: 0.8rem;
+    color: var(--color-error);
+    margin-top: -2px;
+}

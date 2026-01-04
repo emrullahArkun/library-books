@@ -67,7 +67,9 @@ const MainLayout = () => {
                     />
                 )}
             </Box>
-            <Outlet />
+            <div className="main-layout-content">
+                <Outlet />
+            </div>
         </>
     );
 };

@@ -2,23 +2,24 @@ import { useState } from 'react';
 import { useNavigate, useLocation, Link as RouterLink } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/AuthContext';
-import {
-    Button,
-    FormControl,
-    FormLabel,
-    Input,
-    VStack,
-    Heading,
-    Text,
-    Link,
-    useToast,
-    InputGroup,
-    InputLeftElement,
-    Icon
-} from '@chakra-ui/react';
+import { useToast } from '@chakra-ui/react'; // Keeping toast for now as per plan
 import { MdEmail, MdLock, MdLogin } from 'react-icons/md';
-import AuthShell from './components/AuthShell';
 import { api } from '../../api/api';
+
+// New UI Components
+import { AuthLayout } from '../../ui/layouts/AuthLayout';
+import { TextField } from '../../ui/TextField';
+import { Button } from '../../ui/Button';
+
+// Scoped styles for page-specific layout tweaks if needed
+// or just inline styles/utility classes. 
+// We'll use a small inline style for the link to keep it simple without extra css file
+const linkStyle = {
+    color: 'var(--primary-base)',
+    fontWeight: 600,
+    textDecoration: 'none',
+    fontSize: '0.875rem'
+};
 
 function LoginPage() {
     const { t } = useTranslation();
@@ -29,10 +30,13 @@ function LoginPage() {
     const location = useLocation();
     const toast = useToast();
     const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState('');
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setIsLoading(true);
+        setError('');
+
         try {
             const response = await api.auth.login(email, password);
 
@@ -51,14 +55,12 @@ function LoginPage() {
                 duration: 3000,
                 isClosable: true,
                 position: "top-right",
-                containerStyle: {
-                    marginTop: "80px"
-                }
             });
             // Redirect to original route if available, otherwise home
             const from = location.state?.from?.pathname || '/';
             navigate(from, { replace: true });
         } catch (err) {
+            setError(err.message);
             toast({
                 title: t('auth.errorTitle', "Error"),
                 description: err.message,
@@ -73,85 +75,60 @@ function LoginPage() {
     };
 
     return (
-        <AuthShell>
-            <VStack spacing={6} as="form" onSubmit={handleSubmit}>
-                <VStack spacing={2} textAlign="center">
-                    <Icon as={MdLogin} w={12} h={12} color="teal.500" />
-                    <Heading size="lg" color="gray.700">
-                        {t('auth.login.title')}
-                    </Heading>
-                </VStack>
+        <AuthLayout
+            title={t('auth.login.title')}
+            icon={<MdLogin />}
+        >
+            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                    <TextField
+                        label={t('auth.email')}
+                        type="email"
+                        value={email}
+                        onChange={e => setEmail(e.target.value)}
+                        placeholder={t('auth.enterEmail')}
+                        leftIcon={<MdEmail />}
+                        required
+                        autoComplete="email"
+                    />
 
-                <VStack spacing={4} w="full">
-                    <FormControl isRequired>
-                        <FormLabel color="gray.600">{t('auth.email')}</FormLabel>
-                        <InputGroup>
-                            <InputLeftElement pointerEvents="none">
-                                <Icon as={MdEmail} color="gray.400" />
-                            </InputLeftElement>
-                            <Input
-                                type="email"
-                                value={email}
-                                onChange={e => setEmail(e.target.value)}
-                                placeholder={t('auth.enterEmail')}
-                                focusBorderColor="teal.500"
-                                borderRadius="lg"
-                                autoComplete="email"
-                            />
-                        </InputGroup>
-                    </FormControl>
+                    <TextField
+                        label={t('auth.password')}
+                        type="password"
+                        value={password}
+                        onChange={e => setPassword(e.target.value)}
+                        placeholder={t('auth.enterPassword')}
+                        leftIcon={<MdLock />}
+                        required
+                        autoComplete="current-password"
+                    />
+                </div>
 
-                    <FormControl isRequired>
-                        <FormLabel color="gray.600">{t('auth.password')}</FormLabel>
-                        <InputGroup>
-                            <InputLeftElement pointerEvents="none">
-                                <Icon as={MdLock} color="gray.400" />
-                            </InputLeftElement>
-                            <Input
-                                type="password"
-                                value={password}
-                                onChange={e => setPassword(e.target.value)}
-                                placeholder={t('auth.enterPassword')}
-                                focusBorderColor="teal.500"
-                                borderRadius="lg"
-                                autoComplete="current-password"
-                            />
-                        </InputGroup>
-                    </FormControl>
-                </VStack>
+                {error && (
+                    <div style={{ color: 'var(--color-error)', fontSize: '0.875rem', marginTop: '-8px' }}>
+                        {error}
+                    </div>
+                )}
 
                 <Button
                     type="submit"
-                    colorScheme="teal"
-                    size="lg"
-                    w="full"
+                    variant="primary"
                     isLoading={isLoading}
-                    loadingText={t('auth.login.loadingText', "Signing in...")}
-                    borderRadius="lg"
-                    boxShadow="md"
-                    _hover={{
-                        transform: "translateY(-2px)",
-                        boxShadow: "lg",
-                    }}
-                    transition="all 0.2s"
+                    style={{ width: '100%' }}
                 >
                     {t('auth.login.button')}
                 </Button>
 
-                <Text fontSize="sm" color="gray.600">
-                    {t('auth.register.link')} {' '}
-                    <Link
-                        as={RouterLink}
-                        to="/register"
-                        color="teal.500"
-                        fontWeight="semibold"
-                        _hover={{ textDecoration: 'underline' }}
-                    >
+                <div style={{ textAlign: 'center' }}>
+                    <span style={{ color: 'var(--text-secondary)', fontSize: '0.875rem' }}>
+                        {t('auth.register.link')}{' '}
+                    </span>
+                    <RouterLink to="/register" style={linkStyle}>
                         {t('auth.register.button')}
-                    </Link>
-                </Text>
-            </VStack>
-        </AuthShell>
+                    </RouterLink>
+                </div>
+            </form>
+        </AuthLayout>
     );
 }
 

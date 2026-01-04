@@ -1,12 +1,17 @@
+/* Global reset moved to specific layout */
 #root {
+  width: 100%;
+}
+
+.main-layout-content {
   max-width: 1280px;
   width: 100%;
-  /* Ensure it takes full width and doesn't shrink-wrap */
   margin: 0 auto;
   padding: 2rem;
   padding-top: 120px;
   /* Offset for fixed navbar */
   text-align: center;
+  min-height: 100vh;
 }
 
 .home-content h1 {

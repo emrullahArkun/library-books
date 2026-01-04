@@ -1,0 +1,144 @@
+/* Main Layout Container */
+.auth-layout {
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    /* Full page background image with dimming overlay */
+    background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url('/Hintergrund.png?v=2');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    overflow: hidden;
+}
+
+/* --- Brand Panel (Left) --- */
+.auth-layout__brand {
+    display: none;
+    /* Keeps its solid background defined in desktop query below to sit ON TOP of image */
+}
+
+/* --- Form Area (Right) --- */
+.auth-layout__form-area {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-4);
+    /* Transparent to show background image */
+    background: transparent;
+    overflow-y: auto;
+}
+
+/* --- Feature List Icons --- */
+.auth-layout__feature-icon {
+    font-size: 1.5rem;
+    color: var(--primary-base);
+    flex-shrink: 0;
+}
+
+.auth-layout__card {
+    width: 100%;
+    max-width: 440px;
+    /* Slightly more depth for the main card */
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.auth-layout__header {
+    margin-bottom: var(--space-8);
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-4);
+}
+
+.auth-layout__mobile-icon {
+    font-size: 3rem;
+    color: var(--primary-base);
+}
+
+.auth-layout__title {
+    font-size: 1.75rem;
+    color: var(--text-primary);
+}
+
+/* --- Desktop Styles --- */
+@media (min-width: 900px) {
+    .auth-layout__brand {
+        display: flex;
+        flex: 0 0 45%;
+        background-color: var(--bg-surface-1);
+        align-items: center;
+        justify-content: center;
+        padding: var(--space-12);
+        border-right: 1px solid var(--border-subtle);
+        position: relative;
+        overflow: hidden;
+    }
+
+    /* Decorative circle behind brand */
+    .auth-layout__brand::before {
+        content: '';
+        position: absolute;
+        top: -20%;
+        left: -20%;
+        width: 60%;
+        height: 60%;
+        background: var(--accent-100);
+        opacity: 0.3;
+        border-radius: 50%;
+        filter: blur(80px);
+    }
+
+    .auth-layout__brand-content {
+        position: relative;
+        z-index: 1;
+        max-width: 400px;
+    }
+
+    .auth-layout__logo-large {
+        display: flex;
+        align-items: center;
+        gap: var(--space-4);
+        margin-bottom: var(--space-4);
+        color: var(--primary-base);
+    }
+
+    .auth-layout__icon-wrapper {
+        font-size: 3rem;
+    }
+
+    .auth-layout__tagline {
+        font-size: 1.25rem;
+        color: var(--text-secondary);
+        margin-bottom: var(--space-8);
+        font-weight: 500;
+    }
+
+    .auth-layout__features {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-6);
+    }
+
+    .auth-layout__features li {
+        display: flex;
+        align-items: center;
+        gap: var(--space-3);
+        font-size: 1.1rem;
+        color: var(--text-primary);
+    }
+
+    .auth-layout__header {
+        text-align: left;
+        align-items: flex-start;
+    }
+
+    .auth-layout__mobile-icon {
+        display: none;
+        /* Already shown in brand panel or just keep simple title */
+    }
+}

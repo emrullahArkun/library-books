@@ -1,0 +1,78 @@
+.string-lights-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 300px;
+    /* Safe height */
+    z-index: 10;
+    pointer-events: none;
+    overflow: visible;
+    /* Prevent any clipping of glows */
+}
+
+.string-lights-svg {
+    width: 100%;
+    height: 100%;
+    /* Gentle sway of the entire string system */
+    transform-origin: top center;
+    animation: sway 5s ease-in-out infinite alternate;
+}
+
+/* Adjust curve calculation visually */
+.string-lights__cord {
+    stroke: var(--neutral-600);
+}
+
+.string-lights__bulb-wrapper {
+    position: absolute;
+    transform: translate(-50%, 0);
+    /* Center horizontally, starts at top (wire pos) and goes down */
+    /* Gentle individual sway for realism? Maybe later. For now stick to container sway. */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.string-lights__socket {
+    width: 4px;
+    /* Slightly wider base */
+    height: 3px;
+    /* Very short - just a connector, virtually "directly on rope" */
+    background-color: var(--neutral-800);
+}
+
+/* Updated larger, round HTML bulb */
+.string-lights__bulb {
+    width: 14px;
+    /* Larger size */
+    height: 14px;
+    border-radius: 50%;
+    /* Perfect circle */
+    background-color: var(--neutral-300);
+    /* Off state */
+    transition: background-color 0.3s ease;
+    animation: glow-html 2s ease-in-out infinite alternate;
+}
+
+@keyframes sway {
+    0% {
+        transform: rotate(-0.5deg);
+    }
+
+    100% {
+        transform: rotate(0.5deg);
+    }
+}
+
+@keyframes glow-html {
+    0% {
+        opacity: 0.7;
+        filter: brightness(0.8);
+    }
+
+    100% {
+        opacity: 1;
+        filter: brightness(1.3);
+    }
+}

@@ -1,11 +1,16 @@
+@import "../styles/tokens.css";
+
 :root {
   font-family: 'Open Sans', system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
+
   color-scheme: light dark;
-  color: rgba(0, 0, 0, 0.87);
-  background-color: #ffffff;
-  min-height: 100vh;
+
+  /* Use new tokens */
+  color: var(--text-primary);
+  background-color: var(--bg-app);
+
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -20,59 +25,40 @@
 
 a {
   font-weight: 500;
-  color: #646cff;
+  color: var(--primary-base);
   text-decoration: inherit;
+  transition: color var(--duration-fast) ease;
 }
 
 a:hover {
-  color: #535bf2;
+  color: var(--primary-hover);
 }
 
 body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
+  background-color: var(--bg-app);
+  color: var(--text-primary);
 }
 
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
-  font-family: 'Open Sans', sans-serif;
-}
-
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin: 0;
   font-family: inherit;
-  background-color: #1a1a1a;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* Reset buttons to allow components to handle style */
+button {
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: inherit;
   cursor: pointer;
-  transition: border-color 0.25s;
-}
-
-button:hover {
-  border-color: #646cff;
-}
-
-/* Adjusted for light theme default */
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
-}
-
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-
-  a:hover {
-    color: #747bff;
-  }
-
-  button {
-    background-color: #f9f9f9;
-  }
 }
