@@ -1,0 +1,14 @@
+.homeContent {
+    background-color: #ffffff;
+    width: 100vw;
+    min-height: 100vh;
+    position: relative;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
+    display: flex;
+    flex-direction: column;
+    padding-top: 20px;
+    box-sizing: border-box;
+}

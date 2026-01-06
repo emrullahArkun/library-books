@@ -1,0 +1,41 @@
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.inputsContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.error {
+    color: var(--color-error);
+    font-size: 0.875rem;
+    margin-top: -8px;
+}
+
+.submitButton {
+    width: 100%;
+}
+
+.footer {
+    text-align: center;
+}
+
+.footerText {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+}
+
+.registerLink {
+    color: var(--primary-base);
+    font-weight: 600;
+    text-decoration: none;
+    font-size: 0.875rem;
+}
+
+.registerLink:hover {
+    text-decoration: underline;
+}

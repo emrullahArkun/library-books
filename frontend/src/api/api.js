@@ -1,5 +1,5 @@
-import { authApi } from './authApi';
-import { booksApi } from './booksApi';
+import { authApi } from '../features/auth/api/authApi';
+import { booksApi } from '../features/book-search/api/booksApi';
 import { sessionsApi } from './sessionsApi';
 
 export { authApi, booksApi, sessionsApi };

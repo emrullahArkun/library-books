@@ -1,0 +1,199 @@
+.searchResultCard {
+    background: transparent;
+    border: none;
+    border-radius: 30px;
+    box-shadow: none;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    transition: transform 0.2s;
+    cursor: pointer;
+    position: relative;
+    overflow: visible;
+}
+
+.cardUpperSection {
+    background-color: var(--navbar-bg);
+    color: white;
+    padding: 16px;
+    border-radius: 30px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+    z-index: 2;
+    position: relative;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.searchResultCard:hover {
+    transform: translateY(-4px);
+}
+
+.searchResultCard:hover .cardUpperSection {
+    border-color: #319795;
+    /* Teal border check if needed, context suggests just hover effect */
+}
+
+
+.cardHeader {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.resultImgWrapper {
+    width: 80px;
+    height: 120px;
+    background: #f5f5f5;
+    flex-shrink: 0;
+    border-radius: 6px;
+    overflow: hidden;
+    position: relative;
+}
+
+.resultThumb {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.resultThumbPlaceholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2em;
+    color: #ddd;
+}
+
+.cardBasicInfo {
+    flex: 1;
+    min-width: 0;
+}
+
+.bookTitle {
+    font-size: 1.1em;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 6px;
+    line-height: 1.3;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.author {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.9em;
+    margin-bottom: 4px;
+}
+
+.metaDate,
+.metaPublisher {
+    font-size: 0.85em;
+    color: #888;
+}
+
+.cardDetails {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.description {
+    font-size: 0.9em;
+    color: #555;
+    line-height: 1.5;
+    margin: 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.metaRow {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: auto;
+}
+
+.tag {
+    font-size: 0.8em;
+    background: #f0f7ff;
+    color: #0066cc;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.cardActionFooter {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    margin-top: -35px;
+    padding-top: 45px;
+    position: relative;
+    border-top: none;
+    background-color: #D4AF37;
+    color: black;
+    font-weight: 700;
+    font-size: 0.95em;
+    border-radius: 0 0 30px 30px;
+    z-index: 1;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.2s;
+}
+
+.plusIcon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: #E6FFFA;
+    transition: all 0.2s;
+}
+
+.searchResultCard:hover .cardActionFooter {
+    background-color: #C5A028;
+}
+
+.searchResultCard:hover .plusIcon {
+    background: black;
+    color: #D4AF37;
+    transform: scale(1.1);
+}
+
+.showMoreBtn {
+    color: #319795;
+    background-color: rgba(49, 151, 149, 0.1);
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.85em;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-block;
+    margin-top: 8px;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+}
+
+.showMoreBtn:hover {
+    background-color: var(--navbar-bg);
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}

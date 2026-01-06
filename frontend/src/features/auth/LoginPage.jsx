@@ -5,21 +5,12 @@ import { useAuth } from '../../context/AuthContext';
 import { useToast } from '@chakra-ui/react'; // Keeping toast for now as per plan
 import { MdEmail, MdLock, MdLogin } from 'react-icons/md';
 import { api } from '../../api/api';
+import styles from './LoginPage.module.css';
 
 // New UI Components
 import { AuthLayout } from '../../ui/layouts/AuthLayout';
 import { TextField } from '../../ui/TextField';
 import { Button } from '../../ui/Button';
-
-// Scoped styles for page-specific layout tweaks if needed
-// or just inline styles/utility classes. 
-// We'll use a small inline style for the link to keep it simple without extra css file
-const linkStyle = {
-    color: 'var(--primary-base)',
-    fontWeight: 600,
-    textDecoration: 'none',
-    fontSize: '0.875rem'
-};
 
 function LoginPage() {
     const { t } = useTranslation();
@@ -79,8 +70,8 @@ function LoginPage() {
             title={t('auth.login.title')}
             icon={<MdLogin />}
         >
-            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            <form onSubmit={handleSubmit} className={styles.form}>
+                <div className={styles.inputsContainer}>
                     <TextField
                         label={t('auth.email')}
                         type="email"
@@ -105,7 +96,7 @@ function LoginPage() {
                 </div>
 
                 {error && (
-                    <div style={{ color: 'var(--color-error)', fontSize: '0.875rem', marginTop: '-8px' }}>
+                    <div className={styles.error}>
                         {error}
                     </div>
                 )}
@@ -114,16 +105,16 @@ function LoginPage() {
                     type="submit"
                     variant="primary"
                     isLoading={isLoading}
-                    style={{ width: '100%' }}
+                    className={styles.submitButton}
                 >
                     {t('auth.login.button')}
                 </Button>
 
-                <div style={{ textAlign: 'center' }}>
-                    <span style={{ color: 'var(--text-secondary)', fontSize: '0.875rem' }}>
+                <div className={styles.footer}>
+                    <span className={styles.footerText}>
                         {t('auth.register.link')}{' '}
                     </span>
-                    <RouterLink to="/register" style={linkStyle}>
+                    <RouterLink to="/register" className={styles.registerLink}>
                         {t('auth.register.button')}
                     </RouterLink>
                 </div>

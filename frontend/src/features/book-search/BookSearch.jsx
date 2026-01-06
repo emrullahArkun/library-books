@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import './BookSearch.css';
+import styles from './BookSearch.module.css';
 import { useBookSearch } from './hooks/useBookSearch';
 import SearchForm from './components/SearchForm';
 import SearchResultCard from './components/SearchResultCard';
@@ -18,15 +18,6 @@ function BookSearch({ onBookAdded }) {
         addBookToLibrary
     } = useBookSearch();
 
-    React.useEffect(() => {
-        // Set body background to white when on this page
-        document.body.style.backgroundColor = '#ffffff';
-        // Reset when leaving
-        return () => {
-            document.body.style.backgroundColor = 'var(--bg-app)';
-        };
-    }, []);
-
     const handleAddBook = useCallback(async (book) => {
         const success = await addBookToLibrary(book);
         if (success && onBookAdded) {
@@ -35,12 +26,12 @@ function BookSearch({ onBookAdded }) {
     }, [addBookToLibrary, onBookAdded]);
 
     return (
-        <div className="search-container">
+        <div className={styles.searchContainer}>
             <SearchForm query={query} setQuery={setQuery} onSearch={searchBooks} />
 
-            {error && <p className="error">{error}</p>}
+            {error && <p className={styles.error}>{error}</p>}
 
-            <div className="results-grid">
+            <div className={styles.resultsGrid}>
                 {results.map((book) => (
                     <SearchResultCard
                         key={book.id}
@@ -50,13 +41,13 @@ function BookSearch({ onBookAdded }) {
                 ))}
             </div>
 
-            {loading && <div className="loading-more">{t('search.loading')}</div>}
+            {loading && <div className={styles.loadingMore}>{t('search.loading')}</div>}
 
             {results.length > 0 && hasMore && !loading && (
-                <button onClick={loadMore} className="load-more-btn">{t('search.loadMore')}</button>
+                <button onClick={loadMore} className={styles.loadMoreBtn}>{t('search.loadMore')}</button>
             )}
 
-            {!hasMore && results.length > 0 && <div className="end-message">{t('search.endResults')}</div>}
+            {!hasMore && results.length > 0 && <div className={styles.endMessage}>{t('search.endResults')}</div>}
         </div>
     );
 }

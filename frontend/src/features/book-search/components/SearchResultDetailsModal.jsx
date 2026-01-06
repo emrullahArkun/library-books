@@ -1,5 +1,5 @@
 import React from 'react';
-
+import styles from './SearchResultDetailsModal.module.css';
 import { useTranslation } from 'react-i18next';
 
 const SearchResultDetailsModal = ({ isOpen, onClose, title, description }) => {
@@ -8,14 +8,14 @@ const SearchResultDetailsModal = ({ isOpen, onClose, title, description }) => {
     if (!isOpen) return null;
 
     return (
-        <div className="modal-overlay" onClick={onClose}>
-            <div className="modal-content" onClick={e => e.stopPropagation()}>
-                <div className="modal-header">
-                    <h2 className="modal-title">{title}</h2>
-                    <button className="modal-close-btn" onClick={onClose}>&times;</button>
+        <div className={styles.modalOverlay} onClick={onClose}>
+            <div className={styles.modalContent} onClick={e => e.stopPropagation()}>
+                <div className={styles.modalHeader}>
+                    <h2 className={styles.modalTitle}>{title}</h2>
+                    <button className={styles.modalCloseBtn} onClick={onClose}>&times;</button>
                 </div>
-                <div className="modal-body">
-                    <span className="modal-label">{t('search.result.description')}:</span>
+                <div className={styles.modalBody}>
+                    <span className={styles.modalLabel}>{t('search.result.description')}:</span>
                     <p style={{ whiteSpace: 'pre-wrap', margin: 0 }}>{description}</p>
                 </div>
             </div>

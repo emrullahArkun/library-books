@@ -2,7 +2,7 @@ import React from 'react';
 import { FaBookOpen, FaFileAlt, FaTag, FaStar, FaPlus } from 'react-icons/fa';
 import { useTranslation } from 'react-i18next';
 import { useState } from 'react';
-import '../BookSearch.css';
+import styles from './SearchResultCard.module.css';
 import { formatPublishedDate } from '../../../utils/formatDate';
 import { getHighResImage } from '../../../utils/googleBooks';
 import SearchResultDetailsModal from './SearchResultDetailsModal';
@@ -36,7 +36,7 @@ const SearchResultCard = ({ book, onAdd }) => {
     return (
         <>
             <div
-                className="search-result-card"
+                className={styles.searchResultCard}
                 onClick={() => onAdd(book)}
                 role="button"
                 tabIndex={0}
@@ -49,38 +49,38 @@ const SearchResultCard = ({ book, onAdd }) => {
             >
                 <div style={{ position: 'relative', zIndex: 2, width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
 
-                    <div className="card-upper-section">
-                        <div className="card-header">
-                            <div className="result-img-wrapper">
+                    <div className={styles.cardUpperSection}>
+                        <div className={styles.cardHeader}>
+                            <div className={styles.resultImgWrapper}>
                                 {initialThumb ? (
                                     <img
                                         src={imgSrc}
                                         onError={handleImageError}
                                         alt={info.title}
-                                        className="result-thumb"
+                                        className={styles.resultThumb}
                                     />
                                 ) : (
-                                    <div className="result-thumb-placeholder"><FaBookOpen size={24} color="#ccc" /></div>
+                                    <div className={styles.resultThumbPlaceholder}><FaBookOpen size={24} color="#ccc" /></div>
                                 )}
                             </div>
-                            <div className="card-basic-info">
-                                <div className="book-title">{info.title}</div>
-                                <div className="author">{t('search.result.by')} {info.authors?.join(', ') || t('search.result.unknown')}</div>
-                                {published && <div className="meta-date">{published}</div>}
-                                {info.publisher && <div className="meta-publisher">{info.publisher}</div>}
+                            <div className={styles.cardBasicInfo}>
+                                <div className={styles.bookTitle}>{info.title}</div>
+                                <div className={styles.author}>{t('search.result.by')} {info.authors?.join(', ') || t('search.result.unknown')}</div>
+                                {published && <div className={styles.metaDate}>{published}</div>}
+                                {info.publisher && <div className={styles.metaPublisher}>{info.publisher}</div>}
                             </div>
                         </div>
 
-                        <div className="card-details">
+                        <div className={styles.cardDetails}>
                             {description && (
-                                <div className="description-container" style={{ textAlign: 'left' }}>
-                                    <p className="description">
+                                <div className={styles.descriptionContainer} style={{ textAlign: 'left' }}>
+                                    <p className={styles.description}>
                                         {shortDescription}
                                     </p>
                                     {isLongDescription && (
                                         <button
                                             type="button"
-                                            className="show-more-btn"
+                                            className={styles.showMoreBtn}
                                             onClick={handleShowMore}
                                             style={{ background: 'none', border: 'none', padding: 0, font: 'inherit', cursor: 'pointer', textDecoration: 'underline' }}
                                         >
@@ -89,22 +89,22 @@ const SearchResultCard = ({ book, onAdd }) => {
                                     )}
                                 </div>
                             )}
-                            <div className="meta-row">
-                                {info.pageCount && <span className="tag"><FaFileAlt /> {info.pageCount} {t('search.result.pages')}</span>}
+                            <div className={styles.metaRow}>
+                                {info.pageCount && <span className={styles.tag}><FaFileAlt /> {info.pageCount} {t('search.result.pages')}</span>}
                                 {info.categories && (
-                                    <span className="tag">
+                                    <span className={styles.tag}>
                                         <FaTag />
                                         {info.categories[0]}
                                     </span>
                                 )}
-                                {info.averageRating && <span className="tag"><FaStar color="#FFC107" /> {info.averageRating}</span>}
+                                {info.averageRating && <span className={styles.tag}><FaStar color="#FFC107" /> {info.averageRating}</span>}
                             </div>
                         </div>
                     </div>
 
-                    <div className="card-action-footer">
+                    <div className={styles.cardActionFooter}>
                         <span className="add-text">{t('search.result.addToLibrary')}</span>
-                        <span className="plus-icon"><FaPlus size={10} /></span>
+                        <span className={styles.plusIcon}><FaPlus size={10} /></span>
                     </div>
                 </div>
             </div>

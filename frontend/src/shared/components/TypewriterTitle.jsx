@@ -30,20 +30,15 @@ const TypewriterTitle = () => {
     return (
         <h1 style={{
             display: "flex",
-            justifyContent: "flex-start", /* Align left */
+            justifyContent: "flex-start",
             alignItems: "center",
             minHeight: "1.5em",
             fontSize: "3.5rem",
-            width: "100vw", /* Full width breakout */
+            width: "100%",
             textAlign: "left",
-            position: "relative",
-            left: "50%",
-            right: "50%",
-            marginLeft: "-50vw",
-            marginRight: "-50vw",
-            paddingLeft: "40px", /* Match search container padding */
+            paddingLeft: "40px",
             boxSizing: "border-box",
-            color: "black" /* Explicitly black */
+            color: "black"
         }}>
             {displayedText}
             {currentIndex < fullText.length && (
