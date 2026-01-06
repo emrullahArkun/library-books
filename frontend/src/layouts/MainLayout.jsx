@@ -1,6 +1,5 @@
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import Navbar from '../shared/components/Navbar';
-import { Box } from '@chakra-ui/react';
 import { useReadingSession } from '../features/my-books/hooks/useReadingSession';
 
 import { useTranslation } from 'react-i18next';
@@ -24,49 +23,56 @@ const MainLayout = () => {
 
     return (
         <>
-            <Box position="relative">
+            <div style={{ position: 'relative' }}>
                 {showSessionAlert && (
-                    <Box
-                        position="fixed"
-                        top="20px"
-                        left="50%"
-                        transform="translateX(-50%)"
-                        zIndex="3000"
-                        width="auto"
+                    <div
+                        style={{
+                            position: 'fixed',
+                            top: '20px',
+                            left: '50%',
+                            transform: 'translateX(-50%)',
+                            zIndex: 3000,
+                            width: 'auto'
+                        }}
                     >
-                        <Box
-                            bg="teal.500"
-                            color="white"
-                            px={6}
-                            py={3}
-                            borderRadius="full"
-                            boxShadow="lg"
-                            display="flex"
-                            alignItems="center"
-                            gap={3}
-                            cursor="pointer"
+                        <div
+                            style={{
+                                backgroundColor: '#319795', // Teal 500
+                                color: 'white',
+                                padding: '12px 24px',
+                                borderRadius: '9999px',
+                                boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '12px',
+                                cursor: 'pointer',
+                                transition: 'transform 0.2s'
+                            }}
                             onClick={() => navigate(`/books/${activeSession.bookId}/session`)}
-                            _hover={{ transform: 'scale(1.05)', transition: 'transform 0.2s' }}
+                            onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
+                            onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
                         >
                             <span style={{ fontWeight: 'bold' }}>⚠️ In Session zurückkehren</span>
-                        </Box>
-                    </Box>
+                        </div>
+                    </div>
                 )}
                 <Navbar />
                 {isSessionPage && (
-                    <Box
-                        position="fixed"
-                        top="0"
-                        left="0"
-                        right="0"
-                        height="90px"
-                        zIndex="2000"
-                        cursor="not-allowed"
+                    <div
+                        style={{
+                            position: 'fixed',
+                            top: 0,
+                            left: 0,
+                            right: 0,
+                            height: '90px',
+                            zIndex: 2000,
+                            cursor: 'not-allowed',
+                            backgroundColor: 'transparent'
+                        }}
                         onClick={handleOverlayClick}
-                        bg="transparent"
                     />
                 )}
-            </Box>
+            </div>
             <div className="main-layout-content">
                 <Outlet />
             </div>

@@ -8,17 +8,14 @@ const SearchForm = ({ query, setQuery, onSearch }) => {
 
     return (
         <form onSubmit={onSearch} className="search-form">
+            <FaSearch className="search-icon" />
             <input
                 type="text"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                placeholder={t('search.placeholder')}
+                placeholder={t('search.placeholder', 'Suche nach Titel, Autor, ISBN...')}
                 className="search-input"
             />
-            <button type="submit" className="search-button">
-                <FaSearch />
-                {t('search.button')}
-            </button>
         </form>
     );
 };

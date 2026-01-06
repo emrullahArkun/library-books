@@ -1,30 +1,25 @@
 import React from 'react';
-import {
-    Modal,
-    ModalOverlay,
-    ModalContent,
-    ModalHeader,
-    ModalBody,
-    ModalCloseButton,
-    Text
-} from '@chakra-ui/react';
+
 import { useTranslation } from 'react-i18next';
 
 const SearchResultDetailsModal = ({ isOpen, onClose, title, description }) => {
     const { t } = useTranslation();
 
+    if (!isOpen) return null;
+
     return (
-        <Modal isOpen={isOpen} onClose={onClose} size="xl" isCentered>
-            <ModalOverlay backdropFilter="blur(5px)" />
-            <ModalContent>
-                <ModalHeader pr={10}>{title}</ModalHeader>
-                <ModalCloseButton />
-                <ModalBody pb={6}>
-                    <Text fontWeight="bold" mb={2}>{t('search.result.description')}:</Text>
-                    <Text whiteSpace="pre-wrap">{description}</Text>
-                </ModalBody>
-            </ModalContent>
-        </Modal>
+        <div className="modal-overlay" onClick={onClose}>
+            <div className="modal-content" onClick={e => e.stopPropagation()}>
+                <div className="modal-header">
+                    <h2 className="modal-title">{title}</h2>
+                    <button className="modal-close-btn" onClick={onClose}>&times;</button>
+                </div>
+                <div className="modal-body">
+                    <span className="modal-label">{t('search.result.description')}:</span>
+                    <p style={{ whiteSpace: 'pre-wrap', margin: 0 }}>{description}</p>
+                </div>
+            </div>
+        </div>
     );
 };
 

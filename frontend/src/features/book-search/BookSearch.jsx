@@ -18,6 +18,15 @@ function BookSearch({ onBookAdded }) {
         addBookToLibrary
     } = useBookSearch();
 
+    React.useEffect(() => {
+        // Set body background to white when on this page
+        document.body.style.backgroundColor = '#ffffff';
+        // Reset when leaving
+        return () => {
+            document.body.style.backgroundColor = 'var(--bg-app)';
+        };
+    }, []);
+
     const handleAddBook = useCallback(async (book) => {
         const success = await addBookToLibrary(book);
         if (success && onBookAdded) {

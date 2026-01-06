@@ -39,6 +39,10 @@
   --border-subtle: var(--neutral-200);
   --border-strong: var(--neutral-300);
 
+  /* --- Brand Colors --- */
+  --navbar-bg: #1a1f24;
+  /* Dark Blue Black from Login Box (Neutral 900) */
+
   /* Primary Action */
   --primary-base: var(--accent-700);
   --primary-hover: var(--accent-800);

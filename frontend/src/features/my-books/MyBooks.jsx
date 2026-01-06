@@ -43,6 +43,15 @@ function MyBooks() {
 
     } = useReadingSession();
 
+    React.useEffect(() => {
+        // Set body background to white when on this page
+        document.body.style.backgroundColor = '#ffffff';
+        // Reset when leaving
+        return () => {
+            document.body.style.backgroundColor = 'var(--bg-app)';
+        };
+    }, []);
+
     if (loading) return <Center h="200px">{t('myBooks.loading')}</Center>;
     if (error) return <Center h="200px" color="red.500">{t('myBooks.error', { message: error })}</Center>;
 

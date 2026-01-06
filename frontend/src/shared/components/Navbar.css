@@ -3,8 +3,8 @@
     justify-content: space-between;
     align-items: center;
     padding: 1rem 2rem;
-    background-color: rgba(49, 151, 149, 0.9);
-    /* Teal 500 with opacity */
+    background-color: var(--navbar-bg);
+    /* Dark Blue */
     backdrop-filter: blur(10px);
     color: white;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);

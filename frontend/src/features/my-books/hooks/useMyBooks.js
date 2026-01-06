@@ -169,7 +169,25 @@ export const useMyBooks = (pageSize = 12) => {
     const deleteSelected = async () => {
         if (!window.confirm(t('myBooks.confirmDeleteSelected', { count: selectedBooks.size }))) return;
 
+        // Optimistic Update
         const ids = Array.from(selectedBooks);
+
+        // 1. Snapshot previous data
+        await queryClient.cancelQueries({ queryKey: ['myBooks'] });
+        const previousData = queryClient.getQueryData(['myBooks', token, page, pageSize]);
+
+        // 2. Optimistically remove from UI
+        if (previousData) {
+            queryClient.setQueryData(['myBooks', token, page, pageSize], {
+                ...previousData,
+                content: previousData.content.filter(book => !selectedBooks.has(book.id))
+            });
+        }
+
+        // 3. Clear selection immediately
+        setSelectedBooks(new Set());
+
+        // 4. Perform actual deletions
         const results = await Promise.allSettled(
             ids.map(id =>
                 api.books.delete(id)
@@ -182,10 +200,14 @@ export const useMyBooks = (pageSize = 12) => {
         if (failed) {
             console.error('Some deletions failed', results);
             alert(t('myBooks.deleteFailed', { message: 'Some items could not be deleted.' }));
+            // Rollback if failed
+            if (previousData) {
+                queryClient.setQueryData(['myBooks', token, page, pageSize], previousData);
+            }
         }
 
+        // Always re-fetch to be safe
         queryClient.invalidateQueries({ queryKey: ['myBooks'] });
-        setSelectedBooks(new Set());
     };
 
     const deleteAll = () => {
