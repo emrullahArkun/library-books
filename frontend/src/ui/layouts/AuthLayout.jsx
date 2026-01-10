@@ -56,9 +56,22 @@ export const AuthLayout = ({ children, title, icon }) => {
                         {t('auth.brand.tagline')}
                     </p>
                     <ul className="auth-layout__features">
-                        <li><MdLibraryBooks className="auth-layout__feature-icon" /> {t('auth.brand.features.track')}</li>
-                        <li><MdTimer className="auth-layout__feature-icon" /> {t('auth.brand.features.time')}</li>
-                        <li><MdShowChart className="auth-layout__feature-icon" /> {t('auth.brand.features.visualize')}</li>
+                        {[
+                            { icon: MdLibraryBooks, title: 'auth.brand.features.track', desc: 'auth.brand.features.trackDesc' },
+                            { icon: MdTimer, title: 'auth.brand.features.time', desc: 'auth.brand.features.timeDesc' },
+                            { icon: MdShowChart, title: 'auth.brand.features.visualize', desc: 'auth.brand.features.visualizeDesc' }
+                        ].map((feature, index) => (
+                            <li key={index}>
+                                <div className="auth-layout__feature-header">
+                                    <feature.icon className="auth-layout__feature-icon" />
+                                    <span>{t(feature.title)}</span>
+                                </div>
+                                <div className="auth-layout__feature-tooltip">
+                                    <div className="auth-layout__tooltip-title">{t(feature.title)}</div>
+                                    <div className="auth-layout__tooltip-desc">{t(feature.desc)}</div>
+                                </div>
+                            </li>
+                        ))}
                     </ul>
                 </div>
             </div>

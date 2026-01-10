@@ -110,8 +110,11 @@
             "tagline": "Dein persönlicher gemütlicher Leseplatz.",
             "features": {
                 "track": "Verwalte deine Bibliothek",
+                "trackDesc": "Füge Bücher hinzu, entferne sie und organisiere deine persönliche Sammlung.",
                 "time": "Stoppe deine Lesezeit",
-                "visualize": "Visualisiere deinen Fortschritt"
+                "timeDesc": "Erfasse deine tägliche Lesezeit mit einem integrierten Fokus-Timer.",
+                "visualize": "Visualisiere deinen Fortschritt",
+                "visualizeDesc": "Erkenne deine Lesegewohnheiten und Fortschritte durch schöne Analysen."
             }
         }
     },

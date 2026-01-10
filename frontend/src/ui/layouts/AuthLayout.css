@@ -124,7 +124,8 @@
         margin: 0;
         display: flex;
         flex-direction: column;
-        gap: var(--space-6);
+        gap: var(--space-3);
+        /* Reduced gap */
     }
 
     .auth-layout__features li {
@@ -157,4 +158,87 @@
     top: var(--space-4);
     right: var(--space-4);
     z-index: 10;
+}
+
+/* --- Feature Tooltips (Accordion Style) --- */
+.auth-layout__features li {
+    flex-direction: column;
+    /* Stack header and tooltip vertically */
+    align-items: flex-start;
+    cursor: pointer;
+    position: relative;
+}
+
+.auth-layout__feature-header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    width: 100%;
+    /* padding removed to match original spacing */
+}
+
+.auth-layout__feature-tooltip {
+    /* Layout */
+    position: relative;
+    top: auto;
+    left: auto;
+    width: 100%;
+    overflow: hidden;
+    /* Hide content when collapsed */
+
+    /* Accordion Animation State: Closed */
+    max-height: 0;
+    opacity: 0;
+    margin-top: 0;
+    padding: 0 var(--space-6);
+
+    /* Styles */
+    background: rgba(20, 20, 20, 0.4);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    border-radius: var(--radius-lg);
+
+    /* Transition */
+    transition:
+        max-height 0.4s ease-out,
+        opacity 0.4s ease-out,
+        margin 0.3s ease-out,
+        padding 0.3s ease-out;
+
+    /* Content Layout */
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+
+    pointer-events: none;
+    /* Initially non-interactive */
+}
+
+.auth-layout__features li:hover .auth-layout__feature-tooltip {
+    /* Accordion Animation State: Open */
+    max-height: 200px;
+    /* Sufficient height for text */
+    opacity: 1;
+    margin-top: var(--space-2);
+    padding: var(--space-4) var(--space-6);
+    pointer-events: auto;
+    visibility: visible;
+    transform: none;
+    /* remove previous transform */
+}
+
+.auth-layout__tooltip-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--primary-100);
+    /* Highlight title */
+    margin-bottom: var(--space-1);
+}
+
+.auth-layout__tooltip-desc {
+    font-size: 0.95rem;
+    color: var(--neutral-100);
+    line-height: 1.5;
 }

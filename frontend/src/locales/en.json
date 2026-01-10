@@ -110,8 +110,11 @@
             "tagline": "Your personal cozy reading space.",
             "features": {
                 "track": "Track your library",
+                "trackDesc": "Add, remove, and organize the books in your personal collection.",
                 "time": "Time your sessions",
-                "visualize": "Visualize progress"
+                "timeDesc": "Track your daily reading time with a built-in focus timer.",
+                "visualize": "Visualize progress",
+                "visualizeDesc": "See your reading habits and progress through beautiful analytics."
             }
         }
     },
