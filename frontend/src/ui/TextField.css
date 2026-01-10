@@ -31,10 +31,14 @@
     transform: translateY(-50%) scale(0.85);
     left: var(--space-2);
     /* Move slightly left to align nicely */
-    background-color: var(--bg-surface-2);
-    /* Match input bg to cover border if needed */
-    color: var(--primary-base);
+    background-color: transparent;
+    color: #ffffff;
     font-weight: 600;
+    text-shadow:
+        3px 0 0 var(--bg-surface-1),
+        -3px 0 0 var(--bg-surface-1),
+        0 2px 0 var(--bg-surface-1),
+        0 -2px 0 var(--bg-surface-1);
 }
 
 /* If input has left icon, keep floating label aligned correctly */
@@ -69,7 +73,12 @@
 
 /* Update background of label when focused-within to match new input bg */
 .ui-field__input-wrapper:focus-within .ui-field__label {
-    background-color: var(--bg-app);
+    background-color: transparent;
+    text-shadow:
+        3px 0 0 var(--bg-surface-1),
+        -3px 0 0 var(--bg-surface-1),
+        0 2px 0 var(--bg-surface-1),
+        0 -2px 0 var(--bg-surface-1);
 }
 
 .ui-field__input-wrapper--error {
@@ -83,7 +92,8 @@
 .ui-field__input {
     width: 100%;
     height: 100%;
-    padding: var(--space-4); /* Fallback */
+    padding: var(--space-4);
+    /* Fallback */
     padding-top: 20px;
     padding-bottom: 20px;
     /* Balanced padding for vertical alignment */
