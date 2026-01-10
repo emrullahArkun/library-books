@@ -104,7 +104,16 @@
         "invalidEmail": "Invalid email format",
         "enterEmail": "Enter your email",
         "enterPassword": "Enter your password",
-        "errorTitle": "Error"
+        "errorTitle": "Error",
+        "brand": {
+            "appName": "Library Books",
+            "tagline": "Your personal cozy reading space.",
+            "features": {
+                "track": "Track your library",
+                "time": "Time your sessions",
+                "visualize": "Visualize progress"
+            }
+        }
     },
     "readingSession": {
         "start": "Start Reading",

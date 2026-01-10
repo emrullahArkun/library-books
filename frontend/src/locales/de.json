@@ -104,7 +104,16 @@
         "invalidEmail": "Ungültiges E-Mail Format",
         "enterEmail": "E-Mail eingeben",
         "enterPassword": "Passwort eingeben",
-        "errorTitle": "Fehler"
+        "errorTitle": "Fehler",
+        "brand": {
+            "appName": "Library Books",
+            "tagline": "Dein persönlicher gemütlicher Leseplatz.",
+            "features": {
+                "track": "Verwalte deine Bibliothek",
+                "time": "Stoppe deine Lesezeit",
+                "visualize": "Visualisiere deinen Fortschritt"
+            }
+        }
     },
     "readingSession": {
         "start": "Lesen starten",

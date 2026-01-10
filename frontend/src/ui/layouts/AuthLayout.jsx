@@ -1,10 +1,13 @@
 import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next'; // Added useTranslation
 import { MdLibraryBooks, MdTimer, MdShowChart, MdStar } from 'react-icons/md';
 import { StringLights } from '../StringLights';
 import { Card } from '../Card';
+import LanguageSwitcher from '../../shared/components/LanguageSwitcher';
 import './AuthLayout.css';
 
 export const AuthLayout = ({ children, title, icon }) => {
+    const { t } = useTranslation();
     // Generate random stars for the background
     const stars = useMemo(() => {
         return Array.from({ length: 20 }).map((_, i) => ({
@@ -19,6 +22,10 @@ export const AuthLayout = ({ children, title, icon }) => {
 
     return (
         <div className="auth-layout">
+            <div className="auth-layout__language-switcher">
+                <LanguageSwitcher />
+            </div>
+
             {/* Brand Panel (Desktop Only) */}
             <div className="auth-layout__brand">
                 {/* Background Stars */}
@@ -43,15 +50,15 @@ export const AuthLayout = ({ children, title, icon }) => {
                 <div className="auth-layout__brand-content">
                     <div className="auth-layout__logo-large">
                         <MdLibraryBooks style={{ fontSize: '3rem' }} />
-                        <h1>MiniLibrary</h1>
+                        <h1>{t('auth.brand.appName')}</h1>
                     </div>
                     <p className="auth-layout__tagline">
-                        Your personal cozy reading space.
+                        {t('auth.brand.tagline')}
                     </p>
                     <ul className="auth-layout__features">
-                        <li><MdLibraryBooks className="auth-layout__feature-icon" /> Track your library</li>
-                        <li><MdTimer className="auth-layout__feature-icon" /> Time your sessions</li>
-                        <li><MdShowChart className="auth-layout__feature-icon" /> Visualize progress</li>
+                        <li><MdLibraryBooks className="auth-layout__feature-icon" /> {t('auth.brand.features.track')}</li>
+                        <li><MdTimer className="auth-layout__feature-icon" /> {t('auth.brand.features.time')}</li>
+                        <li><MdShowChart className="auth-layout__feature-icon" /> {t('auth.brand.features.visualize')}</li>
                     </ul>
                 </div>
             </div>

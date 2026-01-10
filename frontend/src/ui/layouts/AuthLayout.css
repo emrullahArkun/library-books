@@ -151,3 +151,10 @@
         /* Already shown in brand panel or just keep simple title */
     }
 }
+
+.auth-layout__language-switcher {
+    position: absolute;
+    top: var(--space-4);
+    right: var(--space-4);
+    z-index: 10;
+}
