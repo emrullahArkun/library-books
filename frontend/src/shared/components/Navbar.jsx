@@ -1,6 +1,7 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { FaBook, FaSignOutAlt, FaSignInAlt } from 'react-icons/fa';
 import { useTranslation } from 'react-i18next';
+import { motion } from 'framer-motion';
 import { useAuth } from '../../context/AuthContext';
 import LanguageSwitcher from './LanguageSwitcher';
 import './Navbar.css';
@@ -8,6 +9,7 @@ import './Navbar.css';
 function Navbar() {
     const { user, logout } = useAuth();
     const navigate = useNavigate();
+    const location = useLocation();
     const { t } = useTranslation();
 
     const handleLogout = () => {
@@ -24,13 +26,31 @@ function Navbar() {
             </div>
             <div className="navbar-menu">
                 {user ? (
-                    <>
-                        <Link to="/" className="navbar-item">{t('navbar.search')}</Link>
-                        <Link to="/my-books" className="navbar-item">{t('navbar.myBooks')}</Link>
+                    <div className="navbar-glass-pane">
+                        <Link to="/" className="navbar-item">
+                            {location.pathname === '/' && (
+                                <motion.div
+                                    layoutId="nav-bubble"
+                                    className="nav-bubble"
+                                    transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                                />
+                            )}
+                            <span className="navbar-text">{t('navbar.search')}</span>
+                        </Link>
+                        <Link to="/my-books" className="navbar-item">
+                            {location.pathname === '/my-books' && (
+                                <motion.div
+                                    layoutId="nav-bubble"
+                                    className="nav-bubble"
+                                    transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                                />
+                            )}
+                            <span className="navbar-text">{t('navbar.myBooks')}</span>
+                        </Link>
                         <button onClick={handleLogout} className="navbar-item logout-btn">
-                            <FaSignOutAlt /> {t('navbar.logout')}
+                            <FaSignOutAlt />
                         </button>
-                    </>
+                    </div>
                 ) : (
                     <Link to="/login" className="navbar-item">
                         <FaSignInAlt /> {t('navbar.login')}

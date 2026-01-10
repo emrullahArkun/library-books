@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next'; // Added useTranslation
 import { MdLibraryBooks, MdTimer, MdShowChart, MdStar } from 'react-icons/md';
+import { GiBookshelf } from 'react-icons/gi';
 import { StringLights } from '../StringLights';
 import { Card } from '../Card';
 import LanguageSwitcher from '../../shared/components/LanguageSwitcher';
@@ -48,10 +49,7 @@ export const AuthLayout = ({ children, title, icon }) => {
 
                 <StringLights />
                 <div className="auth-layout__brand-content">
-                    <div className="auth-layout__logo-large">
-                        <MdLibraryBooks style={{ fontSize: '3rem' }} />
-                        <h1>{t('auth.brand.appName')}</h1>
-                    </div>
+
                     <p className="auth-layout__tagline">
                         {t('auth.brand.tagline')}
                     </p>
@@ -73,6 +71,10 @@ export const AuthLayout = ({ children, title, icon }) => {
                             </li>
                         ))}
                     </ul>
+                </div>
+                {/* Decorative Bookshelf Icon */}
+                <div className="auth-layout__decorative-icon">
+                    <GiBookshelf />
                 </div>
             </div>
 

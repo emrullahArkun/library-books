@@ -26,19 +26,61 @@
 .navbar-menu {
     display: flex;
     gap: 20px;
+    align-items: center;
+}
+
+.navbar-glass-pane {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 50px;
+    /* Oval shape */
+    padding: 6px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    /* Gap between bubbles/buttons */
 }
 
 .navbar-item {
     color: rgba(255, 255, 255, 0.9);
     text-decoration: none;
-    font-size: 1.1rem;
+    font-size: 1rem;
     font-weight: 500;
     transition: color 0.2s;
+    position: relative;
+    padding: 8px 16px;
+    border-radius: 9999px;
+    /* Match bubble radius */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1;
+    /* For stacking context */
 }
 
+/* Updated hover state: simple color change if not active */
 .navbar-item:hover {
     color: #ffffff;
-    text-shadow: 0 0 5px rgba(255, 255, 255, 0.4);
+}
+
+.navbar-text {
+    position: relative;
+    z-index: 2;
+    /* Text above bubble */
+}
+
+.nav-bubble {
+    position: absolute;
+    inset: 0;
+    background-color: rgba(255, 255, 255, 0.2);
+    /* Semi-transparent white bubble */
+    border-radius: 9999px;
+    z-index: 1;
+    /* Behind text */
+    mix-blend-mode: overlay;
+    /* Optional: adds nice effect */
 }
 
 .logout-btn {
@@ -48,11 +90,19 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    padding: 0;
+    padding: 10px;
+    /* Square'ish or circle'ish */
     font-family: inherit;
+    border-radius: 50%;
+    /* Circle for just icon, or pill if text */
+    aspect-ratio: 1;
+    /* Make it a circle */
+    justify-content: center;
+    transition: background-color 0.3s, color 0.3s;
 }
 
 .logout-btn:hover {
-    color: #ff4d4d;
-    /* Red color for logout hover */
+    background-color: rgba(255, 77, 77, 0.8);
+    /* Red background */
+    color: white;
 }
