@@ -7,7 +7,8 @@
     min-width: 300px;
     margin-left: 0;
     margin-right: auto;
-    border-bottom: 2px solid black;
+    border-bottom: 2px solid var(--neutral-50);
+    /* White border */
     padding-bottom: 8px;
 }
 
@@ -18,13 +19,15 @@
     border-radius: 0;
     font-size: 1.5rem;
     background: transparent;
-    color: black;
+    color: var(--neutral-50);
+    /* White text */
     box-shadow: none;
     outline: none;
 }
 
 .searchInput::placeholder {
-    color: rgba(0, 0, 0, 0.5);
+    color: rgba(255, 255, 255, 0.5);
+    /* Light placeholder */
     font-weight: 300;
 }
 
@@ -36,5 +39,6 @@
 
 .searchIcon {
     font-size: 1.5rem;
-    color: black;
+    color: var(--neutral-50);
+    /* White icon */
 }

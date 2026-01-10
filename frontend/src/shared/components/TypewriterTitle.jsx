@@ -38,7 +38,7 @@ const TypewriterTitle = () => {
             textAlign: "left",
             paddingLeft: "40px",
             boxSizing: "border-box",
-            color: "black"
+            color: "var(--neutral-50)"
         }}>
             {displayedText}
             {currentIndex < fullText.length && (
