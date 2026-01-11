@@ -15,7 +15,7 @@ const SearchResultDetailsModal = ({ isOpen, onClose, title, description }) => {
                     <button className={styles.modalCloseBtn} onClick={onClose}>&times;</button>
                 </div>
                 <div className={styles.modalBody}>
-                    <span className={styles.modalLabel}>{t('search.result.description')}:</span>
+
                     <p style={{ whiteSpace: 'pre-wrap', margin: 0 }}>{description}</p>
                 </div>
             </div>

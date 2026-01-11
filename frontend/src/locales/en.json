@@ -10,7 +10,7 @@
         "placeholder": "Search by title, author, ISBN...",
         "button": "Search",
         "loading": "Loading...",
-        "welcomeMessage": "What do you want to read now?",
+        "welcomeMessage": "What do you want to read today?",
         "loadMore": "Load More Results",
         "endResults": "End of results",
         "result": {

@@ -74,11 +74,10 @@ export const useBookSearch = () => {
                 throw new Error(t('search.toast.addFailed'));
             }
         },
-        onMutate: (book) => {
-            // Optimistic feedback
+        onSuccess: (data, variables) => {
             toast({
                 title: t('search.toast.successTitle'),
-                description: t('search.toast.successDesc', { title: book.volumeInfo.title }),
+                description: t('search.toast.successDesc', { title: variables.volumeInfo.title }),
                 status: 'success',
                 duration: 3000,
                 isClosable: true,
@@ -88,11 +87,7 @@ export const useBookSearch = () => {
                 }
             });
         },
-        onSuccess: (data) => {
-            // Already showed success in onMutate
-        },
         onError: (err) => {
-            // If it actually fails, show error (user might have seen a success message first, which is a trade-off for speed)
             toast({
                 title: t('search.toast.errorTitle'),
                 description: err.message,

@@ -126,16 +126,30 @@
         padding: 0;
         margin: 0;
         display: flex;
-        flex-direction: row;
-        flex-wrap: wrap;
+        flex-direction: column;
+        /* Default to vertical on desktop to avoid 2+1 */
         gap: var(--space-6);
-        /* Increased gap for horizontal spacing */
+    }
+
+    /* Only switch to horizontal if we have enough space for ALL 3 items */
+    @media (min-width: 1600px) {
+        .auth-layout__features {
+            flex-direction: row;
+        }
+
+        .auth-layout__features li {
+            flex: 1 1 250px;
+            width: auto;
+        }
     }
 
     .auth-layout__features li {
         display: flex;
-        flex: 1 1 250px;
-        /* Allow growing and shrinking, min-width 250px */
+        flex: 1 1 auto;
+        /* Auto height for column mode */
+        width: 100%;
+        /* Full width for column mode */
+        /* Allow growing and shrinking */
         align-items: center;
         gap: var(--space-3);
         font-size: 1.3rem;

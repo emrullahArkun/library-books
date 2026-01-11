@@ -11,7 +11,7 @@ const queryClient = new QueryClient();
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
-      <ChakraProvider>
+      <ChakraProvider toastOptions={{ defaultOptions: { containerStyle: { margin: '0px !important', marginBottom: '2px !important' } } }}>
         <App />
       </ChakraProvider>
     </QueryClientProvider>

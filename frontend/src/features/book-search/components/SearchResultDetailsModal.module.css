@@ -41,14 +41,14 @@
 .modalTitle {
     font-size: 1.25rem;
     font-weight: 700;
-    color: var(--text-primary);
+    color: #000000;
 }
 
 .modalCloseBtn {
     background: transparent;
     border: none;
     font-size: 1.5rem;
-    color: var(--text-secondary);
+    color: #000000;
     cursor: pointer;
     line-height: 1;
     padding: 4px;
@@ -58,12 +58,12 @@
 
 .modalCloseBtn:hover {
     background-color: var(--neutral-100);
-    color: var(--text-primary);
+    color: #000000;
 }
 
 .modalBody {
     font-size: 1rem;
-    color: var(--text-secondary);
+    color: #000000;
     line-height: 1.6;
 }
 
@@ -71,7 +71,7 @@
     font-weight: 700;
     display: block;
     margin-bottom: 8px;
-    color: var(--text-primary);
+    color: #000000;
 }
 
 @keyframes fadeIn {
