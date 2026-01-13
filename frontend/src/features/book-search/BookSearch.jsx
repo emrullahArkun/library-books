@@ -15,13 +15,18 @@ function BookSearch({ onBookAdded }) {
         loading,
         searchBooks,
         loadMore,
-        addBookToLibrary
+        addBookToLibrary,
+        ownedIsbns
     } = useBookSearch();
 
     const handleAddBook = useCallback(async (book) => {
-        const success = await addBookToLibrary(book);
-        if (success && onBookAdded) {
-            onBookAdded();
+        try {
+            const success = await addBookToLibrary(book);
+            if (success && onBookAdded) {
+                onBookAdded();
+            }
+        } catch (error) {
+            // Error is handled by global onError toast in useBookSearch
         }
     }, [addBookToLibrary, onBookAdded]);
 
@@ -37,6 +42,7 @@ function BookSearch({ onBookAdded }) {
                         key={book.id}
                         book={book}
                         onAdd={handleAddBook}
+                        ownedIsbns={ownedIsbns}
                     />
                 ))}
             </div>

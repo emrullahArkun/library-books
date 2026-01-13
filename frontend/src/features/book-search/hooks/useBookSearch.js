@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useAuth } from '../../../context/AuthContext';
-import { useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useToast } from '@chakra-ui/react';
 import { useTranslation } from 'react-i18next';
 import { mapGoogleBookToNewBook } from '../../../utils/googleBooks';
@@ -12,6 +12,21 @@ export const useBookSearch = () => {
     const toast = useToast();
     const { t } = useTranslation();
     const queryClient = useQueryClient();
+
+    // Fetch owned ISBNs to check duplicates
+    const { data: ownedIsbns } = useQuery({
+        queryKey: ['ownedIsbns'],
+        queryFn: async () => {
+            if (!token) return [];
+            const response = await booksApi.getOwnedIsbns();
+            if (response.ok) return response.json();
+            return [];
+        },
+        enabled: !!token,
+        staleTime: 5 * 60 * 1000, // Cache for 5 minutes
+    });
+
+    const ownedIsbnsSet = new Set((ownedIsbns || []).map(isbn => isbn.replace(/-/g, '')));
 
     const {
         data,
@@ -77,6 +92,7 @@ export const useBookSearch = () => {
         },
         onSuccess: (data, variables) => {
             queryClient.invalidateQueries({ queryKey: ['myBooks'] });
+            queryClient.invalidateQueries({ queryKey: ['ownedIsbns'] });
             toast({
                 title: t('search.toast.successTitle'),
                 description: t('search.toast.successDesc', { title: variables.volumeInfo.title }),
@@ -117,7 +133,8 @@ export const useBookSearch = () => {
         loading: isLoading || isFetching,
         searchBooks,
         loadMore: fetchNextPage,
-        addBookToLibrary: addBookMutation.mutateAsync
+        addBookToLibrary: addBookMutation.mutateAsync,
+        ownedIsbns: ownedIsbnsSet
     };
 };
 

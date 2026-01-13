@@ -35,7 +35,12 @@ public class BookController {
                 .map(bookMapper::toDto);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/owned")
+    public java.util.List<String> getAllOwnedIsbns(java.security.Principal principal) {
+        return bookService.getAllOwnedIsbns(getCurrentUser(principal));
+    }
+
+    @GetMapping("/{id:\\d+}")
     public ResponseEntity<BookDto> getBookById(@PathVariable Long id, java.security.Principal principal) {
         Book book = bookService.findByIdAndUser(id, getCurrentUser(principal))
                 .orElseThrow(() -> new ResourceNotFoundException("Book not found with id: " + id));

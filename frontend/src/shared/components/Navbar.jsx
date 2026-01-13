@@ -3,6 +3,7 @@ import { FaBook, FaSignOutAlt, FaSignInAlt } from 'react-icons/fa';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import { useAuth } from '../../context/AuthContext';
+import { useAnimation } from '../../context/AnimationContext';
 import LanguageSwitcher from './LanguageSwitcher';
 import './Navbar.css';
 
@@ -11,6 +12,7 @@ function Navbar() {
     const navigate = useNavigate();
     const location = useLocation();
     const { t } = useTranslation();
+    const { registerTarget } = useAnimation();
 
     const handleLogout = () => {
         logout();
@@ -37,7 +39,7 @@ function Navbar() {
                             )}
                             <span className="navbar-text">{t('navbar.search')}</span>
                         </Link>
-                        <Link to="/my-books" className="navbar-item">
+                        <Link to="/my-books" className="navbar-item" ref={registerTarget}>
                             {location.pathname === '/my-books' && (
                                 <motion.div
                                     layoutId="nav-bubble"

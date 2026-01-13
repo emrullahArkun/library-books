@@ -38,6 +38,12 @@ public class BookService {
         return bookRepository.existsByIsbnAndUser(isbn, user);
     }
 
+    public List<String> getAllOwnedIsbns(com.example.minilibrary.model.User user) {
+        return bookRepository.findByUser(user).stream()
+                .map(Book::getIsbn)
+                .collect(java.util.stream.Collectors.toList());
+    }
+
     @Transactional
     public Book createBook(CreateBookRequest request, com.example.minilibrary.model.User user) {
         Author author;
