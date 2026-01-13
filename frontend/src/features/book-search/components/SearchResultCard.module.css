@@ -73,9 +73,23 @@
     color: white;
     transform: scale(0.8);
     transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    drop-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
 }
 
 .searchResultCard:hover .plusIcon {
     transform: scale(1);
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.spinning {
+    animation: spin 1s linear infinite;
 }

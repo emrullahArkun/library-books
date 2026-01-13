@@ -16,6 +16,11 @@ import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 
 @Entity
+@jakarta.persistence.Table(name = "books", indexes = {
+        @jakarta.persistence.Index(name = "idx_book_user", columnList = "user_id"),
+        @jakarta.persistence.Index(name = "idx_book_author", columnList = "author_id"),
+        @jakarta.persistence.Index(name = "idx_book_isbn", columnList = "isbn")
+})
 @Getter
 @Setter
 @NoArgsConstructor

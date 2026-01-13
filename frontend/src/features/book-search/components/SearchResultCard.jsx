@@ -1,5 +1,5 @@
-import React from 'react';
-import { FaBookOpen, FaPlus } from 'react-icons/fa';
+import React, { useState } from 'react';
+import { FaBookOpen, FaPlus, FaSpinner } from 'react-icons/fa';
 import { useTranslation } from 'react-i18next';
 import styles from './SearchResultCard.module.css';
 import { getHighResImage } from '../../../utils/googleBooks';
@@ -7,6 +7,7 @@ import { getHighResImage } from '../../../utils/googleBooks';
 const SearchResultCard = ({ book, onAdd }) => {
     const { t } = useTranslation();
     const info = book.volumeInfo;
+    const [isAdding, setIsAdding] = useState(false);
 
     const initialThumb = info.imageLinks?.thumbnail || info.imageLinks?.smallThumbnail;
     const safeUrl = initialThumb ? getHighResImage(initialThumb) : '';
@@ -17,16 +18,28 @@ const SearchResultCard = ({ book, onAdd }) => {
         // Fallback or placeholder could go here
     };
 
+    const handleAddClick = async (e) => {
+        e.stopPropagation();
+        if (isAdding) return;
+
+        setIsAdding(true);
+        try {
+            await onAdd(book);
+        } finally {
+            setIsAdding(false);
+        }
+    };
+
     return (
         <div
             className={styles.searchResultCard}
-            onClick={() => onAdd(book)}
+            onClick={handleAddClick}
             role="button"
             tabIndex={0}
             onKeyDown={(e) => {
                 if (e.key === 'Enter' || e.key === ' ') {
                     e.preventDefault();
-                    onAdd(book);
+                    handleAddClick(e);
                 }
             }}
         >
@@ -37,6 +50,8 @@ const SearchResultCard = ({ book, onAdd }) => {
                         onError={handleImageError}
                         alt={info.title}
                         className={styles.coverImage}
+                        loading="lazy"
+                        decoding="async"
                     />
                 ) : (
                     <div className={styles.placeholder}>
@@ -45,7 +60,11 @@ const SearchResultCard = ({ book, onAdd }) => {
                 )}
 
                 <div className={styles.hoverOverlay}>
-                    <FaPlus className={styles.plusIcon} />
+                    {isAdding ? (
+                        <FaSpinner className={`${styles.plusIcon} ${styles.spinning}`} />
+                    ) : (
+                        <FaPlus className={styles.plusIcon} />
+                    )}
                 </div>
             </div>
         </div>

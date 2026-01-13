@@ -10,7 +10,10 @@ import java.time.Instant;
 @Getter
 @Setter
 @Entity
-@Table(name = "reading_session")
+@Table(name = "reading_session", indexes = {
+        @Index(name = "idx_session_user", columnList = "user_id"),
+        @Index(name = "idx_session_book", columnList = "book_id")
+})
 public class ReadingSession {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

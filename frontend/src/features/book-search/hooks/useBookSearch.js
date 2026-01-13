@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useAuth } from '../../../context/AuthContext';
-import { useInfiniteQuery, useMutation } from '@tanstack/react-query';
+import { useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useToast } from '@chakra-ui/react';
 import { useTranslation } from 'react-i18next';
 import { mapGoogleBookToNewBook } from '../../../utils/googleBooks';
@@ -11,6 +11,7 @@ export const useBookSearch = () => {
     const { token } = useAuth();
     const toast = useToast();
     const { t } = useTranslation();
+    const queryClient = useQueryClient();
 
     const {
         data,
@@ -75,6 +76,7 @@ export const useBookSearch = () => {
             }
         },
         onSuccess: (data, variables) => {
+            queryClient.invalidateQueries({ queryKey: ['myBooks'] });
             toast({
                 title: t('search.toast.successTitle'),
                 description: t('search.toast.successDesc', { title: variables.volumeInfo.title }),

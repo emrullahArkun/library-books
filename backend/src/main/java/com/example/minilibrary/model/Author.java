@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@jakarta.persistence.Table(name = "authors", indexes = @jakarta.persistence.Index(name = "idx_author_name", columnList = "name"))
 @Getter
 @Setter
 @NoArgsConstructor
