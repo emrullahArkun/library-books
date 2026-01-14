@@ -17,6 +17,7 @@ export const mapGoogleBookToNewBook = (volumeInfo, isbnInfo, id) => {
         authorName: volumeInfo.authors ? volumeInfo.authors[0] : 'Unknown Author',
         publishDate: volumeInfo.publishedDate || 'Unknown Date',
         coverUrl: coverUrl,
+        readingModes: volumeInfo.readingModes,
         pageCount: volumeInfo.pageCount || 0
     };
 };

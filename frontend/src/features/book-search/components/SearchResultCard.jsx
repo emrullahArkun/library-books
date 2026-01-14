@@ -11,14 +11,69 @@ const SearchResultCard = ({ book, onAdd, ownedIsbns }) => {
     const [isAdding, setIsAdding] = useState(false);
 
     const initialThumb = info.imageLinks?.thumbnail || info.imageLinks?.smallThumbnail;
-    const safeUrl = initialThumb ? getHighResImage(initialThumb) : '';
+
+    // Determine fallback URL from ISBN immediately
+    let fallbackUrl = '';
+    if (info.industryIdentifiers) {
+        const isbnInfo = info.industryIdentifiers.find(id => id.type === 'ISBN_13')
+            || info.industryIdentifiers.find(id => id.type === 'ISBN_10');
+        if (isbnInfo) {
+            const cleanIsbn = isbnInfo.identifier.replace(/-/g, '');
+            fallbackUrl = `https://covers.openlibrary.org/b/isbn/${cleanIsbn}-L.jpg`;
+        }
+    }
+
+    // Heuristic: If Google says "readingModes.image: false", the cover might be a placeholder.
+    // In that case, we prefer OpenLibrary if available.
+    // If not "image mode", we consider OpenLibrary as PRIMARY, and Google as FALLBACK.
+    const preferOpenLibrary = (info.readingModes?.image === false) && fallbackUrl;
+
+    if (info.readingModes?.image === false) {
+        console.debug('SearchResultCard: Placeholder detected via readingModes', {
+            id: book.id,
+            title: book.volumeInfo.title,
+            readingModes: info.readingModes,
+            fallbackUrl,
+            preferOpenLibrary
+        });
+    }
+
+    const safeUrl = preferOpenLibrary
+        ? fallbackUrl
+        : (initialThumb ? getHighResImage(initialThumb) : fallbackUrl);
 
     const [imgSrc, setImgSrc] = React.useState(safeUrl);
     const { flyBook } = useAnimation();
     const imageRef = React.useRef(null);
 
     const handleImageError = () => {
-        // Fallback or placeholder could go here
+        // If we were using OpenLibrary and it failed:
+        // 1. If we preferred it (because Google was suspect), revert to Google (it might be a placeholder but better than Broken Box)
+        // 2. If it was our only hope, well, we stay broken.
+
+        // If we were using Google and it failed:
+        // 1. Try OpenLibrary.
+
+        // Simply: Switch to the candidate we HAVEN'T tried, or just stop.
+
+        // But my logic below was simple: Try fallbackUrl. 
+        // We need to know what we are currently trying.
+
+        const googleUrl = initialThumb ? getHighResImage(initialThumb) : '';
+
+        if (imgSrc === fallbackUrl) {
+            // We tried OpenLibrary and it failed.
+            if (googleUrl && preferOpenLibrary) {
+                // We preferred OpenLibrary but it failed. Fallback to Google (even if suspect).
+                // Use functional update to avoid stale closure issues
+                setImgSrc(prev => prev === fallbackUrl ? googleUrl : prev);
+            }
+        } else {
+            // We were using Google (or something else) and it failed. Try OpenLibrary.
+            if (fallbackUrl && imgSrc !== fallbackUrl) {
+                setImgSrc(fallbackUrl);
+            }
+        }
     };
 
     const handleAddClick = async (e) => {
@@ -59,7 +114,7 @@ const SearchResultCard = ({ book, onAdd, ownedIsbns }) => {
             }}
         >
             <div className={styles.imageContainer}>
-                {initialThumb ? (
+                {imgSrc ? (
                     <img
                         ref={imageRef}
                         src={imgSrc}

@@ -86,12 +86,63 @@ const MyBookCard = ({
         setIsModalOpen(false);
     };
 
-    const safeUrl = book.coverUrl ? getHighResImage(book.coverUrl) : '';
+    let fallbackUrl = '';
+    // Determine fallback URL from ISBN immediately if needed
+    let isbn = book.isbn;
+    if (!isbn && book.industryIdentifiers) {
+        const identifier = book.industryIdentifiers.find(id => id.type === 'ISBN_13') ||
+            book.industryIdentifiers.find(id => id.type === 'ISBN_10');
+        if (identifier) {
+            isbn = identifier.identifier;
+        }
+    }
+
+    if (isbn) {
+        const cleanIsbn = isbn.replace(/-/g, '');
+        if (cleanIsbn.length >= 10) {
+            fallbackUrl = `https://covers.openlibrary.org/b/isbn/${cleanIsbn}-L.jpg`;
+        }
+    }
+
+
+
+    // Heuristic: If Google says "readingModes.image: false" (passed down via book object), cover might be placeholder.
+    // Note: MyBookCard `book` object now has `readingModes` property from `mapGoogleBookToNewBook`.
+    const preferOpenLibrary = (book.readingModes?.image === false) && fallbackUrl;
+
+    if (book.title?.includes('Splitter')) {
+        console.log('DEBUG MyBookCard Splitter:', {
+            id: book.id,
+            title: book.title,
+            isbn: book.isbn,
+            derivedIsbn: isbn,
+            readingModes: book.readingModes,
+            fallbackUrl,
+            preferOpenLibrary
+        });
+    }
+
+    const safeUrl = preferOpenLibrary
+        ? fallbackUrl
+        : (book.coverUrl ? getHighResImage(book.coverUrl) : fallbackUrl);
 
     const [imgSrc, setImgSrc] = useState(safeUrl);
 
     const handleImageError = () => {
-        // Fallback logic
+        const googleUrl = book.coverUrl ? getHighResImage(book.coverUrl) : '';
+
+        if (imgSrc === fallbackUrl) {
+            // We tried OpenLibrary and it failed.
+            if (googleUrl && preferOpenLibrary) {
+                // We preferred OpenLibrary but it failed? Revert to Google.
+                setImgSrc(prev => prev === fallbackUrl ? googleUrl : prev);
+            }
+        } else {
+            // Google failed. Try OpenLibrary.
+            if (fallbackUrl && imgSrc !== fallbackUrl) {
+                setImgSrc(fallbackUrl);
+            }
+        }
     };
 
     return (
@@ -123,7 +174,7 @@ const MyBookCard = ({
                 onClick={() => navigate(`/books/${book.id}/stats`)}
                 position="relative"
             >
-                {book.coverUrl ? (
+                {imgSrc ? (
                     <Image
                         src={imgSrc}
                         onError={handleImageError}
