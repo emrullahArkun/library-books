@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { FaBookOpen, FaPlus, FaSpinner } from 'react-icons/fa';
+import { Skeleton } from '@chakra-ui/react';
 import { useTranslation } from 'react-i18next';
 import styles from './SearchResultCard.module.css';
 import { getHighResImage } from '../../../utils/googleBooks';
@@ -85,7 +86,7 @@ const SearchResultCard = ({ book, onAdd, ownedIsbns }) => {
         const isOwned = identifiers.some(id => {
             const cleanId = id.identifier.replace(/-/g, '');
             return ownedIsbns?.has(cleanId);
-        });
+        }) || ownedIsbns?.has(`ID:${book.id}`);
 
         // Start animation immediately ONLY if not owned
         if (!isOwned && imageRef.current) {
@@ -98,6 +99,22 @@ const SearchResultCard = ({ book, onAdd, ownedIsbns }) => {
         } finally {
             setIsAdding(false);
         }
+    };
+
+    const [imageLoaded, setImageLoaded] = useState(false);
+
+    // Reset loading state when src changes
+    React.useEffect(() => {
+        setImageLoaded(false);
+    }, [imgSrc]);
+
+    const handleImageLoad = () => {
+        setImageLoaded(true);
+    };
+
+    const handleImageErrorWrapper = () => {
+        setImageLoaded(true); // Stop skeleton even if error
+        handleImageError();
     };
 
     return (
@@ -114,21 +131,24 @@ const SearchResultCard = ({ book, onAdd, ownedIsbns }) => {
             }}
         >
             <div className={styles.imageContainer}>
-                {imgSrc ? (
-                    <img
-                        ref={imageRef}
-                        src={imgSrc}
-                        onError={handleImageError}
-                        alt={info.title}
-                        className={styles.coverImage}
-                        loading="lazy"
-                        decoding="async"
-                    />
-                ) : (
-                    <div className={styles.placeholder}>
-                        <FaBookOpen size={48} color="#ccc" />
-                    </div>
-                )}
+                <Skeleton isLoaded={imageLoaded} height="100%" width="100%" borderRadius="12px">
+                    {imgSrc ? (
+                        <img
+                            ref={imageRef}
+                            src={imgSrc}
+                            onLoad={handleImageLoad}
+                            onError={handleImageErrorWrapper}
+                            alt={info.title}
+                            className={styles.coverImage}
+                            loading="lazy"
+                            decoding="async"
+                        />
+                    ) : (
+                        <div className={styles.placeholder}>
+                            <FaBookOpen size={48} color="#ccc" />
+                        </div>
+                    )}
+                </Skeleton>
 
                 <div className={styles.hoverOverlay}>
                     {isAdding ? (

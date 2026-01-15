@@ -1,8 +1,9 @@
 import React, { useCallback } from 'react';
 import styles from './BookSearch.module.css';
-import { useBookSearch } from './hooks/useBookSearch';
+import { useBookSearch } from './hooks/useBookSearch.jsx';
 import SearchForm from './components/SearchForm';
 import SearchResultCard from './components/SearchResultCard';
+import SearchResultSkeleton from './components/SearchResultSkeleton';
 import { useTranslation } from 'react-i18next';
 
 function BookSearch({ onBookAdded }) {
@@ -45,9 +46,11 @@ function BookSearch({ onBookAdded }) {
                         ownedIsbns={ownedIsbns}
                     />
                 ))}
-            </div>
 
-            {loading && <div className={styles.loadingMore}>{t('search.loading')}</div>}
+                {loading && Array.from({ length: 10 }).map((_, index) => (
+                    <SearchResultSkeleton key={`skeleton-${index}`} />
+                ))}
+            </div>
 
             {results.length > 0 && hasMore && !loading && (
                 <button onClick={loadMore} className={styles.loadMoreBtn}>{t('search.loadMore')}</button>

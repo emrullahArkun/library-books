@@ -93,29 +93,58 @@ export const useBookSearch = () => {
         onSuccess: (data, variables) => {
             queryClient.invalidateQueries({ queryKey: ['myBooks'] });
             queryClient.invalidateQueries({ queryKey: ['ownedIsbns'] });
+            toast.close('add-book-toast');
             toast({
-                title: t('search.toast.successTitle'),
-                description: t('search.toast.successDesc', { title: variables.volumeInfo.title }),
-                status: 'success',
+                id: 'add-book-toast',
+                position: 'top',
                 duration: 3000,
-                isClosable: true,
-                position: 'top-right',
                 containerStyle: {
                     marginTop: '80px'
-                }
+                },
+                render: () => (
+                    <div style={{
+                        backgroundColor: '#38A169', // green.500
+                        color: 'white',
+                        padding: '12px 24px',
+                        borderRadius: '8px',
+                        fontWeight: '600',
+                        boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+                        textAlign: 'center'
+                    }}>
+                        Buch wurde erfolgreich hinzugefügt
+                    </div>
+                )
             });
         },
         onError: (err) => {
+            // Check if it's a duplicate error based on the message string key or actual message
+            // The mutationFn throws Error(t('search.toast.duplicate'))
+            // We'll trust the error message is what we expect or we handle it generically
+            const isDuplicate = err.message === t('search.toast.duplicate');
+            const message = isDuplicate ? 'Buch gibt es schon in der Sammlung' : err.message;
+            const bgColor = isDuplicate ? '#DD6B20' : '#E53E3E'; // orange.500 : red.500
+
+            toast.close('add-book-toast');
             toast({
-                title: t('search.toast.errorTitle'),
-                description: err.message,
-                status: 'error',
+                id: 'add-book-toast',
+                position: 'top',
                 duration: 3000,
-                isClosable: true,
-                position: 'top-right',
                 containerStyle: {
                     marginTop: '80px'
-                }
+                },
+                render: () => (
+                    <div style={{
+                        backgroundColor: bgColor,
+                        color: 'white',
+                        padding: '12px 24px',
+                        borderRadius: '8px',
+                        fontWeight: '600',
+                        boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+                        textAlign: 'center'
+                    }}>
+                        {message}
+                    </div>
+                )
             });
         }
     });
