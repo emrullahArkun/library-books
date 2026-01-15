@@ -1,0 +1,55 @@
+version: '3.8'
+
+services:
+  app:
+    build: ./backend
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/minilibrary
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - SPRING_MAIL_HOST=mailhog
+      - SPRING_MAIL_PORT=1025
+      - SPRING_PROFILES_ACTIVE=dev
+      - APP_JWT_SECRET=${APP_JWT_SECRET:-dev_secret_only_for_local_development_do_not_use_in_prod}
+    restart: always
+
+  mailhog:
+    image: mailhog/mailhog
+    ports:
+      - "1025:1025" # SMTP port
+      - "8025:8025" # Web UI port
+    restart: always
+
+  db:
+    image: postgres:16-alpine
+    ports:
+      - "5440:5432"
+    environment:
+      - POSTGRES_DB=minilibrary
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: always
+
+  frontend:
+    build: 
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "5173:80"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    environment:
+        - VITE_API_URL=http://localhost:8080
+    depends_on:
+      - app
+
+volumes:
+  postgres_data:

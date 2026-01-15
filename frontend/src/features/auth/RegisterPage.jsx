@@ -3,7 +3,7 @@ import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useToast } from '@chakra-ui/react';
 import { MdEmail, MdLock, MdAppRegistration } from 'react-icons/md';
-import { api } from '../../api/api';
+import { authApi } from './api/authApi';
 
 // New UI Components
 import { AuthLayout } from '../../ui/layouts/AuthLayout';
@@ -52,7 +52,7 @@ function RegisterPage() {
         setIsLoading(true);
 
         try {
-            const response = await api.auth.register(email, password);
+            const response = await authApi.register(email, password);
 
             let data = null;
             try { data = await response.json(); } catch { /* ignore */ }

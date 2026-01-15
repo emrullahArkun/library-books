@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useAuth } from '../../../context/AuthContext';
 import { useQuery, useMutation, useQueryClient, keepPreviousData } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
-import { api } from '../../../api/api';
+import { booksApi } from '../../book-search/api/booksApi';
 
 export const useMyBooks = (pageSize = 12) => {
     const [page, setPage] = useState(0);
@@ -15,7 +15,7 @@ export const useMyBooks = (pageSize = 12) => {
         queryKey: ['myBooks', token, page, pageSize],
         queryFn: async () => {
             if (!token) return { content: [], totalPages: 0 };
-            const response = await api.books.getAll(page, pageSize);
+            const response = await booksApi.getAll(page, pageSize);
             if (!response.ok) throw new Error('Failed to fetch books');
             return response.json();
         },
@@ -28,7 +28,7 @@ export const useMyBooks = (pageSize = 12) => {
 
     const deleteMutation = useMutation({
         mutationFn: async (id) => {
-            const res = await api.books.delete(id);
+            const res = await booksApi.delete(id);
             if (!res.ok) throw new Error('Failed to delete book');
         },
         onMutate: async (id) => {
@@ -57,7 +57,7 @@ export const useMyBooks = (pageSize = 12) => {
 
     const deleteAllMutation = useMutation({
         mutationFn: async () => {
-            const res = await api.books.deleteAll();
+            const res = await booksApi.deleteAll();
             if (!res.ok) throw new Error('Failed to delete all books');
         },
         onMutate: async () => {
@@ -80,7 +80,7 @@ export const useMyBooks = (pageSize = 12) => {
 
     const updateProgressMutation = useMutation({
         mutationFn: async ({ id, currentPage }) => {
-            const res = await api.books.updateProgress(id, currentPage);
+            const res = await booksApi.updateProgress(id, currentPage);
 
             if (!res.ok) {
                 const text = await res.text();
@@ -113,7 +113,7 @@ export const useMyBooks = (pageSize = 12) => {
 
     const updateStatusMutation = useMutation({
         mutationFn: async ({ id, completed }) => {
-            const res = await api.books.updateStatus(id, completed);
+            const res = await booksApi.updateStatus(id, completed);
 
             if (!res.ok) {
                 const text = await res.text();
@@ -190,7 +190,7 @@ export const useMyBooks = (pageSize = 12) => {
         // 4. Perform actual deletions
         const results = await Promise.allSettled(
             ids.map(id =>
-                api.books.delete(id)
+                booksApi.delete(id)
             )
         );
 

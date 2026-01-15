@@ -1,5 +1,8 @@
 package com.example.minilibrary.controller;
 
+import com.example.minilibrary.security.CurrentUser;
+import com.example.minilibrary.model.User;
+
 import com.example.minilibrary.dto.BookDto;
 import com.example.minilibrary.model.Book;
 import com.example.minilibrary.service.BookService;
@@ -17,32 +20,25 @@ public class BookController {
 
     private final BookService bookService;
     private final BookMapper bookMapper;
-    private final com.example.minilibrary.service.AuthService authService;
-
-    private com.example.minilibrary.model.User getCurrentUser(java.security.Principal principal) {
-        if (principal == null)
-            throw new com.example.minilibrary.exception.ResourceNotFoundException("User not authenticated");
-        return authService.getUserByEmail(principal.getName());
-    }
 
     @GetMapping
     public org.springframework.data.domain.Page<BookDto> getAllBooks(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
-            java.security.Principal principal) {
+            @CurrentUser User user) {
         org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(page, size);
-        return bookService.findAllByUser(getCurrentUser(principal), pageable)
+        return bookService.findAllByUser(user, pageable)
                 .map(bookMapper::toDto);
     }
 
     @GetMapping("/owned")
-    public java.util.List<String> getAllOwnedIsbns(java.security.Principal principal) {
-        return bookService.getAllOwnedIsbns(getCurrentUser(principal));
+    public java.util.List<String> getAllOwnedIsbns(@CurrentUser User user) {
+        return bookService.getAllOwnedIsbns(user);
     }
 
     @GetMapping("/{id:\\d+}")
-    public ResponseEntity<BookDto> getBookById(@PathVariable Long id, java.security.Principal principal) {
-        Book book = bookService.findByIdAndUser(id, getCurrentUser(principal))
+    public ResponseEntity<BookDto> getBookById(@PathVariable Long id, @CurrentUser User user) {
+        Book book = bookService.findByIdAndUser(id, user)
                 .orElseThrow(() -> new ResourceNotFoundException("Book not found with id: " + id));
         return ResponseEntity.ok(bookMapper.toDto(book));
     }
@@ -50,8 +46,8 @@ public class BookController {
     @PostMapping
     public ResponseEntity<BookDto> createBook(
             @RequestBody @jakarta.validation.Valid CreateBookRequest request,
-            java.security.Principal principal) {
-        Book savedBook = bookService.createBook(request, getCurrentUser(principal));
+            @CurrentUser User user) {
+        Book savedBook = bookService.createBook(request, user);
         return ResponseEntity.ok(bookMapper.toDto(savedBook));
     }
 
@@ -59,12 +55,12 @@ public class BookController {
     public ResponseEntity<BookDto> updateBookProgress(
             @PathVariable Long id,
             @RequestBody java.util.Map<String, Integer> updateRequest,
-            java.security.Principal principal) {
+            @CurrentUser User user) {
         Integer currentPage = updateRequest.get("currentPage");
         if (currentPage == null) {
             throw new IllegalArgumentException("currentPage is required");
         }
-        Book updatedBook = bookService.updateBookProgress(id, currentPage, getCurrentUser(principal));
+        Book updatedBook = bookService.updateBookProgress(id, currentPage, user);
         return ResponseEntity.ok(bookMapper.toDto(updatedBook));
     }
 
@@ -72,24 +68,24 @@ public class BookController {
     public ResponseEntity<BookDto> updateBookStatus(
             @PathVariable Long id,
             @RequestBody java.util.Map<String, Boolean> updateRequest,
-            java.security.Principal principal) {
+            @CurrentUser User user) {
         Boolean completed = updateRequest.get("completed");
         if (completed == null) {
             throw new IllegalArgumentException("completed status is required");
         }
-        Book updatedBook = bookService.updateBookStatus(id, completed, getCurrentUser(principal));
+        Book updatedBook = bookService.updateBookStatus(id, completed, user);
         return ResponseEntity.ok(bookMapper.toDto(updatedBook));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteBook(@PathVariable Long id, java.security.Principal principal) {
-        bookService.deleteByIdAndUser(id, getCurrentUser(principal));
+    public ResponseEntity<Void> deleteBook(@PathVariable Long id, @CurrentUser User user) {
+        bookService.deleteByIdAndUser(id, user);
         return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping
-    public ResponseEntity<Void> deleteAllBooks(java.security.Principal principal) {
-        bookService.deleteAllByUser(getCurrentUser(principal));
+    public ResponseEntity<Void> deleteAllBooks(@CurrentUser User user) {
+        bookService.deleteAllByUser(user);
         return ResponseEntity.noContent().build();
     }
 }

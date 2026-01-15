@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '@chakra-ui/react'; // Keeping toast for now as per plan
 import { MdEmail, MdLock, MdLogin } from 'react-icons/md';
-import { api } from '../../api/api';
+import { authApi } from './api/authApi';
 import styles from './LoginPage.module.css';
 
 // New UI Components
@@ -29,7 +29,7 @@ function LoginPage() {
         setError('');
 
         try {
-            const response = await api.auth.login(email, password);
+            const response = await authApi.login(email, password);
 
             let data = null;
             try { data = await response.json(); } catch { /* ignore */ }

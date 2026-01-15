@@ -12,12 +12,15 @@ public class EmailService {
 
     private final JavaMailSender mailSender;
 
+    @org.springframework.beans.factory.annotation.Value("${app.base-url}")
+    private String baseUrl;
+
     public void sendVerificationEmail(User user) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom("noreply@library.local");
         message.setTo(user.getEmail());
         message.setSubject("Library Email Verification");
-        message.setText("Click here to verify your account:\nhttp://localhost:8080/api/auth/verify?token="
+        message.setText("Click here to verify your account:\n" + baseUrl + "/verify?token="
                 + user.getVerificationToken());
 
         mailSender.send(message);

@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useEffect, useRef, useCallback } from 'react';
 import { useAuth } from './AuthContext';
-import { api } from '../api/api';
+import { sessionsApi } from '../features/my-books/api/sessionsApi';
 import { useControllerLock } from '../features/my-books/hooks/useControllerLock';
 
 const ReadingSessionContext = createContext(null);
@@ -50,7 +50,7 @@ export const ReadingSessionProvider = ({ children }) => {
         if (!token) return;
         try {
             // Don't set loading to true here to avoid flickering UI
-            const response = await api.sessions.getActive();
+            const response = await sessionsApi.getActive();
             if (response.status === 204) {
                 setActiveSession(null);
             } else if (response.ok) {
@@ -124,7 +124,7 @@ export const ReadingSessionProvider = ({ children }) => {
 
     const startSession = async (bookId) => {
         try {
-            const response = await api.sessions.start(bookId);
+            const response = await sessionsApi.start(bookId);
 
             if (!response.ok) throw new Error('Failed to start session');
             const session = await response.json();
@@ -140,7 +140,7 @@ export const ReadingSessionProvider = ({ children }) => {
 
     const stopSession = async (endTime, endPage) => {
         try {
-            const response = await api.sessions.stop(endTime, endPage);
+            const response = await sessionsApi.stop(endTime, endPage);
 
             if (!response.ok) throw new Error('Failed to stop session');
 
@@ -156,7 +156,7 @@ export const ReadingSessionProvider = ({ children }) => {
     const pauseSession = async () => {
         if (!isController) return;
         try {
-            const response = await api.sessions.pause();
+            const response = await sessionsApi.pause();
             if (response.ok) {
                 const session = await response.json();
                 setActiveSession(session);
@@ -170,7 +170,7 @@ export const ReadingSessionProvider = ({ children }) => {
     const resumeSession = async () => {
         if (!isController) return;
         try {
-            const response = await api.sessions.resume();
+            const response = await sessionsApi.resume();
             if (response.ok) {
                 const session = await response.json();
                 setActiveSession(session);
