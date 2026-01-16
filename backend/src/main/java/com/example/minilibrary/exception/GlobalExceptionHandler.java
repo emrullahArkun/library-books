@@ -72,7 +72,13 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleGlobalException(Exception ex, WebRequest request) {
+    public ResponseEntity<ErrorResponse> handleGlobalException(Exception ex, WebRequest request) throws Exception {
+        // Allow NoResourceFoundException (Spring 6/Boot 3) to be handled by the
+        // framework (returns 404)
+        if (ex.getClass().getName().contains("NoResourceFoundException")) {
+            throw ex;
+        }
+
         logger.error("Unexpected error occurred", ex);
         return buildErrorResponse(new Exception("An unexpected error occurred"), HttpStatus.INTERNAL_SERVER_ERROR,
                 request);
