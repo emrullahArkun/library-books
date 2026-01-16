@@ -18,6 +18,7 @@ public class ReadingSessionController {
 
     private final ReadingSessionService sessionService;
 
+    @PostMapping("/start")
     public ResponseEntity<ReadingSessionDto> startSession(
             @RequestBody @jakarta.validation.Valid com.example.minilibrary.dto.StartSessionRequest request,
             @CurrentUser User user) {
