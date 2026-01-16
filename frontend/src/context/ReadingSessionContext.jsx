@@ -50,13 +50,8 @@ export const ReadingSessionProvider = ({ children }) => {
         if (!token) return;
         try {
             // Don't set loading to true here to avoid flickering UI
-            const response = await sessionsApi.getActive();
-            if (response.status === 204) {
-                setActiveSession(null);
-            } else if (response.ok) {
-                const session = await response.json();
-                setActiveSession(session);
-            }
+            const session = await sessionsApi.getActive();
+            setActiveSession(session); // apiClient returns null for 204
         } catch (err) {
             console.error("Failed to refresh session", err);
         }
@@ -124,10 +119,7 @@ export const ReadingSessionProvider = ({ children }) => {
 
     const startSession = async (bookId) => {
         try {
-            const response = await sessionsApi.start(bookId);
-
-            if (!response.ok) throw new Error('Failed to start session');
-            const session = await response.json();
+            const session = await sessionsApi.start(bookId);
             setActiveSession(session);
             takeControl(); // Auto-take control on start
             broadcastUpdate();
@@ -140,10 +132,7 @@ export const ReadingSessionProvider = ({ children }) => {
 
     const stopSession = async (endTime, endPage) => {
         try {
-            const response = await sessionsApi.stop(endTime, endPage);
-
-            if (!response.ok) throw new Error('Failed to stop session');
-
+            await sessionsApi.stop(endTime, endPage);
             setActiveSession(null);
             broadcastUpdate();
             return true;
@@ -156,12 +145,9 @@ export const ReadingSessionProvider = ({ children }) => {
     const pauseSession = async () => {
         if (!isController) return;
         try {
-            const response = await sessionsApi.pause();
-            if (response.ok) {
-                const session = await response.json();
-                setActiveSession(session);
-                broadcastUpdate();
-            }
+            const session = await sessionsApi.pause();
+            setActiveSession(session);
+            broadcastUpdate();
         } catch (err) {
             console.error("Failed to pause session", err);
         }
@@ -170,12 +156,9 @@ export const ReadingSessionProvider = ({ children }) => {
     const resumeSession = async () => {
         if (!isController) return;
         try {
-            const response = await sessionsApi.resume();
-            if (response.ok) {
-                const session = await response.json();
-                setActiveSession(session);
-                broadcastUpdate();
-            }
+            const session = await sessionsApi.resume();
+            setActiveSession(session);
+            broadcastUpdate();
         } catch (err) {
             console.error("Failed to resume session", err);
         }

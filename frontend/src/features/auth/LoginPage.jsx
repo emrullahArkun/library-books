@@ -29,14 +29,7 @@ function LoginPage() {
         setError('');
 
         try {
-            const response = await authApi.login(email, password);
-
-            let data = null;
-            try { data = await response.json(); } catch { /* ignore */ }
-
-            if (!response.ok) {
-                throw new Error(data?.error || 'Login failed');
-            }
+            const data = await authApi.login(email, password);
 
             login({ email: data.email, role: data.role }, data.token);
             toast({
