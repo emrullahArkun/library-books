@@ -27,7 +27,7 @@ public class AuthService {
 
     public User registerUser(String email, String password) {
         if (userRepository.findByEmail(email).isPresent()) {
-            throw new RuntimeException("Email already taken");
+            throw new com.example.minilibrary.exception.DuplicateResourceException("Email already taken");
         }
 
         User user = new User();
@@ -74,9 +74,12 @@ public class AuthService {
                     "Account not verified. Please check your email.");
         }
 
+        System.out.println("Login attempt for: " + email);
         if (!passwordEncoder.matches(password, user.getPassword())) {
+            System.out.println("Password mismatch for: " + email);
             throw new com.example.minilibrary.exception.InvalidCredentialsException("Invalid credentials");
         }
+        System.out.println("Login successful for: " + email);
 
         return user;
     }
