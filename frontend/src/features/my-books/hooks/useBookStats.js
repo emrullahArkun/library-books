@@ -16,15 +16,12 @@ export const useBookStats = (bookId) => {
             setLoading(true);
             try {
                 // Fetch book details
-                const bookRes = await api.books.getById(bookId);
-                if (!bookRes.ok) throw new Error("Failed to fetch book");
-                const bookData = await bookRes.json();
+                const bookData = await api.books.getById(bookId);
                 setBook(bookData);
 
                 // Fetch sessions
-                const sessionsRes = await api.sessions.getByBookId(bookId);
-                if (sessionsRes.ok) {
-                    const sessionsData = await sessionsRes.json();
+                const sessionsData = await api.sessions.getByBookId(bookId);
+                if (sessionsData) {
                     setSessions(sessionsData);
                 }
             } catch (err) {

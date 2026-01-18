@@ -15,9 +15,8 @@ export const useMyBooks = (pageSize = 12) => {
         queryKey: ['myBooks', token, page, pageSize],
         queryFn: async () => {
             if (!token) return { content: [], totalPages: 0 };
-            const response = await booksApi.getAll(page, pageSize);
-            if (!response.ok) throw new Error('Failed to fetch books');
-            return response.json();
+            const data = await booksApi.getAll(page, pageSize);
+            return data;
         },
         placeholderData: keepPreviousData,
         enabled: !!token
@@ -28,8 +27,7 @@ export const useMyBooks = (pageSize = 12) => {
 
     const deleteMutation = useMutation({
         mutationFn: async (id) => {
-            const res = await booksApi.delete(id);
-            if (!res.ok) throw new Error('Failed to delete book');
+            await booksApi.delete(id);
         },
         onMutate: async (id) => {
             await queryClient.cancelQueries({ queryKey: ['myBooks'] }); // Invalidate all myBooks queries
@@ -57,8 +55,7 @@ export const useMyBooks = (pageSize = 12) => {
 
     const deleteAllMutation = useMutation({
         mutationFn: async () => {
-            const res = await booksApi.deleteAll();
-            if (!res.ok) throw new Error('Failed to delete all books');
+            await booksApi.deleteAll();
         },
         onMutate: async () => {
             await queryClient.cancelQueries({ queryKey: ['myBooks'] });
@@ -80,13 +77,7 @@ export const useMyBooks = (pageSize = 12) => {
 
     const updateProgressMutation = useMutation({
         mutationFn: async ({ id, currentPage }) => {
-            const res = await booksApi.updateProgress(id, currentPage);
-
-            if (!res.ok) {
-                const text = await res.text();
-                throw new Error(text || 'Failed to update progress');
-            }
-            return res.json();
+            return await booksApi.updateProgress(id, currentPage);
         },
         onMutate: async ({ id, currentPage }) => {
             await queryClient.cancelQueries({ queryKey: ['myBooks'] });
@@ -113,13 +104,7 @@ export const useMyBooks = (pageSize = 12) => {
 
     const updateStatusMutation = useMutation({
         mutationFn: async ({ id, completed }) => {
-            const res = await booksApi.updateStatus(id, completed);
-
-            if (!res.ok) {
-                const text = await res.text();
-                throw new Error(text || 'Failed to update status');
-            }
-            return res.json();
+            return await booksApi.updateStatus(id, completed);
         },
         onMutate: async ({ id, completed }) => {
             await queryClient.cancelQueries({ queryKey: ['myBooks'] });
@@ -194,8 +179,7 @@ export const useMyBooks = (pageSize = 12) => {
             )
         );
 
-        const failed = results.some(r => r.status === 'fulfilled' && !r.value.ok) ||
-            results.some(r => r.status === 'rejected');
+        const failed = results.some(r => r.status === 'rejected');
 
         if (failed) {
             console.error('Some deletions failed', results);

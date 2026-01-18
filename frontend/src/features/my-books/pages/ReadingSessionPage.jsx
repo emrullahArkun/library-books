@@ -68,9 +68,8 @@ const ReadingSessionPage = () => {
         if (!token) return;
         const fetchBook = async () => {
             try {
-                const res = await api.books.getById(id);
-                if (res.ok) {
-                    const data = await res.json();
+                const data = await api.books.getById(id);
+                if (data) {
                     setBook(data);
                     // Default end page to current page
                     if (data.currentPage) setEndPage(data.currentPage);

@@ -21,11 +21,15 @@ export const AuthProvider = ({ children }) => {
                     setToken(storedToken);
 
                     // 2. Validate against server
+                    // authApi.getSession() returns the parsed JSON data, not the Response object.
+                    // The apiClient throws on non-2xx responses.
                     const res = await authApi.getSession();
 
-                    if (!res.ok) {
+                    if (!res) {
                         throw new Error("Session invalid");
                     }
+                    // Optional: check res.valid if the backend sends it
+                    // if (!res.valid) throw ...
                 } catch (error) {
                     console.error("Session validation failed:", error);
                     localStorage.removeItem('token');

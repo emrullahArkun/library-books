@@ -42,7 +42,8 @@ const apiClient = {
         if (response.status === 401) {
             // Optional: redirect to login or clear token
             localStorage.removeItem('token');
-            window.location.href = '/login';
+            // Remove hard redirect to prevent refresh loops. Let the app handle the 401.
+            // window.location.href = '/login';
             throw new Error('Unauthorized');
         }
 

@@ -19,7 +19,7 @@ export const useBookSearch = () => {
         queryFn: async () => {
             if (!token) return [];
             const response = await booksApi.getOwnedIsbns();
-            if (response.ok) return response.json();
+            if (response) return response;
             return [];
         },
         enabled: !!token,
@@ -80,15 +80,32 @@ export const useBookSearch = () => {
             // Use utility for mapping logic
             const newBook = mapGoogleBookToNewBook(volumeInfo, isbnInfo, book.id);
 
-            const response = await booksApi.create(newBook);
-
-            if (response.ok) {
-                return newBook;
-            } else if (response.status === 409) {
-                throw new Error(t('search.toast.duplicate'));
-            } else {
-                throw new Error(t('search.toast.addFailed'));
+            // FALLBACK: If pageCount is 0 or missing, try OpenLibrary
+            if ((!newBook.pageCount || newBook.pageCount === 0) && newBook.isbn) {
+                try {
+                    // Extract ISBN (remove "ID:" prefix if it exists, though mapGoogleBookToNewBook puts ISBN directly if available)
+                    // If it used the ID fallback, it starts with ID:. OpenLibrary needs actual ISBN.
+                    // isbnInfo was already found above, so we can use that directly for safety
+                    if (isbnInfo) {
+                        const cleanIsbn = isbnInfo.identifier;
+                        const olUrl = `https://openlibrary.org/api/books?bibkeys=ISBN:${cleanIsbn}&format=json&jscmd=data`;
+                        const response = await fetch(olUrl);
+                        if (response.ok) {
+                            const data = await response.json();
+                            const bookKey = `ISBN:${cleanIsbn}`;
+                            if (data[bookKey] && data[bookKey].number_of_pages) {
+                                newBook.pageCount = data[bookKey].number_of_pages;
+                                console.log(`Updated page count from OpenLibrary for ${newBook.title}: ${newBook.pageCount}`);
+                            }
+                        }
+                    }
+                } catch (error) {
+                    console.warn('Failed to fetch page count from OpenLibrary:', error);
+                    // Silently fail fallback and proceed with 0 pages
+                }
             }
+
+            return await booksApi.create(newBook);
         },
         onSuccess: (data, variables) => {
             queryClient.invalidateQueries({ queryKey: ['myBooks'] });
@@ -117,11 +134,9 @@ export const useBookSearch = () => {
             });
         },
         onError: (err) => {
-            // Check if it's a duplicate error based on the message string key or actual message
-            // The mutationFn throws Error(t('search.toast.duplicate'))
-            // We'll trust the error message is what we expect or we handle it generically
-            const isDuplicate = err.message === t('search.toast.duplicate');
-            const message = isDuplicate ? 'Buch gibt es schon in der Sammlung' : err.message;
+            // Check if it's a duplicate error based on the status code
+            const isDuplicate = err.status === 409;
+            const message = isDuplicate ? 'Buch gibt es schon in der Sammlung' : (err.message || t('search.toast.addFailed'));
             const bgColor = isDuplicate ? '#DD6B20' : '#E53E3E'; // orange.500 : red.500
 
             toast.close('add-book-toast');

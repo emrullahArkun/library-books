@@ -1,4 +1,4 @@
-.PHONY: dev-backend dev-db stop
+.PHONY: dev-backend dev-db stop start
 
 # Start Backend (API + DB + Mail) in Docker
 dev-backend:
@@ -11,3 +11,6 @@ dev-db:
 # Stop everything
 stop:
 	docker-compose -f docker-compose.dev.yml down
+
+# Alias for dev-backend
+start: dev-backend
