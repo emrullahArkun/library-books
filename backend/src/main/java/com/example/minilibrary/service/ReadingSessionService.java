@@ -23,7 +23,7 @@ public class ReadingSessionService {
     private final BookRepository bookRepository;
 
     @Transactional
-    public ReadingSession startSession(User user, Long bookId) {
+    public synchronized ReadingSession startSession(User user, Long bookId) {
         // Enforce Invariant: Max 1 Active/Paused session
         Optional<ReadingSession> existingOpt = sessionRepository.findFirstByUserAndStatusIn(user,
                 List.of(SessionStatus.ACTIVE, SessionStatus.PAUSED));

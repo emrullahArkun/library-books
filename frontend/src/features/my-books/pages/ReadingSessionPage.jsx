@@ -95,12 +95,22 @@ const ReadingSessionPage = () => {
         }
     }, [activeSession, wasActive, hasStopped, navigate, t]);
 
+    // Guard to prevent double-firing startSession
+    const isStartingRef = React.useRef(false);
+
     // Auto-start session if not active
     useEffect(() => {
         // Only auto-start if we have NO history of an active session (wasActive is false)
         // AND we aren't currently stopping one interactively.
         if (!sessionLoading && !activeSession && book && !hasStopped && !wasActive) {
-            startSession(id);
+            if (isStartingRef.current) return;
+            isStartingRef.current = true;
+
+            startSession(id).finally(() => {
+                // We keep the ref true for a bit or rely on activeSession changing
+                // shortly. But strictly to unlock:
+                isStartingRef.current = false;
+            });
         }
     }, [sessionLoading, activeSession, book, id, startSession, hasStopped, wasActive]);
 
