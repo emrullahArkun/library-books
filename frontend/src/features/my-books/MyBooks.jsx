@@ -44,21 +44,30 @@ function MyBooks() {
     } = useReadingSession();
 
     React.useEffect(() => {
-        // Set body background to white when on this page
-        document.body.style.backgroundColor = '#ffffff';
+        // Set body background to match Search Page (dark pinstripe)
+        document.body.style.backgroundColor = 'var(--accent-800)';
+        document.body.style.backgroundImage = `repeating-linear-gradient(
+            to right,
+            transparent,
+            transparent 39px,
+            rgba(0, 0, 0, 0.1) 40px,
+            rgba(0, 0, 0, 0.1) 41px
+        )`;
+
         // Reset when leaving
         return () => {
             document.body.style.backgroundColor = 'var(--bg-app)';
+            document.body.style.backgroundImage = 'none';
         };
     }, []);
 
-    if (loading) return <Center h="200px">{t('myBooks.loading')}</Center>;
-    if (error) return <Center h="200px" color="red.500">{t('myBooks.error', { message: error })}</Center>;
+    if (loading) return <Center h="200px" color="white">{t('myBooks.loading')}</Center>;
+    if (error) return <Center h="200px" color="red.300">{t('myBooks.error', { message: error })}</Center>;
 
     return (
         <Container maxW="container.xl" py={4}>
             <Flex justify="space-between" align="center" mb={6} wrap="wrap" gap={4}>
-                <Heading as="h1" size="xl">{t('myBooks.title')}</Heading>
+                <Heading as="h1" size="xl" color="white">{t('myBooks.title')}</Heading>
                 <HStack spacing={4}>
                     {selectedBooks.size > 0 && (
                         <Button
@@ -81,7 +90,7 @@ function MyBooks() {
             </Flex>
 
             {books.length === 0 ? (
-                <Center flexDirection="column" py={10} color="gray.500">
+                <Center flexDirection="column" py={10} color="gray.300">
                     <Text fontSize="lg">{t('myBooks.empty.line1')}</Text>
                     <Text>{t('myBooks.empty.line2')}</Text>
                 </Center>
@@ -113,10 +122,12 @@ function MyBooks() {
                                 onClick={() => setPage(p => Math.max(0, p - 1))}
                                 isDisabled={page === 0}
                                 leftIcon={<FaChevronLeft />}
+                                colorScheme="whiteAlpha"
+                                color="white"
                             >
                                 {t('common.previous', 'Previous')}
                             </Button>
-                            <Text>
+                            <Text color="white">
                                 {t('common.pageOf', { current: page + 1, total: totalPages }, `Page ${page + 1} of ${totalPages}`)}
                             </Text>
                             <Button
