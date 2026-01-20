@@ -228,44 +228,60 @@ const MyBookCard = ({
             <VStack align="stretch" spacing={2}>
                 {book.pageCount > 0 ? (
                     <>
-                        <Box>
+                        <Box position="relative" w="100%">
                             <Progress
                                 value={((book.currentPage || 0) / book.pageCount) * 100}
-                                size="sm"
+                                height="20px"
                                 colorScheme="green"
                                 borderRadius="full"
                             />
-                            <Text fontSize="xs" textAlign="center" mt={1} fontWeight="semibold" color="gray.600">
+                            <Text
+                                position="absolute"
+                                top="50%"
+                                left="50%"
+                                transform="translate(-50%, -50%)"
+                                fontSize="xs"
+                                fontWeight="bold"
+                                color="black"
+                                w="100%"
+                                textAlign="center"
+                                zIndex={1}
+                            >
                                 {t('bookCard.readProgress', { current: book.currentPage || 0, total: book.pageCount })}
                             </Text>
-
-                            <Button
-                                w="100%"
-                                size="sm"
-                                variant="outline"
-                                colorScheme="teal"
-                                leftIcon={<FaPlay />}
-                                onClick={() => navigate(`/books/${book.id}/session`)}
-                            >
-                                {t('readingSession.start')}
-                            </Button>
                         </Box>
+
+                        <Button
+                            w="100%"
+                            size="sm"
+                            variant="solid"
+                            bg="var(--navbar-bg)"
+                            color="white"
+                            _hover={{ bg: "var(--navbar-bg)", opacity: 0.9 }}
+                            mt={2}
+                            leftIcon={<FaPlay />}
+                            onClick={() => navigate(`/books/${book.id}/session`)}
+                        >
+                            {t('readingSession.start')}
+                        </Button>
                     </>
                 ) : (
                     <Text fontSize="sm" color="gray.500" textAlign="center">{t('bookCard.pagesUnknown')}</Text>
                 )}
             </VStack>
 
-            {isModalOpen && (
-                <UpdateProgressModal
-                    book={book}
-                    onClose={() => setIsModalOpen(false)}
-                    onUpdate={handleUpdate}
-                />
-            )}
+            {
+                isModalOpen && (
+                    <UpdateProgressModal
+                        book={book}
+                        onClose={() => setIsModalOpen(false)}
+                        onUpdate={handleUpdate}
+                    />
+                )
+            }
 
 
-        </Box>
+        </Box >
     );
 };
 
