@@ -66,15 +66,18 @@ function MyBooks() {
 
     return (
         <Container maxW="container.xl" py={4}>
-            <Flex justify="space-between" align="center" mb={6} wrap="wrap" gap={4}>
-                <Heading as="h1" size="xl" color="white">{t('myBooks.title')}</Heading>
+            <Flex justify="flex-end" align="center" mb={6} wrap="wrap" gap={4}>
+
                 <HStack spacing={4}>
                     {selectedBooks.size > 0 && (
                         <Button
                             leftIcon={<FaTrash />}
                             onClick={deleteSelected}
-                            colorScheme="red"
-                            variant="outline"
+                            bg="whiteAlpha.200"
+                            color="white"
+                            _hover={{ bg: 'whiteAlpha.300' }}
+                            _active={{ bg: 'whiteAlpha.400' }}
+                            backdropFilter="blur(5px)"
                         >
                             {t('myBooks.deleteSelectedCount', { count: selectedBooks.size, defaultValue: `Löschen (${selectedBooks.size})` })}
                         </Button>
@@ -82,7 +85,11 @@ function MyBooks() {
                     <Button
                         leftIcon={<FaTrashAlt />}
                         onClick={deleteAll}
-                        colorScheme="red"
+                        bg="whiteAlpha.200"
+                        color="white"
+                        _hover={{ bg: 'whiteAlpha.300' }}
+                        _active={{ bg: 'whiteAlpha.400' }}
+                        backdropFilter="blur(5px)"
                     >
                         {t('myBooks.deleteAll')}
                     </Button>
