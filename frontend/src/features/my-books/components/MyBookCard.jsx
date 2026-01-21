@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { FaPlay } from 'react-icons/fa';
+import { FaPlay, FaChartBar } from 'react-icons/fa';
 import { getHighResImage } from '../../../utils/googleBooks';
 import {
     Box,
@@ -154,6 +154,7 @@ const MyBookCard = ({
             w="100%"
             m="0 auto"
             className="book-card-detail"
+            role="group"
         >
             <Box position="absolute" top="5px" right="5px" zIndex="20">
                 <Checkbox
@@ -170,10 +171,12 @@ const MyBookCard = ({
             <Box
                 h="320px"
                 mb="10px"
-                cursor="pointer"
-                onClick={() => navigate(`/books/${book.id}/stats`)}
                 position="relative"
+                overflow="hidden"
+                borderRadius="md"
+                boxShadow="md"
             >
+                {/* Cover Image */}
                 {imgSrc ? (
                     <Image
                         src={imgSrc}
@@ -183,7 +186,6 @@ const MyBookCard = ({
                         h="100%"
                         objectFit="cover"
                         borderRadius="md"
-                        boxShadow="md"
                     />
                 ) : (
                     <Center
@@ -192,12 +194,12 @@ const MyBookCard = ({
                         borderRadius="md"
                         bg="gray.100"
                         color="gray.500"
-                        boxShadow="md"
                     >
                         {t('bookCard.noCover')}
                     </Center>
                 )}
 
+                {/* Finished Badge */}
                 {book.completed && (
                     <Center
                         position="absolute"
@@ -223,6 +225,76 @@ const MyBookCard = ({
                         </Badge>
                     </Center>
                 )}
+
+                {/* Hover Overlay */}
+                <Flex
+                    position="absolute"
+                    inset="0"
+                    bg="blackAlpha.600"
+                    opacity="0"
+                    _groupHover={{ opacity: 1 }}
+                    transition="all 0.3s ease"
+                    direction="column"
+                    justify="space-between"
+                    align="center"
+                    zIndex="10"
+                >
+                    {/* Centered Play Button (Start Session) */}
+                    <Center flex="1" w="100%">
+                        <VStack
+                            role="group"
+                            spacing={2}
+                            as="button"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                navigate(`/books/${book.id}/session`);
+                            }}
+                            _hover={{ transform: "scale(1.1)" }}
+                            transition="all 0.2s"
+                        >
+                            <Box
+                                color="white"
+                                p={4}
+                                borderRadius="full"
+                                bg="whiteAlpha.300"
+                                _groupHover={{ bg: "whiteAlpha.500" }}
+                                transition="all 0.2s"
+                            >
+                                <FaPlay size="24px" />
+                            </Box>
+                            <Text
+                                color="white"
+                                fontSize="sm"
+                                fontWeight="medium"
+                                opacity="0"
+                                transform="translateY(-10px)"
+                                _groupHover={{ opacity: 1, transform: "translateY(0)" }}
+                                transition="all 0.3s ease"
+                            >
+                                {t('readingSession.start', 'Lesen starten')}
+                            </Text>
+                        </VStack>
+                    </Center>
+
+                    {/* Bottom Stats Button */}
+                    <Button
+                        w="100%"
+                        borderRadius="0"
+                        variant="solid"
+                        bg="var(--navbar-bg)"
+                        color="white"
+                        _hover={{ bg: "var(--navbar-bg)", filter: "brightness(1.1)" }}
+                        leftIcon={<FaChartBar />} // Using FaChartBar, need to import if not present, checking imports...
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            navigate(`/books/${book.id}/stats`);
+                        }}
+                        size="md"
+                        mb={0}
+                    >
+                        {t('bookCard.stats', 'Statistik')}
+                    </Button>
+                </Flex>
             </Box>
 
             <VStack align="stretch" spacing={2}>
@@ -250,20 +322,7 @@ const MyBookCard = ({
                                 {t('bookCard.readProgress', { current: book.currentPage || 0, total: book.pageCount })}
                             </Text>
                         </Box>
-
-                        <Button
-                            w="100%"
-                            size="sm"
-                            variant="solid"
-                            bg="var(--navbar-bg)"
-                            color="white"
-                            _hover={{ bg: "var(--navbar-bg)", opacity: 0.9 }}
-                            mt={2}
-                            leftIcon={<FaPlay />}
-                            onClick={() => navigate(`/books/${book.id}/session`)}
-                        >
-                            {t('readingSession.start')}
-                        </Button>
+                        {/* External Start Reading button removed */}
                     </>
                 ) : (
                     <Text fontSize="sm" color="gray.500" textAlign="center">{t('bookCard.pagesUnknown')}</Text>
