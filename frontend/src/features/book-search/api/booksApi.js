@@ -7,12 +7,6 @@ export const booksApi = {
     create: (bookData) => apiClient.post('/api/books', bookData),
     delete: (id) => apiClient.delete(`/api/books/${id}`),
     deleteAll: () => apiClient.delete('/api/books'),
-    updateProgress: (id, currentPage) => apiClient.request(`/api/books/${id}/progress`, {
-        method: 'PATCH',
-        body: JSON.stringify({ currentPage })
-    }),
-    updateStatus: (id, completed) => apiClient.request(`/api/books/${id}/status`, {
-        method: 'PATCH',
-        body: JSON.stringify({ completed })
-    }),
+    updateProgress: (id, currentPage) => apiClient.patch(`/api/books/${id}/progress`, { currentPage }),
+    updateStatus: (id, completed) => apiClient.patch(`/api/books/${id}/status`, { completed }),
 };

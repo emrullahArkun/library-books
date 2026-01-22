@@ -1,10 +1,10 @@
 package com.example.minilibrary.controller;
 
 import com.example.minilibrary.dto.CreateBookRequest;
-import com.example.minilibrary.model.Author;
+
 import com.example.minilibrary.model.Book;
 import com.example.minilibrary.model.User;
-import com.example.minilibrary.repository.AuthorRepository;
+
 import com.example.minilibrary.repository.BookRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -34,9 +34,6 @@ public class BookControllerIntegrationTest {
         private BookRepository bookRepository;
 
         @Autowired
-        private AuthorRepository authorRepository;
-
-        @Autowired
         private com.example.minilibrary.repository.UserRepository userRepository;
 
         @org.springframework.boot.test.mock.mockito.MockBean
@@ -50,7 +47,7 @@ public class BookControllerIntegrationTest {
         @BeforeEach
         void setUp() {
                 bookRepository.deleteAll();
-                authorRepository.deleteAll();
+
                 userRepository.deleteAll();
 
                 // Create the user that matches @WithMockUser
@@ -65,11 +62,11 @@ public class BookControllerIntegrationTest {
         @Test
         void shouldCreateBook() throws Exception {
                 // Given
-                Author author = createAuthor("J.K. Rowling");
+                String author = "J.K. Rowling";
 
                 // When
                 CreateBookRequest request = new CreateBookRequest(
-                                "978-1234567890", "Harry Potter", author.getId(), null, "2001", "http://cover.url",
+                                "978-1234567890", "Harry Potter", author, "2001", "http://cover.url",
                                 250);
 
                 // Then
@@ -79,14 +76,14 @@ public class BookControllerIntegrationTest {
                                 .andExpect(status().isOk())
                                 .andExpect(jsonPath("$.id").exists())
                                 .andExpect(jsonPath("$.title", is("Harry Potter")))
-                                .andExpect(jsonPath("$.authorId", is(author.getId().intValue())));
+                                .andExpect(jsonPath("$.authorName", is(author)));
         }
 
         @Test
         void shouldCreateBookWithAuthorName() throws Exception {
-                // When: Creating a book with ONLY author name (Find or Create logic)
+                // When: Creating a book with ONLY author name
                 CreateBookRequest request = new CreateBookRequest(
-                                "978-9876543210", "New Book", null, "New Author", null, null, null);
+                                "978-9876543210", "New Book", "New Author", null, null, null);
 
                 mockMvc.perform(post("/api/books")
                                 .contentType(MediaType.APPLICATION_JSON)
@@ -99,7 +96,7 @@ public class BookControllerIntegrationTest {
         @Test
         void shouldGetMyBooks() throws Exception {
                 // Given
-                createBook("My Book", "111-111", createAuthor("Test Author"));
+                createBook("My Book", "111-111", "Test Author");
 
                 // When / Then
                 mockMvc.perform(get("/api/books"))
@@ -111,7 +108,7 @@ public class BookControllerIntegrationTest {
         @Test
         void shouldUpdateBookStatus() throws Exception {
                 // Given
-                Book savedBook = createBook("Status Book", "222-222", createAuthor("Status Author"));
+                Book savedBook = createBook("Status Book", "222-222", "Status Author");
 
                 // When
                 Map<String, Boolean> updateRequest = Map.of("completed", true);
@@ -127,7 +124,7 @@ public class BookControllerIntegrationTest {
         @Test
         void shouldUpdateBookProgress() throws Exception {
                 // Given
-                Book savedBook = createBook("Progress Book", "333-333", createAuthor("Progress Author"));
+                Book savedBook = createBook("Progress Book", "333-333", "Progress Author");
                 savedBook.setCurrentPage(0);
                 savedBook.setPageCount(100);
                 bookRepository.save(savedBook);
@@ -146,7 +143,7 @@ public class BookControllerIntegrationTest {
         @Test
         void shouldDeleteBook() throws Exception {
                 // Given
-                Book savedBook = createBook("Delete Book", "444-444", createAuthor("Delete Author"));
+                Book savedBook = createBook("Delete Book", "444-444", "Delete Author");
 
                 // When
                 mockMvc.perform(delete("/api/books/" + savedBook.getId()))
@@ -157,27 +154,9 @@ public class BookControllerIntegrationTest {
                                 .andExpect(status().isNotFound());
         }
 
-        @Test
-        void shouldFailToCreateBookCheckingAuthorExistence() throws Exception {
-                // When: Creating a book for a non-existent author ID
-                CreateBookRequest request = new CreateBookRequest(
-                                "123", "Unknown Book", 999L, null, null, null, null);
-
-                mockMvc.perform(post("/api/books")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(request)))
-                                .andExpect(status().isNotFound());
-        }
-
         // --- Helper Methods ---
 
-        private Author createAuthor(String name) {
-                Author author = new Author();
-                author.setName(name);
-                return authorRepository.save(author);
-        }
-
-        private Book createBook(String title, String isbn, Author author) {
+        private Book createBook(String title, String isbn, String author) {
                 Book book = new Book();
                 book.setTitle(title);
                 book.setIsbn(isbn);

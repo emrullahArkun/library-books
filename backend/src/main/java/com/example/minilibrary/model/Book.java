@@ -18,8 +18,9 @@ import lombok.AllArgsConstructor;
 @Entity
 @jakarta.persistence.Table(name = "books", indexes = {
         @jakarta.persistence.Index(name = "idx_book_user", columnList = "user_id"),
-        @jakarta.persistence.Index(name = "idx_book_author", columnList = "author_id"),
         @jakarta.persistence.Index(name = "idx_book_isbn", columnList = "isbn")
+}, uniqueConstraints = {
+        @jakarta.persistence.UniqueConstraint(columnNames = { "user_id", "isbn" })
 })
 @Getter
 @Setter
@@ -36,11 +37,9 @@ public class Book {
     private String isbn;
     private String title;
 
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "author_id", nullable = false)
-    private Author author;
+    private String author;
 
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false, fetch = jakarta.persistence.FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 

@@ -4,7 +4,7 @@ import com.example.minilibrary.model.ReadingSession;
 import com.example.minilibrary.model.SessionStatus;
 import com.example.minilibrary.model.User;
 import com.example.minilibrary.model.Book;
-import com.example.minilibrary.repository.AuthorRepository;
+import com.example.minilibrary.model.Book;
 import com.example.minilibrary.repository.BookRepository;
 import com.example.minilibrary.repository.ReadingSessionRepository;
 import com.example.minilibrary.repository.UserRepository;
@@ -33,8 +33,6 @@ public class ReproductionIT {
     private UserRepository userRepository;
     @Autowired
     private BookRepository bookRepository;
-    @Autowired
-    private AuthorRepository authorRepository; // Wired
 
     private User testUser;
     private Book testBook;
@@ -44,7 +42,7 @@ public class ReproductionIT {
         // Clear DB
         sessionRepository.deleteAll();
         bookRepository.deleteAll();
-        authorRepository.deleteAll();
+
         userRepository.deleteAll();
 
         // Create User
@@ -55,16 +53,11 @@ public class ReproductionIT {
         testUser.setEnabled(true);
         testUser = userRepository.save(testUser);
 
-        // Create Author
-        com.example.minilibrary.model.Author author = new com.example.minilibrary.model.Author();
-        author.setName("Test Author");
-        author = authorRepository.save(author);
-
         // Create Book
         testBook = new Book();
         testBook.setTitle("Integration Book");
         testBook.setIsbn("123-456");
-        testBook.setAuthor(author);
+        testBook.setAuthor("Test Author");
         testBook.setUser(testUser);
         testBook.setPageCount(100);
         testBook.setCurrentPage(0);

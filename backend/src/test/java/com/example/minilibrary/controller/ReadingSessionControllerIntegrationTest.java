@@ -1,11 +1,9 @@
 package com.example.minilibrary.controller;
 
-import com.example.minilibrary.model.Author;
 import com.example.minilibrary.model.Book;
 import com.example.minilibrary.model.Role;
 import com.example.minilibrary.model.SessionStatus;
 import com.example.minilibrary.model.User;
-import com.example.minilibrary.repository.AuthorRepository;
 import com.example.minilibrary.repository.BookRepository;
 import com.example.minilibrary.repository.ReadingSessionRepository;
 import com.example.minilibrary.repository.UserRepository;
@@ -47,9 +45,6 @@ class ReadingSessionControllerIntegrationTest {
         private BookRepository bookRepository;
 
         @Autowired
-        private AuthorRepository authorRepository;
-
-        @Autowired
         private ReadingSessionRepository sessionRepository;
 
         @Autowired
@@ -68,7 +63,7 @@ class ReadingSessionControllerIntegrationTest {
         void setUp() {
                 sessionRepository.deleteAll();
                 bookRepository.deleteAll();
-                authorRepository.deleteAll();
+
                 userRepository.deleteAll();
 
                 // Create User
@@ -80,14 +75,11 @@ class ReadingSessionControllerIntegrationTest {
                 testUser = userRepository.save(testUser);
 
                 // Create Author
-                Author author = new Author();
-                author.setName("Timer Author");
-                author = authorRepository.save(author);
 
                 // Create Book
                 testBook = new Book();
                 testBook.setTitle("Reading Timer Test");
-                testBook.setAuthor(author);
+                testBook.setAuthor("Timer Author");
                 testBook.setIsbn("9999999999");
                 testBook.setUser(testUser);
                 testBook.setStartDate(LocalDate.now());

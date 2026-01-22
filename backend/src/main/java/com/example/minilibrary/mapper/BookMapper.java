@@ -9,13 +9,11 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface BookMapper {
 
-    @Mapping(target = "authorId", source = "author.id")
-    @Mapping(target = "authorName", source = "author.name")
-    @Mapping(target = "startDate", source = "startDate")
+    @Mapping(target = "authorName", source = "author")
     BookDto toDto(Book book);
 
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "author", ignore = true)
+    @Mapping(target = "author", source = "authorName")
     @Mapping(target = "currentPage", ignore = true)
     @Mapping(target = "startDate", ignore = true)
     @Mapping(target = "user", ignore = true)

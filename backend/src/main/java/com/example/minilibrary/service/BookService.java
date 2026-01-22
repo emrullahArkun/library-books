@@ -4,7 +4,6 @@ import com.example.minilibrary.dto.CreateBookRequest;
 import com.example.minilibrary.exception.DuplicateResourceException;
 import com.example.minilibrary.exception.ResourceNotFoundException;
 import com.example.minilibrary.mapper.BookMapper;
-import com.example.minilibrary.model.Author;
 import com.example.minilibrary.model.Book;
 import com.example.minilibrary.repository.BookRepository;
 import jakarta.validation.constraints.NotNull;
@@ -22,7 +21,6 @@ import java.util.Optional;
 public class BookService {
 
     private final BookRepository bookRepository;
-    private final AuthorService authorService;
     private final BookMapper bookMapper;
 
     public org.springframework.data.domain.Page<Book> findAllByUser(com.example.minilibrary.model.User user,
@@ -46,30 +44,20 @@ public class BookService {
 
     @Transactional
     public Book createBook(CreateBookRequest request, com.example.minilibrary.model.User user) {
-        Author author;
-        if (request.authorId() != null) {
-            author = authorService.findById(request.authorId())
-                    .orElseThrow(
-                            () -> new ResourceNotFoundException("Author not found with id: " + request.authorId()));
-        } else if (request.authorName() != null && !request.authorName().isBlank()) {
-            author = authorService.findByName(request.authorName())
-                    .orElseGet(() -> {
-                        Author newAuthor = new Author();
-                        newAuthor.setName(request.authorName());
-                        return authorService.save(newAuthor);
-                    });
-        } else {
-            throw new IllegalArgumentException("Either authorId or authorName must be provided");
-        }
-
         if (existsByIsbnAndUser(request.isbn(), user)) {
             throw new DuplicateResourceException(
                     "Book with ISBN " + request.isbn() + " already exists in your collection.");
         }
 
         Book book = bookMapper.toEntity(request);
-        book.setAuthor(author);
+        // Author is already mapped from authorName to author string by Mapper
         book.setUser(user);
+
+        // Fallback if mapper didn't handle it (redundant if mapper is correct, but
+        // safe)
+        if (book.getAuthor() == null && request.authorName() != null) {
+            book.setAuthor(request.authorName());
+        }
 
         if (book.getStartDate() == null) {
             book.setStartDate(java.time.LocalDate.now());
@@ -92,7 +80,8 @@ public class BookService {
 
     @Transactional
     public void deleteAllByUser(com.example.minilibrary.model.User user) {
-        bookRepository.deleteByUser(user);
+        List<Book> books = bookRepository.findByUser(user);
+        bookRepository.deleteAll(books);
     }
 
     @Transactional

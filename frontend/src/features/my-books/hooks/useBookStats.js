@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { api } from '../../../api/api';
+import { booksApi } from '../../book-search/api/booksApi';
+import { sessionsApi } from '../api/sessionsApi';
 import { useAuth } from '../../../context/AuthContext';
 
 export const useBookStats = (bookId) => {
@@ -16,11 +17,11 @@ export const useBookStats = (bookId) => {
             setLoading(true);
             try {
                 // Fetch book details
-                const bookData = await api.books.getById(bookId);
+                const bookData = await booksApi.getById(bookId);
                 setBook(bookData);
 
                 // Fetch sessions
-                const sessionsData = await api.sessions.getByBookId(bookId);
+                const sessionsData = await sessionsApi.getByBookId(bookId);
                 if (sessionsData) {
                     setSessions(sessionsData);
                 }

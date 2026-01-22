@@ -9,6 +9,12 @@ export const AuthProvider = ({ children }) => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+        const handleUnauthorized = () => {
+            logout();
+        };
+
+        window.addEventListener('auth:unauthorized', handleUnauthorized);
+
         const initAuth = async () => {
             const storedToken = localStorage.getItem('token');
             const storedUser = localStorage.getItem('user');
@@ -41,6 +47,10 @@ export const AuthProvider = ({ children }) => {
             setLoading(false);
         };
         initAuth();
+
+        return () => {
+            window.removeEventListener('auth:unauthorized', handleUnauthorized);
+        };
     }, []);
 
 

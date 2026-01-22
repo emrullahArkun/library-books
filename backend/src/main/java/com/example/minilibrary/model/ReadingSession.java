@@ -12,7 +12,8 @@ import java.time.Instant;
 @Entity
 @Table(name = "reading_session", indexes = {
         @Index(name = "idx_session_user", columnList = "user_id"),
-        @Index(name = "idx_session_book", columnList = "book_id")
+        @Index(name = "idx_session_book", columnList = "book_id"),
+        @Index(name = "idx_session_user_status", columnList = "user_id, status")
 })
 public class ReadingSession {
     @Id

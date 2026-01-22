@@ -22,7 +22,7 @@ import {
 import { FaPlay, FaPause, FaStop, FaArrowLeft, FaCheck } from 'react-icons/fa';
 import { useAuth } from '../../../context/AuthContext';
 import { useReadingSession } from '../hooks/useReadingSession';
-import { api } from '../../../api/api';
+import { booksApi } from '../../book-search/api/booksApi';
 
 const ReadingSessionPage = () => {
     const { t } = useTranslation();
@@ -68,7 +68,7 @@ const ReadingSessionPage = () => {
         if (!token) return;
         const fetchBook = async () => {
             try {
-                const data = await api.books.getById(id);
+                const data = await booksApi.getById(id);
                 if (data) {
                     setBook(data);
                     // Default end page to current page

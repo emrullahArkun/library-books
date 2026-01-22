@@ -54,26 +54,18 @@ public class BookController {
     @PatchMapping("/{id}/progress")
     public ResponseEntity<BookDto> updateBookProgress(
             @PathVariable Long id,
-            @RequestBody java.util.Map<String, Integer> updateRequest,
+            @RequestBody @jakarta.validation.Valid com.example.minilibrary.dto.UpdateProgressRequest request,
             @CurrentUser User user) {
-        Integer currentPage = updateRequest.get("currentPage");
-        if (currentPage == null) {
-            throw new IllegalArgumentException("currentPage is required");
-        }
-        Book updatedBook = bookService.updateBookProgress(id, currentPage, user);
+        Book updatedBook = bookService.updateBookProgress(id, request.currentPage(), user);
         return ResponseEntity.ok(bookMapper.toDto(updatedBook));
     }
 
     @PatchMapping("/{id}/status")
     public ResponseEntity<BookDto> updateBookStatus(
             @PathVariable Long id,
-            @RequestBody java.util.Map<String, Boolean> updateRequest,
+            @RequestBody @jakarta.validation.Valid com.example.minilibrary.dto.UpdateStatusRequest request,
             @CurrentUser User user) {
-        Boolean completed = updateRequest.get("completed");
-        if (completed == null) {
-            throw new IllegalArgumentException("completed status is required");
-        }
-        Book updatedBook = bookService.updateBookStatus(id, completed, user);
+        Book updatedBook = bookService.updateBookStatus(id, request.completed(), user);
         return ResponseEntity.ok(bookMapper.toDto(updatedBook));
     }
 

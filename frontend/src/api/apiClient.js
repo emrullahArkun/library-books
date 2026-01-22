@@ -40,10 +40,9 @@ const apiClient = {
 
     async handleResponse(response) {
         if (response.status === 401) {
-            // Optional: redirect to login or clear token
             localStorage.removeItem('token');
-            // Remove hard redirect to prevent refresh loops. Let the app handle the 401.
-            // window.location.href = '/login';
+            // Dispatch event for AuthContext to handle
+            window.dispatchEvent(new CustomEvent('auth:unauthorized'));
             throw new Error('Unauthorized');
         }
 
