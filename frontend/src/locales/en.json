@@ -4,7 +4,9 @@
         "search": "Search",
         "myBooks": "My Books",
         "logout": "Logout",
-        "login": "Login"
+        "login": "Login",
+        "session": "Reading Session",
+        "stats": "Statistics"
     },
     "search": {
         "placeholder": "Search by title, author, ISBN...",

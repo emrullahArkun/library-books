@@ -3,7 +3,9 @@ import { FaBook, FaSignOutAlt, FaSignInAlt } from 'react-icons/fa';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import { useAuth } from '../../context/AuthContext';
+
 import { useAnimation } from '../../context/AnimationContext';
+import { useReadingSessionContext } from '../../context/ReadingSessionContext';
 import LanguageSwitcher from './LanguageSwitcher';
 import './Navbar.css';
 
@@ -12,7 +14,13 @@ function Navbar() {
     const navigate = useNavigate();
     const location = useLocation();
     const { t } = useTranslation();
+
     const { registerTarget } = useAnimation();
+    const { activeSession } = useReadingSessionContext();
+
+    // Check if we are on a statistics page
+    const isStatsPage = location.pathname.match(/\/books\/\d+\/stats/);
+    const isSessionPage = location.pathname.match(/\/books\/\d+\/session/);
 
     const handleLogout = () => {
         logout();
@@ -29,6 +37,32 @@ function Navbar() {
             <div className="navbar-menu">
                 {user ? (
                     <div className="navbar-glass-pane">
+                        {/* Dynamic Item: Reading Session (Active) */}
+                        {activeSession && (
+                            <Link to={`/books/${activeSession.bookId}/session`} className="navbar-item">
+                                {(location.pathname === `/books/${activeSession.bookId}/session`) && (
+                                    <motion.div
+                                        layoutId="nav-bubble"
+                                        className="nav-bubble"
+                                        transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                                    />
+                                )}
+                                <span className="navbar-text">{t('navbar.session')}</span>
+                            </Link>
+                        )}
+
+                        {/* Dynamic Item: Statistics (On Stats Page) */}
+                        {(isStatsPage && !isSessionPage) && ( // Don't show if we are on session page (though URL patterns differ, just safety)
+                            <Link to={location.pathname} className="navbar-item">
+                                <motion.div
+                                    layoutId="nav-bubble"
+                                    className="nav-bubble"
+                                    transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                                />
+                                <span className="navbar-text">{t('navbar.stats')}</span>
+                            </Link>
+                        )}
+
                         <Link to="/" className="navbar-item">
                             {location.pathname === '/' && (
                                 <motion.div

@@ -4,7 +4,9 @@
         "search": "Suche",
         "myBooks": "Meine Bücher",
         "logout": "Abmelden",
-        "login": "Anmelden"
+        "login": "Anmelden",
+        "session": "Lese-Session",
+        "stats": "Statistik"
     },
     "search": {
         "placeholder": "Suche nach Titel, Autor, ISBN...",
