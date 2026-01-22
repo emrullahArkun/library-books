@@ -29,6 +29,7 @@ import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, AreaChart,
 import { useBookStats } from '../hooks/useBookStats';
 import { FaBookOpen, FaChartLine, FaCheck, FaArrowLeft, FaClock, FaCalendarAlt } from 'react-icons/fa';
 import { motion } from 'framer-motion';
+import { getHighResImage } from '../../../utils/googleBooks';
 
 // Motion components
 const MotionCard = motion(Card);
@@ -41,6 +42,64 @@ const BookStatsPage = () => {
 
     // Custom Hook
     const { book, sessions, loading } = useBookStats(id);
+
+    const [imgSrc, setImgSrc] = useState('');
+
+    // Helper to determine safe URL and metadata
+    const getCoverInfo = (bookInfo) => {
+        if (!bookInfo) return { safeUrl: '', fallbackUrl: '', preferOpenLibrary: false, googleUrl: '' };
+
+        let fallbackUrl = '';
+        let isbn = bookInfo.isbn;
+        if (!isbn && bookInfo.industryIdentifiers) {
+            const identifier = bookInfo.industryIdentifiers.find(id => id.type === 'ISBN_13') ||
+                bookInfo.industryIdentifiers.find(id => id.type === 'ISBN_10');
+            if (identifier) {
+                isbn = identifier.identifier;
+            }
+        }
+
+        if (isbn) {
+            const cleanIsbn = isbn.replace(/-/g, '');
+            if (cleanIsbn.length >= 10) {
+                fallbackUrl = `https://covers.openlibrary.org/b/isbn/${cleanIsbn}-L.jpg`;
+            }
+        }
+
+        const preferOpenLibrary = (bookInfo.readingModes?.image === false) && fallbackUrl;
+        const googleUrl = bookInfo.coverUrl ? getHighResImage(bookInfo.coverUrl) : '';
+
+        const safeUrl = preferOpenLibrary
+            ? fallbackUrl
+            : (googleUrl || fallbackUrl);
+
+        return { safeUrl, fallbackUrl, preferOpenLibrary, googleUrl };
+    };
+
+    useEffect(() => {
+        if (book) {
+            const { safeUrl } = getCoverInfo(book);
+            setImgSrc(safeUrl);
+        }
+    }, [book]);
+
+    const handleImageError = () => {
+        if (!book) return;
+        const { fallbackUrl, preferOpenLibrary, googleUrl } = getCoverInfo(book);
+
+        if (imgSrc === fallbackUrl) {
+            // We tried OpenLibrary and it failed.
+            if (googleUrl && preferOpenLibrary) {
+                // We preferred OpenLibrary but it failed? Revert to Google.
+                setImgSrc(prev => prev === fallbackUrl ? googleUrl : prev);
+            }
+        } else {
+            // Google failed. Try OpenLibrary.
+            if (fallbackUrl && imgSrc !== fallbackUrl) {
+                setImgSrc(fallbackUrl);
+            }
+        }
+    };
 
     // Apply brown background style (same as HomePage)
     useEffect(() => {
@@ -177,7 +236,8 @@ const BookStatsPage = () => {
                                         ratio={2 / 3}
                                     >
                                         <Image
-                                            src={book.coverUrl || 'https://via.placeholder.com/200x300?text=No+Cover'}
+                                            src={imgSrc || 'https://via.placeholder.com/200x300?text=No+Cover'}
+                                            onError={handleImageError}
                                             alt={book.title}
                                             w="100%"
                                             h="auto"
