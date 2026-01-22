@@ -240,16 +240,20 @@ const MyBookCard = ({
                     zIndex="10"
                 >
                     {/* Centered Play Button (Start Session) */}
-                    <Center flex="1" w="100%">
+                    <Center
+                        flex="1"
+                        w="100%"
+                        cursor="pointer"
+                        role="group"
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            navigate(`/books/${book.id}/session`);
+                        }}
+                    >
                         <VStack
-                            role="group"
                             spacing={2}
-                            as="button"
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                navigate(`/books/${book.id}/session`);
-                            }}
-                            _hover={{ transform: "scale(1.1)" }}
+                            as="div"
+                            _groupHover={{ transform: "scale(1.1)" }}
                             transition="all 0.2s"
                         >
                             <Box
@@ -257,7 +261,7 @@ const MyBookCard = ({
                                 p={4}
                                 borderRadius="full"
                                 bg="whiteAlpha.300"
-                                _groupHover={{ bg: "whiteAlpha.500" }}
+                                _groupHover={{ bg: "whiteAlpha.500" }} // This will now trigger on Center hover as well, which is good.
                                 transition="all 0.2s"
                             >
                                 <FaPlay size="24px" />
@@ -268,6 +272,17 @@ const MyBookCard = ({
                                 fontWeight="medium"
                                 opacity="0"
                                 transform="translateY(-10px)"
+                                // This text needs to appear when the CARD is hovered (to show the overlay content), 
+                                // but maybe we want it to animate differently?
+                                // The original code had: _groupHover={{ opacity: 1, transform: "translateY(0)" }}
+                                // The original 'group' for THIS element was likely the VStack itself (which had role='group').
+                                // Wait, the VStack had role='group' in the original code.
+                                // The Text had _groupHover. So it appeared when VStack was hovered.
+                                // If the user wants the WHOLE area clickable, maybe the text should be visible whenever the overlay is visible?
+                                // OR only when the upper area is hovered?
+                                // original: Text appears when hovering the play button (VStack).
+                                // New behavior: Text should probably appear when hovering the upper area (Center).
+                                // Since Center is now the group, using _groupHover here works perfectly for that.
                                 _groupHover={{ opacity: 1, transform: "translateY(0)" }}
                                 transition="all 0.3s ease"
                             >

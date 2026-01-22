@@ -15,7 +15,7 @@ public interface BookMapper {
     BookDto toDto(Book book);
 
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "author", ignore = true) // Author is handled manually in service/controller
+    @Mapping(target = "author", ignore = true)
     @Mapping(target = "currentPage", ignore = true)
     @Mapping(target = "startDate", ignore = true)
     @Mapping(target = "user", ignore = true)

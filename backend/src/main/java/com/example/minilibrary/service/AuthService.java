@@ -41,10 +41,6 @@ public class AuthService {
 
         userRepository.save(user);
 
-        // Only send email if verification is required (or maybe always send but allow
-        // login?
-        // User asked to disable it implies skipping the blocker.
-        // Let's always send for info, but allow login.)
         if (requireVerification) {
             emailService.sendVerificationEmail(user);
         }

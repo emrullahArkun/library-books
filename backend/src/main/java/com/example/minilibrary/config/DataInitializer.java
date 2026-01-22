@@ -19,13 +19,12 @@ public class DataInitializer {
     @Bean
     public CommandLineRunner initData() {
         return args -> {
-            // Create default admin user if not exists
             if (userRepository.findByEmail("admin@example.com").isEmpty()) {
                 User admin = new User();
                 admin.setEmail("admin@example.com");
-                admin.setPassword(passwordEncoder.encode("password")); // Hardcoded for simplified demo
+                admin.setPassword(passwordEncoder.encode("password"));
                 admin.setRole(com.example.minilibrary.model.Role.ADMIN);
-                admin.setEnabled(true); // Auto-enable admin
+                admin.setEnabled(true);
                 userRepository.save(admin);
                 System.out.println("Default admin user created: admin@example.com / password");
             }

@@ -9,7 +9,6 @@ import './AuthLayout.css';
 
 export const AuthLayout = ({ children, title, icon }) => {
     const { t } = useTranslation();
-    // Generate random stars for the background
     const stars = useMemo(() => {
         return Array.from({ length: 20 }).map((_, i) => ({
             id: i,
@@ -40,7 +39,7 @@ export const AuthLayout = ({ children, title, icon }) => {
                             fontSize: star.size,
                             opacity: star.opacity,
                             transform: `rotate(${star.rotation})`,
-                            color: 'var(--accent-200)', // Using a light accent color for stars
+                            color: 'var(--accent-200)',
                             pointerEvents: 'none',
                             zIndex: 0,
                         }}

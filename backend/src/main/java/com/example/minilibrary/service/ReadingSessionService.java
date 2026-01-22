@@ -63,24 +63,6 @@ public class ReadingSessionService {
 
         Instant safeEndTime = endTime != null ? endTime : Instant.now();
 
-        // Calculate paused duration logic if needed or just finalize
-        // If it was PAUSED, we don't add extra time since pausedAt?
-        // Logic: active duration = (endTime - startTime) - pausedMillis
-        // If it was paused, we should update pausedMillis?
-        // Actually simplest: if paused, resume it virtually then stop?
-        // Or just trust pausedMillis is correct up to pausedAt.
-        // If status == PAUSED, the time between pausedAt and safeEndTime is NOT reading
-        // time.
-        // So we need to ADD that gap to pausedMillis so that (endTime - startTime) -
-        // pausedMillis is correct?
-        // Let's verify:
-        // Start: 10:00. Pause: 10:30. Stop: 11:00.
-        // Reading time should be 30 mins.
-        // pausedMillis (so far) = 0.
-        // If we just set endTime=11:00. Total duration = 60m.
-        // We need pausedMillis to include 10:30-11:00 (30m).
-        // So yes, if PAUSED, add gap to pausedMillis.
-
         if (session.getStatus() == SessionStatus.PAUSED && session.getPausedAt() != null) {
             long gap = java.time.Duration.between(session.getPausedAt(), safeEndTime).toMillis();
             if (gap > 0) {

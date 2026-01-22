@@ -45,9 +45,6 @@ export const handlers = [
             title: 'Test Book ' + id,
             author: { name: 'Author ' + id },
             completed: completed,
-            // ...other fields would be here in real app, but for update mutation result, this might suffice
-            // or we return a full object structure if the UI relies on it.
-            // Let's return a stable full object to avoid crashes.
             coverUrl: 'http://example.com/cover.jpg',
             currentPage: 0,
             pageCount: 300,

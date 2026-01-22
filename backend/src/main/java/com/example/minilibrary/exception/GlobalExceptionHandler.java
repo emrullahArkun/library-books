@@ -73,8 +73,6 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGlobalException(Exception ex, WebRequest request) throws Exception {
-        // Allow NoResourceFoundException (Spring 6/Boot 3) to be handled by the
-        // framework (returns 404)
         if (ex.getClass().getName().contains("NoResourceFoundException")) {
             throw ex;
         }
