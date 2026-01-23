@@ -67,7 +67,7 @@ const ReadingSessionPage = () => {
     // Check for session mismatch
     useEffect(() => {
         if (activeSession && book && activeSession.bookId !== book.id) {
-            alert(t('readingSession.sessionMismatch', 'Es läuft bereits eine Session für ein anderes Buch!'));
+            alert(t('readingSession.alerts.mismatch'));
             navigate('/my-books');
         }
     }, [activeSession, book, navigate, t]);
@@ -178,7 +178,7 @@ const ReadingSessionPage = () => {
         if (activeSession) {
             setWasActive(true);
         } else if (wasActive && !activeSession && !hasStopped) {
-            alert(t('readingSession.sessionEndedRemote', 'Die Session wurde in einem anderen Tab beendet.'));
+            alert(t('readingSession.alerts.endedRemote'));
             navigate('/my-books');
         }
     }, [activeSession, wasActive, hasStopped, navigate, t]);
@@ -210,7 +210,7 @@ const ReadingSessionPage = () => {
             if (activeSession) {
                 e.preventDefault();
                 window.history.pushState(null, '', window.location.href);
-                alert(t('readingSession.exitWarning', 'Beende erst die Session bevor du verlässt!'));
+                alert(t('readingSession.alerts.exitWarning'));
             }
         };
 
@@ -228,7 +228,7 @@ const ReadingSessionPage = () => {
 
     const handleBackClick = () => {
         if (activeSession) {
-            if (window.confirm(t('readingSession.exitConfirm', 'Beende erst die Session bevor du verlässt. Wirklich verlassen?'))) {
+            if (window.confirm(t('readingSession.alerts.exitConfirm'))) {
                 // If user really wants to leave without stopping properly
                 navigate('/my-books');
             }
@@ -247,7 +247,7 @@ const ReadingSessionPage = () => {
         setHasStopped(true);
         const success = await stopSession(new Date(), pageNum);
         if (success) {
-            alert(t('readingSession.sessionSummary', { pages: pagesRead > 0 ? pagesRead : 0, defaultValue: `Du hast ${pagesRead > 0 ? pagesRead : 0} Seiten gelesen!` }));
+            alert(t('readingSession.alerts.summary', { pages: pagesRead > 0 ? pagesRead : 0 }));
             navigate('/my-books');
         }
     };
@@ -334,7 +334,7 @@ const ReadingSessionPage = () => {
 
                                     <Box w="full">
                                         <Flex justify="space-between" mb={2} fontSize="xs" fontWeight="bold" color="gray.400" textTransform="uppercase" letterSpacing="wider">
-                                            <Text>Aktuelle Seite</Text>
+                                            <Text>{t('bookStats.currentPage')}</Text>
                                             <Text>{book.currentPage || 0}</Text>
                                         </Flex>
                                         <Progress
@@ -367,7 +367,7 @@ const ReadingSessionPage = () => {
                                 <VStack spacing={8} textAlign="center">
                                     <Flex align="center" color={brandColor}>
                                         <Icon as={FaBookOpen} mr={2} />
-                                        <Text fontWeight="bold" letterSpacing="wider" textTransform="uppercase" fontSize="sm">Active Session</Text>
+                                        <Text fontWeight="bold" letterSpacing="wider" textTransform="uppercase" fontSize="sm">{t('readingSession.activeSession')}</Text>
                                     </Flex>
 
                                     <Box>
@@ -382,7 +382,7 @@ const ReadingSessionPage = () => {
                                             {formattedTime}
                                         </Text>
                                         <Text color={isPaused ? "orange.300" : "teal.300"} mt={2} fontWeight="medium" letterSpacing="wide">
-                                            {isPaused ? "PAUSIERT" : "LIES DOCH MAL..."}
+                                            {isPaused ? t('readingSession.paused') : t('readingSession.readingPrompt')}
                                         </Text>
                                     </Box>
 
@@ -390,11 +390,11 @@ const ReadingSessionPage = () => {
                                         <Alert status="warning" borderRadius="md" variant="solid" bg="orange.500">
                                             <AlertIcon />
                                             <Box flex="1">
-                                                <Text fontWeight="bold">{t('readingSession.controlledByOther', 'Remote Session')}</Text>
-                                                <Text fontSize="sm">{t('readingSession.controlledByOtherDesc', 'Steuerung in einem anderen Tab.')}</Text>
+                                                <Text fontWeight="bold">{t('readingSession.remote.title')}</Text>
+                                                <Text fontSize="sm">{t('readingSession.remote.desc')}</Text>
                                             </Box>
                                             <Button colorScheme="whiteAlpha" size="sm" onClick={takeControl}>
-                                                Übernehmen
+                                                {t('readingSession.remote.takeControl')}
                                             </Button>
                                         </Alert>
                                     )}
@@ -410,9 +410,9 @@ const ReadingSessionPage = () => {
                                             borderRadius="xl"
                                         >
                                             <VStack spacing={4}>
-                                                <Text color="white" fontWeight="bold" fontSize="lg">Session beenden</Text>
+                                                <Text color="white" fontWeight="bold" fontSize="lg">{t('readingSession.finish.title')}</Text>
                                                 <FormControl>
-                                                    <FormLabel color={subTextColor}>End-Seite</FormLabel>
+                                                    <FormLabel color={subTextColor}>{t('readingSession.finish.endPage')}</FormLabel>
                                                     <Input
                                                         type="number"
                                                         value={endPage}
@@ -426,10 +426,10 @@ const ReadingSessionPage = () => {
                                                 </FormControl>
                                                 <HStack spacing={4} w="full">
                                                     <Button flex={1} colorScheme="teal" onClick={handleConfirmStop} leftIcon={<FaCheck />}>
-                                                        Speichern
+                                                        {t('readingSession.controls.save')}
                                                     </Button>
                                                     <Button flex={1} variant="ghost" colorScheme="whiteAlpha" onClick={handleStopCancel} color="white">
-                                                        Abbrechen
+                                                        {t('readingSession.controls.cancel')}
                                                     </Button>
                                                 </HStack>
                                             </VStack>
@@ -451,7 +451,7 @@ const ReadingSessionPage = () => {
                                                     transition="all 0.2s"
                                                     boxShadow="0 0 15px rgba(56, 178, 172, 0.5)"
                                                 >
-                                                    Weiter
+                                                    {t('readingSession.controls.resume')}
                                                 </Button>
                                             ) : (
                                                 <Button
@@ -467,7 +467,7 @@ const ReadingSessionPage = () => {
                                                     _hover={{ transform: 'scale(1.05)' }}
                                                     transition="all 0.2s"
                                                 >
-                                                    Pause
+                                                    {t('readingSession.controls.pause')}
                                                 </Button>
                                             )}
 
@@ -485,7 +485,7 @@ const ReadingSessionPage = () => {
                                                 _hover={{ bg: 'red.900', borderColor: 'red.400' }}
                                                 fontSize="xl"
                                             >
-                                                Stop
+                                                {t('readingSession.controls.stop')}
                                             </Button>
                                         </HStack>
                                     )}
@@ -505,10 +505,10 @@ const ReadingSessionPage = () => {
                             >
                                 <Flex align="center" mb={4} color="yellow.200">
                                     <Icon as={FaStickyNote} mr={2} />
-                                    <Text fontWeight="bold" textTransform="uppercase" fontSize="sm" letterSpacing="wider">Notizen zur Session</Text>
+                                    <Text fontWeight="bold" textTransform="uppercase" fontSize="sm" letterSpacing="wider">{t('readingSession.notes.title')}</Text>
                                 </Flex>
                                 <Textarea
-                                    placeholder="Gedanken, Zitate oder Ideen..."
+                                    placeholder={t('readingSession.notes.placeholder')}
                                     value={note}
                                     onChange={(e) => setNote(e.target.value)}
                                     bg="whiteAlpha.100"
@@ -520,7 +520,7 @@ const ReadingSessionPage = () => {
                                     rows={5}
                                 />
                                 <Flex justify="flex-end" mt={2}>
-                                    <Text fontSize="xs" color="gray.500">Notizen werden lokal gespeichert (Simulation)</Text>
+                                    <Text fontSize="xs" color="gray.500">{t('readingSession.notes.helper')}</Text>
                                 </Flex>
                             </MotionCard>
                         </VStack>

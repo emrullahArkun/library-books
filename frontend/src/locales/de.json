@@ -127,6 +127,40 @@
         "startReading": "Lesen beginnen",
         "failedStart": "Starten der Sitzung fehlgeschlagen",
         "pagesReadAlert": "Gut gemacht! Du hast heute {{pages}} Seiten gelesen.",
+        "activeSession": "Aktive Sitzung",
+        "currentSession": "Aktuelle Lese-Sitzung",
+        "paused": "PAUSIERT",
+        "readingPrompt": "LIES DOCH MAL...",
+        "notes": {
+            "title": "Notizen zur Session",
+            "placeholder": "Gedanken, Zitate oder Ideen...",
+            "helper": "Notizen werden lokal gespeichert (Simulation)"
+        },
+        "remote": {
+            "title": "Remote Session",
+            "desc": "Steuerung in einem anderen Tab.",
+            "takeControl": "Übernehmen",
+            "alertTitle": "Session läuft in einem anderen Tab",
+            "alertDesc": "Du kannst die Session hier nicht steuern."
+        },
+        "controls": {
+            "resume": "Weiter",
+            "pause": "Pause",
+            "stop": "Stop",
+            "save": "Speichern",
+            "cancel": "Abbrechen"
+        },
+        "finish": {
+            "title": "Session beenden",
+            "endPage": "End-Seite"
+        },
+        "alerts": {
+            "mismatch": "Es läuft bereits eine Session für ein anderes Buch!",
+            "endedRemote": "Die Session wurde in einem anderen Tab beendet.",
+            "exitWarning": "Beende erst die Session bevor du verlässt!",
+            "exitConfirm": "Beende erst die Session bevor du verlässt. Wirklich verlassen?",
+            "summary": "Du hast {{pages}} Seiten gelesen!" 
+        },
         "stopModal": {
             "title": "Fertig mit Lesen?",
             "confirm": "Ja",
@@ -138,5 +172,31 @@
             "maxPagesError": "Du kannst nicht mehr als {{count}} Seiten haben!",
             "finished": "Fertig!"
         }
+    },
+    "bookStats": {
+        "readProgress": "Lese-Fortschritt",
+        "pages": "Seiten",
+        "completed": "Abgeschlossen",
+        "totalTime": {
+            "label": "Gesamtzeit",
+            "subLabel": "Investierte Zeit"
+        },
+        "speed": {
+            "label": "Tempo",
+            "subLabel": "Seiten / Stunde"
+        },
+        "projection": {
+            "label": "Prognose",
+            "subLabel": "Bis zum Ende"
+        },
+        "chart": {
+            "title": "Aktivitäts-Verlauf",
+            "subTitle": "Deine Lesegewohnheiten über die Zeit",
+            "badge": "Chronologie",
+            "noData": "Noch keine Daten verfügbar",
+            "readNow": "Jetzt lesen"
+        },
+        "notFound": "Buch nicht gefunden",
+        "currentPage": "Aktuelle Seite"
     }
 }

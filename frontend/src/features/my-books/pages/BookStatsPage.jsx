@@ -196,7 +196,7 @@ const BookStatsPage = () => {
         </Flex>
     );
 
-    if (!book) return <Box textAlign="center" py={20} color={textColor}>Book not found</Box>;
+    if (!book) return <Box textAlign="center" py={20} color={textColor}>{t('bookStats.notFound')}</Box>;
 
     return (
         <Box bg={bgColor} minH="100vh" py={8} px={{ base: 4, md: 8 }}>
@@ -261,7 +261,7 @@ const BookStatsPage = () => {
                                     {/* Progress Section */}
                                     <Box w="full">
                                         <Flex justify="space-between" mb={2} fontSize="xs" fontWeight="bold" color="gray.400" textTransform="uppercase" letterSpacing="wider">
-                                            <Text>Lese-Fortschritt</Text>
+                                            <Text>{t('bookStats.readProgress')}</Text>
                                             <Text>{stats.progressPercent}%</Text>
                                         </Flex>
                                         <Progress
@@ -272,7 +272,7 @@ const BookStatsPage = () => {
                                             bg="whiteAlpha.100"
                                         />
                                         <Text fontSize="xs" color="gray.400" mt={2} textAlign="center">
-                                            {stats.pagesRead} <span style={{ opacity: 0.5 }}>/</span> {stats.totalPages} Seiten
+                                            {stats.pagesRead} <span style={{ opacity: 0.5 }}>/</span> {stats.totalPages} {t('bookStats.pages')}
                                         </Text>
                                     </Box>
 
@@ -287,7 +287,7 @@ const BookStatsPage = () => {
                                             boxShadow="md"
                                         >
                                             <Icon as={FaCheck} mr={2} />
-                                            Abgeschlossen
+                                            {t('bookStats.completed')}
                                         </Badge>
                                     )}
                                 </VStack>
@@ -302,9 +302,9 @@ const BookStatsPage = () => {
                             <SimpleGrid columns={{ base: 1, md: 3 }} spacing={6}>
                                 <StatsCard
                                     icon={FaClock}
-                                    label="Gesamtzeit"
+                                    label={t('bookStats.totalTime.label')}
                                     value={stats.totalTime}
-                                    subLabel="Investierte Zeit"
+                                    subLabel={t('bookStats.totalTime.subLabel')}
                                     color="teal.200"
                                     delay={0.1}
                                     bg={cardBg}
@@ -312,9 +312,9 @@ const BookStatsPage = () => {
                                 />
                                 <StatsCard
                                     icon={FaBookOpen}
-                                    label="Tempo"
+                                    label={t('bookStats.speed.label')}
                                     value={stats.speed}
-                                    subLabel="Seiten / Stunde"
+                                    subLabel={t('bookStats.speed.subLabel')}
                                     color="blue.200"
                                     delay={0.2}
                                     bg={cardBg}
@@ -323,9 +323,9 @@ const BookStatsPage = () => {
                                 {!book.completed && (
                                     <StatsCard
                                         icon={FaChartLine}
-                                        label="Prognose"
+                                        label={t('bookStats.projection.label')}
                                         value={`~${stats.timeLeft || '...'}`}
-                                        subLabel="Bis zum Ende"
+                                        subLabel={t('bookStats.projection.subLabel')}
                                         color="purple.200"
                                         delay={0.3}
                                         bg={cardBg}
@@ -348,13 +348,13 @@ const BookStatsPage = () => {
                                 <Flex justify="space-between" align="center" mb={10}>
                                     <Box>
                                         <Heading size="md" fontWeight="bold" color={textColor} mb={1}>
-                                            Aktivitäts-Verlauf
+                                            {t('bookStats.chart.title')}
                                         </Heading>
-                                        <Text fontSize="sm" color={subTextColor}>Deine Lesegewohnheiten über die Zeit</Text>
+                                        <Text fontSize="sm" color={subTextColor}>{t('bookStats.chart.subTitle')}</Text>
                                     </Box>
                                     <Badge variant="subtle" colorScheme="gray" px={3} py={1} borderRadius="md" fontSize="xs" bg="whiteAlpha.200" color="white">
                                         <Icon as={FaCalendarAlt} mr={2} />
-                                        Chronologie
+                                        {t('bookStats.chart.badge')}
                                     </Badge>
                                 </Flex>
 
@@ -407,9 +407,9 @@ const BookStatsPage = () => {
                                     ) : (
                                         <Flex h="100%" justify="center" align="center" direction="column" color={subTextColor} bg="whiteAlpha.100" borderRadius="xl">
                                             <Icon as={FaChartLine} w={12} h={12} mb={4} opacity={0.3} />
-                                            <Text fontSize="lg" fontWeight="medium">Noch keine Daten verfügbar</Text>
+                                            <Text fontSize="lg" fontWeight="medium">{t('bookStats.chart.noData')}</Text>
                                             <Button mt={4} colorScheme="teal" variant="ghost" size="sm" onClick={() => navigate(`/books/${id}/session`)}>
-                                                Jetzt lesen
+                                                {t('bookStats.chart.readNow')}
                                             </Button>
                                         </Flex>
                                     )}

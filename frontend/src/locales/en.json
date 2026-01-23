@@ -127,6 +127,40 @@
         "startReading": "Start Reading",
         "failedStart": "Failed to start session",
         "pagesReadAlert": "Great job! You read {{pages}} pages today.",
+        "activeSession": "Active Session",
+        "currentSession": "Current Reading Session",
+        "paused": "PAUSED",
+        "readingPrompt": "KEEP READING...",
+        "notes": {
+            "title": "Session Notes",
+            "placeholder": "Thoughts, quotes, or ideas...",
+            "helper": "Notes are saved locally (Simulation)"
+        },
+        "remote": {
+            "title": "Remote Session",
+            "desc": "Controlled in another tab.",
+            "takeControl": "Take Control",
+            "alertTitle": "Session running in another tab",
+            "alertDesc": "You cannot control the session here."
+        },
+        "controls": {
+            "resume": "Resume",
+            "pause": "Pause",
+            "stop": "Stop",
+            "save": "Save",
+            "cancel": "Cancel"
+        },
+        "finish": {
+            "title": "End Session",
+            "endPage": "End Page"
+        },
+        "alerts": {
+            "mismatch": "A session is already running for another book!",
+            "endedRemote": "The session was ended in another tab.",
+            "exitWarning": "Finish the session before leaving!",
+            "exitConfirm": "Finish the session before leaving. Really leave?",
+            "summary": "You read {{pages}} pages!"
+        },
         "stopModal": {
             "title": "Finished Reading?",
             "confirm": "Yes",
@@ -138,5 +172,31 @@
             "maxPagesError": "Page number cannot exceed {{count}}",
             "finished": "Finished!"
         }
+    },
+    "bookStats": {
+        "readProgress": "Reading Progress",
+        "pages": "Pages",
+        "completed": "Completed",
+        "totalTime": {
+            "label": "Total Time",
+            "subLabel": "Time Invested"
+        },
+        "speed": {
+            "label": "Speed",
+            "subLabel": "Pages / Hour"
+        },
+        "projection": {
+            "label": "Projection",
+            "subLabel": "Until Finished"
+        },
+        "chart": {
+            "title": "Activity History",
+            "subTitle": "Your reading habits over time",
+            "badge": "Chronology",
+            "noData": "No data available yet",
+            "readNow": "Read Now"
+        },
+        "notFound": "Book not found",
+        "currentPage": "Current Page"
     }
 }
