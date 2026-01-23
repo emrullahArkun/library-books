@@ -30,6 +30,7 @@ import { useBookStats } from '../hooks/useBookStats';
 import { FaBookOpen, FaChartLine, FaCheck, FaArrowLeft, FaClock, FaCalendarAlt } from 'react-icons/fa';
 import { motion } from 'framer-motion';
 import { getHighResImage } from '../../../utils/googleBooks';
+import ReadingCalendar from '../components/ReadingCalendar';
 
 // Motion components
 const MotionCard = motion(Card);
@@ -352,10 +353,9 @@ const BookStatsPage = () => {
                                         </Heading>
                                         <Text fontSize="sm" color={subTextColor}>{t('bookStats.chart.subTitle')}</Text>
                                     </Box>
-                                    <Badge variant="subtle" colorScheme="gray" px={3} py={1} borderRadius="md" fontSize="xs" bg="whiteAlpha.200" color="white">
-                                        <Icon as={FaCalendarAlt} mr={2} />
-                                        {t('bookStats.chart.badge')}
-                                    </Badge>
+                                    <Flex align="center">
+                                        <ReadingCalendar sessions={sessions} />
+                                    </Flex>
                                 </Flex>
 
                                 <Box h="400px" w="full">

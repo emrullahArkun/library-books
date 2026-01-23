@@ -159,7 +159,7 @@
             "endedRemote": "Die Session wurde in einem anderen Tab beendet.",
             "exitWarning": "Beende erst die Session bevor du verlässt!",
             "exitConfirm": "Beende erst die Session bevor du verlässt. Wirklich verlassen?",
-            "summary": "Du hast {{pages}} Seiten gelesen!" 
+            "summary": "Du hast {{pages}} Seiten gelesen!"
         },
         "stopModal": {
             "title": "Fertig mit Lesen?",
@@ -197,6 +197,7 @@
             "readNow": "Jetzt lesen"
         },
         "notFound": "Buch nicht gefunden",
-        "currentPage": "Aktuelle Seite"
+        "currentPage": "Aktuelle Seite",
+        "calendarHint": "Tippe auf ein Datum für Details"
     }
 }
