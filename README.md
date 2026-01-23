@@ -9,11 +9,6 @@ MyBooks ist ein Web-Tracker für dein Leseerlebnis – von der Buchsuche bis zur
 *   **Sessions**: Lesezeit mit Live-Timer erfassen oder manuell nachtragen.
 *   **Statistik**: Auswertungen zu Lesezeit und Seiten.
 
-## Technologie
-
-*   **Backend**: Java 21, Spring Boot 3, Spring Security, Docker
-*   **Frontend**: React, Vite, CSS Modules
-
 ## Setup
 
 1.  **Starten**
