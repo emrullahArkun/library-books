@@ -18,10 +18,10 @@ module.exports = {
     'react/jsx-no-target-blank': 'off',
     'react-refresh/only-export-components': 'off',
     'react/prop-types': 'off',
-    'no-unused-vars': 'off',
+    'no-unused-vars': 'warn',
     'no-useless-catch': 'off',
     'react/display-name': 'off',
-    'react-hooks/exhaustive-deps': 'off',
-    'no-undef': 'off',
+    'react-hooks/exhaustive-deps': 'warn',
+    'no-undef': 'error',
   },
 }

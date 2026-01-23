@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useAuth } from '../../../context/AuthContext';
 import { useQuery, useMutation, useQueryClient, keepPreviousData } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
-import { booksApi } from '../../book-search/api/booksApi';
+import { booksApi } from '../../books/api';
 
 export const useMyBooks = (pageSize = 12) => {
     const [page, setPage] = useState(0);

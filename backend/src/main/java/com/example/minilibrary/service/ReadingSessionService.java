@@ -23,9 +23,9 @@ public class ReadingSessionService {
     private final BookRepository bookRepository;
 
     @Transactional
-    public synchronized ReadingSession startSession(User user, Long bookId) {
+    public ReadingSession startSession(User user, Long bookId) {
         // Enforce Invariant: Max 1 Active/Paused session
-        Optional<ReadingSession> existingOpt = sessionRepository.findFirstByUserAndStatusIn(user,
+        Optional<ReadingSession> existingOpt = sessionRepository.findFirstByUserAndStatusInOrderByStartTimeDesc(user,
                 List.of(SessionStatus.ACTIVE, SessionStatus.PAUSED));
 
         if (existingOpt.isPresent()) {
@@ -57,7 +57,7 @@ public class ReadingSessionService {
     @Transactional
     public ReadingSession stopSession(User user, Instant endTime, Integer endPage) {
         // Find THE active or paused session
-        ReadingSession session = sessionRepository.findFirstByUserAndStatusIn(user,
+        ReadingSession session = sessionRepository.findFirstByUserAndStatusInOrderByStartTimeDesc(user,
                 List.of(SessionStatus.ACTIVE, SessionStatus.PAUSED))
                 .orElseThrow(() -> new ResourceNotFoundException("No active reading session found"));
 
@@ -90,13 +90,13 @@ public class ReadingSessionService {
 
     // Now returns Optional directly from DB query
     public Optional<ReadingSession> getActiveSession(User user) {
-        return sessionRepository.findFirstByUserAndStatusIn(user,
+        return sessionRepository.findFirstByUserAndStatusInOrderByStartTimeDesc(user,
                 List.of(SessionStatus.ACTIVE, SessionStatus.PAUSED));
     }
 
     @Transactional
     public ReadingSession pauseSession(User user) {
-        ReadingSession session = sessionRepository.findFirstByUserAndStatusIn(user,
+        ReadingSession session = sessionRepository.findFirstByUserAndStatusInOrderByStartTimeDesc(user,
                 List.of(SessionStatus.ACTIVE))
                 .orElseThrow(() -> new RuntimeException("No active session found to pause"));
 
@@ -107,7 +107,7 @@ public class ReadingSessionService {
 
     @Transactional
     public ReadingSession resumeSession(User user) {
-        ReadingSession session = sessionRepository.findFirstByUserAndStatusIn(user,
+        ReadingSession session = sessionRepository.findFirstByUserAndStatusInOrderByStartTimeDesc(user,
                 List.of(SessionStatus.PAUSED))
                 .orElseThrow(() -> new RuntimeException("No paused session found to resume"));
 
@@ -129,7 +129,7 @@ public class ReadingSessionService {
         if (millis == null || millis < 0) {
             throw new IllegalArgumentException("Invalid millis");
         }
-        ReadingSession session = sessionRepository.findFirstByUserAndStatusIn(user,
+        ReadingSession session = sessionRepository.findFirstByUserAndStatusInOrderByStartTimeDesc(user,
                 List.of(SessionStatus.ACTIVE))
                 .orElseThrow(() -> new RuntimeException("No active session found"));
 
@@ -143,5 +143,10 @@ public class ReadingSessionService {
                 .filter(b -> b.getUser().equals(user))
                 .orElseThrow(() -> new ResourceNotFoundException("Book not found"));
         return sessionRepository.findByUserAndBook(user, book);
+    }
+
+    @Transactional
+    public void deleteSessionsByBook(User user, Book book) {
+        sessionRepository.deleteByUserAndBook(user, book);
     }
 }

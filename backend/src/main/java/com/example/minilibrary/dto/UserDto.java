@@ -5,9 +5,8 @@ import jakarta.validation.constraints.NotBlank;
 import java.util.Set;
 
 public record UserDto(
-        Long id,
-        @NotBlank String username,
-        @NotBlank @Email String email,
-        Set<BookDto> favoriteBooks,
-        Set<AuthorDto> favoriteAuthors) {
+                Long id,
+                @NotBlank String username,
+                @NotBlank @Email String email,
+                Set<BookDto> favoriteBooks) {
 }

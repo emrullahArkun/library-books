@@ -8,7 +8,7 @@ export const handlers = [
                 {
                     id: 1,
                     title: 'Test Book 1',
-                    author: { name: 'Author 1' },
+                    authorName: 'Author 1',
                     coverUrl: 'http://example.com/cover1.jpg',
                     completed: false,
                     currentPage: 0,
@@ -19,7 +19,7 @@ export const handlers = [
                 {
                     id: 2,
                     title: 'Test Book 2',
-                    author: { name: 'Author 2' },
+                    authorName: 'Author 2',
                     coverUrl: 'http://example.com/cover2.jpg',
                     completed: true,
                     currentPage: 300,
@@ -43,7 +43,7 @@ export const handlers = [
         return HttpResponse.json({
             id: Number(id),
             title: 'Test Book ' + id,
-            author: { name: 'Author ' + id },
+            authorName: 'Author ' + id,
             completed: completed,
             coverUrl: 'http://example.com/cover.jpg',
             currentPage: 0,
@@ -59,7 +59,7 @@ export const handlers = [
         return HttpResponse.json({
             id: Number(id),
             title: 'Test Book ' + id,
-            author: { name: 'Author ' + id },
+            authorName: 'Author ' + id,
             completed: false,
             coverUrl: 'http://example.com/cover.jpg',
             currentPage: currentPage,

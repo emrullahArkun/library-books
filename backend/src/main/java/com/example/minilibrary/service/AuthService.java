@@ -9,8 +9,13 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 @Service
 public class AuthService {
+
+    private static final Logger log = LoggerFactory.getLogger(AuthService.class);
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
@@ -70,12 +75,12 @@ public class AuthService {
                     "Account not verified. Please check your email.");
         }
 
-        System.out.println("Login attempt for: " + email);
+        log.debug("Login attempt for: {}", email);
         if (!passwordEncoder.matches(password, user.getPassword())) {
-            System.out.println("Password mismatch for: " + email);
+            log.warn("Password mismatch for: {}", email);
             throw new com.example.minilibrary.exception.InvalidCredentialsException("Invalid credentials");
         }
-        System.out.println("Login successful for: " + email);
+        log.info("Login successful for: {}", email);
 
         return user;
     }

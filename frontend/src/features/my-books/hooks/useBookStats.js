@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { booksApi } from '../../book-search/api/booksApi';
+import { booksApi } from '../../books/api';
 import { sessionsApi } from '../api/sessionsApi';
 import { useAuth } from '../../../context/AuthContext';
 

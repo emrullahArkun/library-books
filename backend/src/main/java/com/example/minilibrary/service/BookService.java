@@ -22,6 +22,7 @@ public class BookService {
 
     private final BookRepository bookRepository;
     private final BookMapper bookMapper;
+    private final ReadingSessionService readingSessionService;
 
     public org.springframework.data.domain.Page<Book> findAllByUser(com.example.minilibrary.model.User user,
             org.springframework.data.domain.Pageable pageable) {
@@ -75,6 +76,10 @@ public class BookService {
     public void deleteByIdAndUser(@NotNull Long id, com.example.minilibrary.model.User user) {
         Book book = bookRepository.findByIdAndUser(id, user)
                 .orElseThrow(() -> new ResourceNotFoundException("Book not found"));
+
+        // Explicitly delete sessions to avoid FK violation
+        readingSessionService.deleteSessionsByBook(user, book);
+
         bookRepository.delete(book);
     }
 

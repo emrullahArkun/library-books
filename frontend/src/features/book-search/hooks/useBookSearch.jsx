@@ -4,7 +4,7 @@ import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tansta
 import { useToast } from '@chakra-ui/react';
 import { useTranslation } from 'react-i18next';
 import { mapGoogleBookToNewBook } from '../../../utils/googleBooks';
-import { booksApi } from '../api/booksApi';
+import { booksApi } from '../../books/api';
 
 export const useBookSearch = () => {
     const [query, setQuery] = useState('');

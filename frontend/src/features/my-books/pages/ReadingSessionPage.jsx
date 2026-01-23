@@ -31,7 +31,7 @@ import { FaPlay, FaPause, FaStop, FaArrowLeft, FaCheck, FaStickyNote, FaBookOpen
 import { motion } from 'framer-motion';
 import { useAuth } from '../../../context/AuthContext';
 import { useReadingSession } from '../hooks/useReadingSession';
-import { booksApi } from '../../book-search/api/booksApi';
+import { booksApi } from '../../books/api';
 import { getHighResImage } from '../../../utils/googleBooks';
 
 // Motion components

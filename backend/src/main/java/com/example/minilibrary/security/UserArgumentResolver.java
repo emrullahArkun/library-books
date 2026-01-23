@@ -29,10 +29,9 @@ public class UserArgumentResolver implements HandlerMethodArgumentResolver {
             NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth == null || !auth.isAuthenticated() || "anonymousUser".equals(auth.getPrincipal())) {
-            // Let it return null or throw?
-            // If parameter is not Optional, maybe throw?
-            // Controllers usually expect user to be present if endpoint is authenticated.
-            throw new RuntimeException("User not authenticated");
+            // Throw specific security exception to ensure 401/403 response
+            throw new org.springframework.security.authentication.AuthenticationCredentialsNotFoundException(
+                    "User not authenticated");
         }
 
         // With JWT, principal might be Jwt object or subject string depending on setup.
