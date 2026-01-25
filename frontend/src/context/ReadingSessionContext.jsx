@@ -13,7 +13,7 @@ export const ReadingSessionProvider = ({ children }) => {
 
     // Pause state derived from activeSession
     const isPaused = activeSession?.status === 'PAUSED';
-    // const pausedAt = activeSession?.pausedAt ? new Date(activeSession.pausedAt) : null;
+
 
     // Refs for timer logic to avoid dependecy/closure issues
     const timerIntervalRef = useRef(null);

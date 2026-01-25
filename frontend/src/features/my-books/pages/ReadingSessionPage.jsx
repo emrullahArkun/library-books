@@ -40,7 +40,7 @@ const ReadingSessionPage = () => {
     const { id } = useParams();
     const navigate = useNavigate();
     const { token } = useAuth();
-    // const toast = useToast();
+
 
     // State
     const [book, setBook] = useState(null);

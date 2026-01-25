@@ -32,42 +32,7 @@ const MyBookCard = ({
     // const cardBg = useColorModeValue('white', 'gray.700');
     const hoverTransform = 'translateY(-5px)';
 
-    // Removed inline stop logic as it is now handled in ReadingSessionPage
-    /*
-        const handleStopClick = () => {
-            setStopTime(new Date());
-            setFrozenTimerDisplay(timerTime);
-            setIsStopModalOpen(true);
-        };
-    
-        const handleStopConfirm = (newPage) => {
-            const pagesRead = newPage - (book.currentPage || 0);
-            onUpdateProgress(book.id, newPage);
-            onStopSession(stopTime, newPage);
-            setIsStopModalOpen(false);
-            setFrozenTimerDisplay(null);
-            if (pagesRead > 0) {
-                alert(t('readingSession.pagesReadAlert', { pages: pagesRead }));
-            }
-        };
-    
-        const handleStopCancel = () => {
-            if (stopTime) {
-                const now = new Date();
-                const diff = now.getTime() - stopTime.getTime();
-                if (diff > 1000 && typeof onExcludeTime === 'function') {
-                    try {
-                        onExcludeTime(diff);
-                    } catch (error) {
-                        console.error("Error calling onExcludeTime", error);
-                    }
-                }
-            }
-            setIsStopModalOpen(false);
-            setFrozenTimerDisplay(null);
-            setStopTime(null);
-        };
-    */
+
 
     const handleUpdate = (id, page) => {
         onUpdateProgress(id, page);

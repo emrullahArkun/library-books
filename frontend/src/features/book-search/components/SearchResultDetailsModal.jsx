@@ -3,7 +3,7 @@ import styles from './SearchResultDetailsModal.module.css';
 
 
 const SearchResultDetailsModal = ({ isOpen, onClose, title, description }) => {
-    // const { t } = useTranslation();
+
 
     if (!isOpen) return null;
 
