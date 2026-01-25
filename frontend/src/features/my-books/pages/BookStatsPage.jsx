@@ -21,8 +21,24 @@ import {
     VStack,
     Badge,
     Grid,
-    GridItem
+    GridItem,
+    Modal,
+    ModalOverlay,
+    ModalContent,
+    ModalHeader,
+    ModalFooter,
+    ModalBody,
+    ModalCloseButton,
+    FormControl,
+    FormLabel,
+    RadioGroup,
+    Radio,
+    Stack,
+    Input,
+    useDisclosure,
+    useToast
 } from '@chakra-ui/react';
+import { booksApi } from '../../books/api';
 import { XAxis, YAxis, Tooltip, ResponsiveContainer, AreaChart, Area, CartesianGrid } from 'recharts';
 import { useBookStats } from '../hooks/useBookStats';
 import { FaBookOpen, FaChartLine, FaCheck, FaArrowLeft, FaClock } from 'react-icons/fa';
@@ -38,9 +54,35 @@ const BookStatsPage = () => {
     const { t } = useTranslation();
     const { id } = useParams();
     const navigate = useNavigate();
+    const { isOpen, onOpen, onClose } = useDisclosure();
+    const toast = useToast();
 
     // Custom Hook
-    const { book, sessions, loading } = useBookStats(id);
+    const { book, sessions, loading, refetch } = useBookStats(id);
+
+    // Goal State
+    const [goalType, setGoalType] = useState('WEEKLY');
+    const [goalPages, setGoalPages] = useState('');
+    const [isSavingGoal, setIsSavingGoal] = useState(false);
+
+    useEffect(() => {
+        if (book?.readingGoalType) setGoalType(book.readingGoalType);
+        if (book?.readingGoalPages) setGoalPages(book.readingGoalPages);
+    }, [book]);
+
+    const handleSaveGoal = async () => {
+        setIsSavingGoal(true);
+        try {
+            await booksApi.updateGoal(id, goalType, parseInt(goalPages, 10));
+            toast({ title: t('bookStats.goal.modal.success', 'Goal updated!'), status: 'success', duration: 3000 });
+            refetch();
+            onClose();
+        } catch (error) {
+            toast({ title: t('bookStats.goal.modal.error', 'Failed to update goal'), status: 'error', duration: 3000 });
+        } finally {
+            setIsSavingGoal(false);
+        }
+    };
 
     const [imgSrc, setImgSrc] = useState('');
 
@@ -186,7 +228,73 @@ const BookStatsPage = () => {
             pagesRead: pagesReadTotal,
             totalPages: book.pageCount
         };
+
     }, [sessions, book]);
+
+    // Goal Progress Calculation
+    const goalProgress = useMemo(() => {
+        if (!book?.readingGoalType || !book?.readingGoalPages || !sessions) return null;
+
+        const now = new Date();
+        let startDate = new Date();
+        startOfTime(startDate, book.readingGoalType);
+
+        function startOfTime(date, type) {
+            date.setHours(0, 0, 0, 0);
+            if (type === 'WEEKLY') {
+                const day = date.getDay(); // 0=Sun
+                // EU Week starts Monday (1). 
+                // If Sunday (0), shift -6 days. If Mon (1), shift 0. If Tue (2), shift -1.
+                // diff = day === 0 ? -6 : 1 - day;
+                // date.setDate(date.getDate() + diff); -> THIS IS WRONG logic commonly.
+                // Correct: Monday is 1. 
+                const diff = date.getDate() - day + (day === 0 ? -6 : 1);
+                date.setDate(diff);
+            } else {
+                date.setDate(1); // 1st of month
+            }
+        }
+
+        // Sort sessions to handle fallback calculation
+        const sortedSessions = [...sessions].sort((a, b) => new Date(a.endTime) - new Date(b.endTime));
+
+        let currentPagesRead = 0;
+
+        sortedSessions.forEach((session, index) => {
+            const sessionEnd = new Date(session.endTime);
+            if (sessionEnd < startDate) return;
+
+            let added = 0;
+            if (session.pagesRead != null) {
+                added = session.pagesRead;
+            } else {
+                // Fallback
+                const prevEndPage = index > 0 ? sortedSessions[index - 1].endPage : 0; // Assuming 0 if first session ever? Or session.book.startPage? 
+                // Using 0 is risky if book started at page 100. But reasonable approximation for 'progress in app'.
+                // Better: If index==0, we can't really know unless we checked book start, but '0' is safe default.
+                added = (session.endPage || 0) - (prevEndPage || 0);
+            }
+            if (added > 0) currentPagesRead += added;
+        });
+
+        const isGoalReached = currentPagesRead >= book.readingGoalPages;
+        const percent = Math.min(100, Math.round((currentPagesRead / book.readingGoalPages) * 100));
+
+        // Multiplier calculation (e.g. 100/20 = 5x)
+        let multiplier = 0;
+        if (isGoalReached && book.readingGoalPages > 0) {
+            multiplier = Math.floor(currentPagesRead / book.readingGoalPages);
+        }
+
+        return {
+            current: currentPagesRead,
+            target: book.readingGoalPages,
+            type: book.readingGoalType,
+            percent,
+            isGoalReached,
+            multiplier
+        };
+    }, [book, sessions]);
 
 
     if (loading) return (
@@ -256,6 +364,51 @@ const BookStatsPage = () => {
                                     </Box>
 
                                     <Box w="full" h="1px" bg="whiteAlpha.200" />
+
+                                    {/* Goal Section */}
+                                    <Box w="full" bg="whiteAlpha.100" p={4} borderRadius="xl">
+                                        <Flex justify="space-between" align="center" mb={2}>
+                                            <Text fontSize="sm" fontWeight="bold" color="gray.300">
+                                                {t('bookStats.goal.title', 'Reading Goal')}
+                                            </Text>
+                                            <Button size="xs" colorScheme="teal" variant="ghost" onClick={onOpen}>
+                                                {goalProgress ? t('bookStats.goal.edit', 'Edit') : t('bookStats.goal.set', 'Set Goal')}
+                                            </Button>
+                                        </Flex>
+
+                                        {goalProgress ? (
+                                            <VStack align="start" spacing={1} w="full">
+                                                <Flex justify="space-between" w="full" fontSize="xs" color="teal.200" mb={1}>
+                                                    <Text>{goalProgress.type === 'WEEKLY' ? 'Weekly' : 'Monthly'}</Text>
+                                                    <Text>{goalProgress.current} / {goalProgress.target} pages</Text>
+                                                </Flex>
+                                                <Progress
+                                                    value={goalProgress.percent}
+                                                    size="sm"
+                                                    colorScheme={goalProgress.isGoalReached ? "green" : "teal"}
+                                                    w="full"
+                                                    borderRadius="full"
+                                                    hasStripe={goalProgress.isGoalReached}
+                                                    isAnimated={goalProgress.isGoalReached}
+                                                />
+                                                {goalProgress.isGoalReached && (
+                                                    <Flex align="center" mt={1} color="green.300">
+                                                        <Icon as={FaCheck} mr={1} boxSize={3} />
+                                                        <Text fontSize="xs" fontWeight="bold">
+                                                            {goalProgress.type === 'WEEKLY' ? t('bookStats.goal.weeklyInfo', 'Weekly goal reached!') : t('bookStats.goal.monthlyInfo', 'Monthly goal reached!')}
+                                                            {goalProgress.multiplier >= 2 && (
+                                                                <Text as="span" ml={1} color="green.200" textTransform="uppercase" fontSize="xx-s">
+                                                                    ({goalProgress.multiplier}x {t('bookStats.goal.surpassed', 'surpassed')}!)
+                                                                </Text>
+                                                            )}
+                                                        </Text>
+                                                    </Flex>
+                                                )}
+                                            </VStack>
+                                        ) : (
+                                            <Text fontSize="xs" color="gray.500">No active goal set.</Text>
+                                        )}
+                                    </Box>
 
                                     {/* Progress Section */}
                                     <Box w="full">
@@ -417,6 +570,44 @@ const BookStatsPage = () => {
                     </GridItem>
                 </Grid>
             </Container>
+
+            {/* Set Goal Modal */}
+            <Modal isOpen={isOpen} onClose={onClose} isCentered>
+                <ModalOverlay backdropFilter="blur(4px)" />
+                <ModalContent bg="gray.800" color="white">
+                    <ModalHeader>{t('bookStats.goal.modal.title', 'Set Reading Goal')}</ModalHeader>
+                    <ModalCloseButton />
+                    <ModalBody>
+                        <VStack spacing={4}>
+                            <FormControl>
+                                <FormLabel>{t('bookStats.goal.modal.period', 'Goal Period')}</FormLabel>
+                                <RadioGroup value={goalType} onChange={setGoalType}>
+                                    <Stack direction="row" spacing={4}>
+                                        <Radio value="WEEKLY" colorScheme="teal">{t('bookStats.goal.modal.weekly', 'Weekly')}</Radio>
+                                        <Radio value="MONTHLY" colorScheme="teal">{t('bookStats.goal.modal.monthly', 'Monthly')}</Radio>
+                                    </Stack>
+                                </RadioGroup>
+                            </FormControl>
+                            <FormControl>
+                                <FormLabel>{t('bookStats.goal.modal.pages', 'Number of Pages')}</FormLabel>
+                                <Input
+                                    type="number"
+                                    value={goalPages}
+                                    onChange={(e) => setGoalPages(e.target.value)}
+                                    placeholder="e.g. 50"
+                                    focusBorderColor="teal.200"
+                                />
+                            </FormControl>
+                        </VStack>
+                    </ModalBody>
+                    <ModalFooter>
+                        <Button variant="ghost" mr={3} onClick={onClose} color="gray.400">{t('bookStats.goal.modal.cancel', 'Cancel')}</Button>
+                        <Button colorScheme="teal" onClick={handleSaveGoal} isLoading={isSavingGoal}>
+                            {t('bookStats.goal.modal.save', 'Save Goal')}
+                        </Button>
+                    </ModalFooter>
+                </ModalContent>
+            </Modal>
         </Box>
     );
 };
@@ -467,3 +658,6 @@ const StatsCard = ({ icon, label, value, subLabel, color, delay, bg, textColor }
 };
 
 export default BookStatsPage;
+
+// Modal Component would be cleaner separated, but inline for now
+

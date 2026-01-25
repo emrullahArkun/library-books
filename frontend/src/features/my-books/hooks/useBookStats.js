@@ -35,5 +35,19 @@ export const useBookStats = (bookId) => {
         fetchData();
     }, [bookId, token]);
 
-    return { book, sessions, loading, error };
+    const refetch = async () => {
+        setLoading(true);
+        try {
+            const bookData = await booksApi.getById(bookId);
+            setBook(bookData);
+            const sessionsData = await sessionsApi.getByBookId(bookId);
+            if (sessionsData) setSessions(sessionsData);
+        } catch (err) {
+            console.error(err);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    return { book, sessions, loading, error, refetch };
 };

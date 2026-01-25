@@ -51,6 +51,10 @@ public class Book {
     private java.time.LocalDate startDate;
     private Boolean completed;
 
+    // Reading Goal
+    private String readingGoalType; // "WEEKLY" or "MONTHLY"
+    private Integer readingGoalPages;
+
     @OneToMany(mappedBy = "book", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ReadingSession> readingSessions = new ArrayList<>();
 

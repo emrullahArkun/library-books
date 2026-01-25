@@ -9,4 +9,5 @@ export const booksApi = {
     deleteAll: () => apiClient.delete('/api/books'),
     updateProgress: (id, currentPage) => apiClient.patch(`/api/books/${id}/progress`, { currentPage }),
     updateStatus: (id, completed) => apiClient.patch(`/api/books/${id}/status`, { completed }),
+    updateGoal: (id, type, pages) => apiClient.patch(`/api/books/${id}/goal`, { type, pages }),
 };

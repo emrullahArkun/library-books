@@ -8,6 +8,11 @@
         "session": "Reading Session",
         "stats": "Statistics"
     },
+    "home": {
+        "goals": "My Goals",
+        "yourTargets": "Your Goals",
+        "noGoals": "No active goals"
+    },
     "search": {
         "placeholder": "Search by title, author, ISBN...",
         "button": "Search",
@@ -198,6 +203,25 @@
         },
         "notFound": "Book not found",
         "currentPage": "Current Page",
-        "calendarHint": "Tap date for details"
+        "calendarHint": "Tap date for details",
+        "goal": {
+            "title": "Reading Goal",
+            "set": "Set Goal",
+            "edit": "Edit",
+            "weeklyInfo": "Weekly goal reached!",
+            "monthlyInfo": "Monthly goal reached!",
+            "surpassed": "surpassed",
+            "modal": {
+                "title": "Set Reading Goal",
+                "period": "Goal Period",
+                "weekly": "Weekly",
+                "monthly": "Monthly",
+                "pages": "Number of Pages",
+                "cancel": "Cancel",
+                "save": "Save Goal",
+                "success": "Goal updated!",
+                "error": "Failed to update goal"
+            }
+        }
     }
 }

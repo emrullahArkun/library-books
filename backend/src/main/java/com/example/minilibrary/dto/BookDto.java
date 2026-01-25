@@ -13,5 +13,8 @@ public record BookDto(
         Integer pageCount,
         Integer currentPage,
         java.time.LocalDate startDate,
-        Boolean completed) {
+        Boolean completed,
+        String readingGoalType,
+        Integer readingGoalPages,
+        Integer readingGoalProgress) {
 }

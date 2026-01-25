@@ -8,6 +8,11 @@
         "session": "Lese-Session",
         "stats": "Statistik"
     },
+    "home": {
+        "goals": "Meine Ziele",
+        "yourTargets": "Deine Ziele",
+        "noGoals": "Keine aktiven Ziele"
+    },
     "search": {
         "placeholder": "Suche nach Titel, Autor, ISBN...",
         "button": "Suchen",
@@ -198,6 +203,25 @@
         },
         "notFound": "Buch nicht gefunden",
         "currentPage": "Aktuelle Seite",
-        "calendarHint": "Tippe auf ein Datum für Details"
+        "calendarHint": "Tippe auf ein Datum für Details",
+        "goal": {
+            "title": "Leseziel",
+            "set": "Ziel setzen",
+            "edit": "Bearbeiten",
+            "weeklyInfo": "Wochenziel erreicht!",
+            "monthlyInfo": "Monatsziel erreicht!",
+            "surpassed": "übertroffen",
+            "modal": {
+                "title": "Leseziel setzen",
+                "period": "Zeitraum",
+                "weekly": "Wöchentlich",
+                "monthly": "Monatlich",
+                "pages": "Anzahl Seiten",
+                "cancel": "Abbrechen",
+                "save": "Ziel speichern",
+                "success": "Ziel aktualisiert!",
+                "error": "Fehler beim Speichern des Ziels"
+            }
+        }
     }
 }

@@ -78,6 +78,17 @@ public class ReadingSessionService {
 
         if (endPage != null) {
             Book book = session.getBook();
+
+            // Calculate pages read
+            int startPage = book.getCurrentPage() != null ? book.getCurrentPage() : 0;
+            int pagesRead = endPage - startPage;
+            // Ensure non-negative (handling corrections/edge cases)
+            if (pagesRead < 0)
+                pagesRead = 0;
+
+            session.setPagesRead(pagesRead);
+            session.setStatus(SessionStatus.COMPLETED); // Ensuring this is set
+
             book.setCurrentPage(endPage);
             if (book.getPageCount() != null && endPage >= book.getPageCount()) {
                 book.setCompleted(true);

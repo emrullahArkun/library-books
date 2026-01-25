@@ -125,4 +125,15 @@ public class BookService {
         book.setCompleted(completed);
         return bookRepository.save(book);
     }
+
+    @Transactional
+    public Book updateReadingGoal(@NotNull Long id, String type, Integer pages,
+            com.example.minilibrary.model.User user) {
+        Book book = findByIdAndUser(id, user)
+                .orElseThrow(() -> new ResourceNotFoundException("Book not found"));
+
+        book.setReadingGoalType(type);
+        book.setReadingGoalPages(pages);
+        return bookRepository.save(book);
+    }
 }

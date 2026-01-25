@@ -69,6 +69,15 @@ public class BookController {
         return ResponseEntity.ok(bookMapper.toDto(updatedBook));
     }
 
+    @PatchMapping("/{id}/goal")
+    public ResponseEntity<BookDto> updateBookGoal(
+            @PathVariable Long id,
+            @RequestBody @jakarta.validation.Valid com.example.minilibrary.dto.SetGoalRequest request,
+            @CurrentUser User user) {
+        Book updatedBook = bookService.updateReadingGoal(id, request.type(), request.pages(), user);
+        return ResponseEntity.ok(bookMapper.toDto(updatedBook));
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteBook(@PathVariable Long id, @CurrentUser User user) {
         bookService.deleteByIdAndUser(id, user);
