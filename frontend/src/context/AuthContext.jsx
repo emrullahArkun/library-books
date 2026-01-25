@@ -8,6 +8,20 @@ export const AuthProvider = ({ children }) => {
     const [token, setToken] = useState(null);
     const [loading, setLoading] = useState(true);
 
+    const login = useCallback((userData, authToken) => {
+        setUser(userData);
+        setToken(authToken);
+        localStorage.setItem('user', JSON.stringify(userData));
+        localStorage.setItem('token', authToken);
+    }, []);
+
+    const logout = useCallback(() => {
+        setUser(null);
+        setToken(null);
+        localStorage.removeItem('user');
+        localStorage.removeItem('token');
+    }, []);
+
     useEffect(() => {
         const handleUnauthorized = () => {
             logout();
@@ -52,21 +66,6 @@ export const AuthProvider = ({ children }) => {
             window.removeEventListener('auth:unauthorized', handleUnauthorized);
         };
     }, [logout]);
-
-
-    const login = useCallback((userData, authToken) => {
-        setUser(userData);
-        setToken(authToken);
-        localStorage.setItem('user', JSON.stringify(userData));
-        localStorage.setItem('token', authToken);
-    }, []);
-
-    const logout = useCallback(() => {
-        setUser(null);
-        setToken(null);
-        localStorage.removeItem('user');
-        localStorage.removeItem('token');
-    }, []);
 
     const value = useMemo(() => ({
         user,

@@ -19,6 +19,17 @@ export const ReadingSessionProvider = ({ children }) => {
     const timerIntervalRef = useRef(null);
     const broadcastChannelRef = useRef(null);
 
+    const refreshSession = useCallback(async () => {
+        if (!token) return;
+        try {
+            // Don't set loading to true here to avoid flickering UI
+            const session = await sessionsApi.getActive();
+            setActiveSession(session); // apiClient returns null for 204
+        } catch (err) {
+            console.error("Failed to refresh session", err);
+        }
+    }, [token]);
+
     // Initialize BroadcastChannel
     useEffect(() => {
         broadcastChannelRef.current = new BroadcastChannel('reading_session_sync');
@@ -45,17 +56,6 @@ export const ReadingSessionProvider = ({ children }) => {
             window.removeEventListener('focus', refreshSession);
         };
     }, [token, refreshSession]);
-
-    const refreshSession = useCallback(async () => {
-        if (!token) return;
-        try {
-            // Don't set loading to true here to avoid flickering UI
-            const session = await sessionsApi.getActive();
-            setActiveSession(session); // apiClient returns null for 204
-        } catch (err) {
-            console.error("Failed to refresh session", err);
-        }
-    }, [token]);
 
     // Fetch active session on mount/token change
     useEffect(() => {
