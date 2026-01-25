@@ -1,4 +1,4 @@
-import React from 'react';
+
 import './StringLights.css';
 
 export const StringLights = () => {

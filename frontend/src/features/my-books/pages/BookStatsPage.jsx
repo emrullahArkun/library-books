@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useEffect } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
@@ -8,7 +8,6 @@ import {
     Text,
     SimpleGrid,
     Stat,
-    StatLabel,
     StatNumber,
     StatHelpText,
     Image,
@@ -20,14 +19,13 @@ import {
     Icon,
     Progress,
     VStack,
-    HStack,
     Badge,
     Grid,
     GridItem
 } from '@chakra-ui/react';
-import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, AreaChart, Area, CartesianGrid } from 'recharts';
+import { XAxis, YAxis, Tooltip, ResponsiveContainer, AreaChart, Area, CartesianGrid } from 'recharts';
 import { useBookStats } from '../hooks/useBookStats';
-import { FaBookOpen, FaChartLine, FaCheck, FaArrowLeft, FaClock, FaCalendarAlt } from 'react-icons/fa';
+import { FaBookOpen, FaChartLine, FaCheck, FaArrowLeft, FaClock } from 'react-icons/fa';
 import { motion } from 'framer-motion';
 import { getHighResImage } from '../../../utils/googleBooks';
 import ReadingCalendar from '../components/ReadingCalendar';

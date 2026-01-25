@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
@@ -20,14 +20,11 @@ import {
     Grid,
     GridItem,
     Card,
-    CardBody,
     Textarea,
     Image,
-    Progress,
-    Badge,
-    useToast
+    Progress
 } from '@chakra-ui/react';
-import { FaPlay, FaPause, FaStop, FaArrowLeft, FaCheck, FaStickyNote, FaBookOpen, FaClock } from 'react-icons/fa';
+import { FaPlay, FaPause, FaStop, FaArrowLeft, FaCheck, FaStickyNote, FaBookOpen } from 'react-icons/fa';
 import { motion } from 'framer-motion';
 import { useAuth } from '../../../context/AuthContext';
 import { useReadingSession } from '../hooks/useReadingSession';
@@ -43,7 +40,7 @@ const ReadingSessionPage = () => {
     const { id } = useParams();
     const navigate = useNavigate();
     const { token } = useAuth();
-    const toast = useToast();
+    // const toast = useToast();
 
     // State
     const [book, setBook] = useState(null);

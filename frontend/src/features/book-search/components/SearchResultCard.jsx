@@ -1,13 +1,13 @@
-import React, { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { FaBookOpen, FaPlus, FaSpinner } from 'react-icons/fa';
 import { Skeleton } from '@chakra-ui/react';
-import { useTranslation } from 'react-i18next';
+
 import styles from './SearchResultCard.module.css';
 import { getHighResImage } from '../../../utils/googleBooks';
 import { useAnimation } from '../../../context/AnimationContext';
 
 const SearchResultCard = ({ book, onAdd, ownedIsbns }) => {
-    const { t } = useTranslation();
+    // const { t } = useTranslation();
     const info = book.volumeInfo;
     const [isAdding, setIsAdding] = useState(false);
 
@@ -43,9 +43,9 @@ const SearchResultCard = ({ book, onAdd, ownedIsbns }) => {
         ? fallbackUrl
         : (initialThumb ? getHighResImage(initialThumb) : fallbackUrl);
 
-    const [imgSrc, setImgSrc] = React.useState(safeUrl);
+    const [imgSrc, setImgSrc] = useState(safeUrl);
     const { flyBook } = useAnimation();
-    const imageRef = React.useRef(null);
+    const imageRef = useRef(null);
 
     const handleImageError = () => {
         // If we were using OpenLibrary and it failed:
@@ -104,7 +104,7 @@ const SearchResultCard = ({ book, onAdd, ownedIsbns }) => {
     const [imageLoaded, setImageLoaded] = useState(false);
 
     // Reset loading state when src changes
-    React.useEffect(() => {
+    useEffect(() => {
         setImageLoaded(false);
     }, [imgSrc]);
 

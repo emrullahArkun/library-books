@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FaCheck, FaTimes } from 'react-icons/fa';
 import {
@@ -15,8 +15,7 @@ import {
     VStack,
     HStack,
     FormControl,
-    FormLabel,
-    useDisclosure
+    FormLabel
 } from '@chakra-ui/react';
 
 const StopSessionModal = ({ isOpen, onClose, onConfirm, currentBookPage, maxPages }) => {

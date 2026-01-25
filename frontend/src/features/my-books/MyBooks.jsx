@@ -1,4 +1,4 @@
-import React from 'react';
+import { useEffect } from 'react';
 import { FaTrash, FaTrashAlt, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import { useTranslation } from 'react-i18next';
 import { useMyBooks } from './hooks/useMyBooks';
@@ -7,7 +7,6 @@ import MyBookCard from './components/MyBookCard';
 import {
     Container,
     Flex,
-    Heading,
     Button,
     SimpleGrid,
     Center,
@@ -43,7 +42,7 @@ function MyBooks() {
 
     } = useReadingSession();
 
-    React.useEffect(() => {
+    useEffect(() => {
         // Set body background to match Search Page (dark pinstripe)
         document.body.style.backgroundColor = 'var(--accent-800)';
         document.body.style.backgroundImage = `repeating-linear-gradient(

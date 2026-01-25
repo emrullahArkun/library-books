@@ -51,7 +51,7 @@ export const AuthProvider = ({ children }) => {
         return () => {
             window.removeEventListener('auth:unauthorized', handleUnauthorized);
         };
-    }, []);
+    }, [logout]);
 
 
     const login = useCallback((userData, authToken) => {

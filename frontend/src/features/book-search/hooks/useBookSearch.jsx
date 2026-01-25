@@ -65,7 +65,7 @@ export const useBookSearch = () => {
         ).values()
     );
 
-    const totalItems = data?.pages[0]?.totalItems || 0;
+    // const totalItems = data?.pages[0]?.totalItems || 0;
 
     const addBookMutation = useMutation({
         mutationFn: async (book) => {
@@ -107,7 +107,7 @@ export const useBookSearch = () => {
 
             return await booksApi.create(newBook);
         },
-        onSuccess: (data, variables) => {
+        onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['myBooks'] });
             queryClient.invalidateQueries({ queryKey: ['ownedIsbns'] });
             toast.close('add-book-toast');

@@ -4,7 +4,7 @@ test('complete reading session flow', async ({ page }) => {
     const uniqueId = Date.now();
     const email = `testuser${uniqueId}@example.com`;
     const password = 'password123';
-    const bookTitle = `Test Book ${uniqueId}`;
+
 
     // 1. Register
     await page.goto('/register');

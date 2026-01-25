@@ -41,7 +41,7 @@ test('reading session flow: start, timer check, stop with page update', async ({
     // 5. Verify Timer
     // Check that "00:00" appears initially, then changes.
     // Ideally wait for a few seconds.
-    const timerDisplay = page.locator('div.chakra-text, div').filter({ hasText: /00:0/ }).last();
+    await page.locator('div.chakra-text, div').filter({ hasText: /00:0/ }).last();
     // The exact selector depends on implementation. 
     // In ReadingSessionPage.jsx: 6xl font size box.
     // Let's rely on text content changing.

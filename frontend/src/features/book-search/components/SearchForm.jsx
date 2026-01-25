@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { FaSearch } from 'react-icons/fa';
 import { useTranslation } from 'react-i18next';
 import styles from './SearchForm.module.css';

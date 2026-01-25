@@ -13,7 +13,7 @@ export const ReadingSessionProvider = ({ children }) => {
 
     // Pause state derived from activeSession
     const isPaused = activeSession?.status === 'PAUSED';
-    const pausedAt = activeSession?.pausedAt ? new Date(activeSession.pausedAt) : null;
+    // const pausedAt = activeSession?.pausedAt ? new Date(activeSession.pausedAt) : null;
 
     // Refs for timer logic to avoid dependecy/closure issues
     const timerIntervalRef = useRef(null);
@@ -44,9 +44,9 @@ export const ReadingSessionProvider = ({ children }) => {
             window.removeEventListener('storage', handleStorage);
             window.removeEventListener('focus', refreshSession);
         };
-    }, [token]);
+    }, [token, refreshSession]);
 
-    const refreshSession = async () => {
+    const refreshSession = useCallback(async () => {
         if (!token) return;
         try {
             // Don't set loading to true here to avoid flickering UI
@@ -55,7 +55,7 @@ export const ReadingSessionProvider = ({ children }) => {
         } catch (err) {
             console.error("Failed to refresh session", err);
         }
-    };
+    }, [token]);
 
     // Fetch active session on mount/token change
     useEffect(() => {
@@ -65,7 +65,7 @@ export const ReadingSessionProvider = ({ children }) => {
             return;
         }
         refreshSession().finally(() => setLoading(false));
-    }, [token]);
+    }, [token, refreshSession]);
 
     const broadcastUpdate = () => {
         if (broadcastChannelRef.current) {

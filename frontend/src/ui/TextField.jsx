@@ -1,4 +1,4 @@
-import React, { forwardRef } from 'react';
+import { forwardRef } from 'react';
 import './TextField.css';
 
 export const TextField = forwardRef(({
@@ -23,7 +23,7 @@ export const TextField = forwardRef(({
                     ref={ref}
                     id={inputId}
                     type={type}
-                    className={`ui-field__input ${leftIcon ? 'ui-field__input--has-left-icon' : ''}`}
+                    className={`ui-field__input ${className} ${leftIcon ? 'ui-field__input--has-left-icon' : ''}`}
                     placeholder=" " /* Required for css :placeholder-shown trick */
                     {...props}
                 />

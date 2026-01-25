@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { Skeleton, AspectRatio, Box } from '@chakra-ui/react';
 import styles from './SearchResultCard.module.css';
 

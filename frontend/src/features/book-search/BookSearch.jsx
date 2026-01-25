@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import { useCallback } from 'react';
 import styles from './BookSearch.module.css';
 import { useBookSearch } from './hooks/useBookSearch.jsx';
 import SearchForm from './components/SearchForm';

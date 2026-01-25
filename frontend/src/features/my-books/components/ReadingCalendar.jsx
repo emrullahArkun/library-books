@@ -1,9 +1,8 @@
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import {
     Box,
     Grid,
     Text,
-    Button,
     IconButton,
     Flex,
     Badge,
@@ -14,7 +13,6 @@ import {
     PopoverArrow,
     PopoverCloseButton,
     PopoverHeader,
-    useColorModeValue,
     Tooltip
 } from '@chakra-ui/react';
 import { FaChevronLeft, FaChevronRight, FaCalendarAlt } from 'react-icons/fa';
@@ -29,7 +27,7 @@ const ReadingCalendar = ({ sessions }) => {
     // Theme calculations
     const textColor = 'white';
     const subTextColor = 'gray.400';
-    const activeDayColor = 'white';
+    // const activeDayColor = 'white';
 
     // 1. Process Sessions to get "Pages Read per Day" map
     // Logic: Sum of (endPage - startPage) for sessions ending on that day.

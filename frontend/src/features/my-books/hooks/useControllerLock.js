@@ -9,7 +9,7 @@ const generateTabId = () => {
     return 'tab_' + Math.random().toString(36).substr(2, 9);
 };
 
-export const useControllerLock = (activeSession) => {
+export const useControllerLock = () => {
     const [isController, setIsController] = useState(false);
     const [tabId] = useState(generateTabId());
     const [controllerId, setControllerId] = useState(null); // Who is the current controller?

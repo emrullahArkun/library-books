@@ -1,9 +1,9 @@
-import React from 'react';
+
 import styles from './SearchResultDetailsModal.module.css';
-import { useTranslation } from 'react-i18next';
+
 
 const SearchResultDetailsModal = ({ isOpen, onClose, title, description }) => {
-    const { t } = useTranslation();
+    // const { t } = useTranslation();
 
     if (!isOpen) return null;
 

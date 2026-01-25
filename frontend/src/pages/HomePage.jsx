@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import TypewriterTitle from '../shared/components/TypewriterTitle';
 import BookSearch from '../features/book-search/BookSearch';
 import styles from './HomePage.module.css';

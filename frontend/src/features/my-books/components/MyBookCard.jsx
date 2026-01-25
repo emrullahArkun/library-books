@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { FaPlay, FaChartBar } from 'react-icons/fa';
@@ -13,10 +13,8 @@ import {
     Checkbox,
     VStack,
     Center,
-    useColorModeValue,
-    Flex,
-    Tooltip,
-    HStack
+
+    Flex
 } from '@chakra-ui/react';
 import UpdateProgressModal from './UpdateProgressModal';
 
@@ -24,24 +22,14 @@ import UpdateProgressModal from './UpdateProgressModal';
 const MyBookCard = ({
     book,
     isSelected,
-    onToggleSelect,
     onUpdateProgress,
-    onUpdateStatus,
-    activeSession,
-    onStartSession,
-    onStopSession,
-    onExcludeTime,
-    timerTime
+    onToggleSelect
 }) => {
     const { t } = useTranslation();
     const navigate = useNavigate();
     const [isModalOpen, setIsModalOpen] = useState(false);
 
-
-    const [frozenTimerDisplay, setFrozenTimerDisplay] = useState(null);
-    const [stopTime, setStopTime] = useState(null);
-
-    const cardBg = useColorModeValue('white', 'gray.700');
+    // const cardBg = useColorModeValue('white', 'gray.700');
     const hoverTransform = 'translateY(-5px)';
 
     // Removed inline stop logic as it is now handled in ReadingSessionPage
