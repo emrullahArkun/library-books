@@ -11,7 +11,11 @@
     "home": {
         "goals": "Meine Ziele",
         "yourTargets": "Deine Ziele",
-        "noGoals": "Keine aktiven Ziele"
+        "noGoals": "Keine aktiven Ziele",
+        "frequency": {
+            "weekly": "Wöchentlich",
+            "monthly": "Monatlich"
+        }
     },
     "search": {
         "placeholder": "Suche nach Titel, Autor, ISBN...",

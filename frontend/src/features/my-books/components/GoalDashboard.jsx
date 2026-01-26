@@ -131,7 +131,7 @@ const GoalDashboard = () => {
                                             {book.title}
                                         </Text>
                                         <Badge size="sm" colorScheme={book.readingGoalType === 'WEEKLY' ? 'purple' : 'blue'} variant="subtle" fontSize="xx-small">
-                                            {book.readingGoalType === 'WEEKLY' ? 'WEEKLY' : 'MONTHLY'}
+                                            {book.readingGoalType === 'WEEKLY' ? t('home.frequency.weekly') : t('home.frequency.monthly')}
                                         </Badge>
                                     </HStack>
 
