@@ -235,7 +235,6 @@ const BookStatsPage = () => {
     const goalProgress = useMemo(() => {
         if (!book?.readingGoalType || !book?.readingGoalPages || !sessions) return null;
 
-        const now = new Date();
         let startDate = new Date();
         startOfTime(startDate, book.readingGoalType);
 

@@ -12,10 +12,9 @@ import {
     VStack,
     HStack,
     Icon,
-    Badge,
-    Spinner
+    Badge
 } from '@chakra-ui/react';
-import { FaBullseye, FaCheckCircle, FaExclamationCircle } from 'react-icons/fa';
+import { FaCheckCircle } from 'react-icons/fa';
 import { booksApi } from '../../books/api';
 import { useNavigate } from 'react-router-dom';
 
@@ -23,7 +22,6 @@ const GoalDashboard = () => {
     const { t } = useTranslation();
     const navigate = useNavigate();
     const [books, setBooks] = useState([]);
-    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const fetchGoals = async () => {
@@ -55,8 +53,6 @@ const GoalDashboard = () => {
                 setBooks(sorted);
             } catch (error) {
                 console.error("Failed to fetch goals", error);
-            } finally {
-                setLoading(false);
             }
         };
 
