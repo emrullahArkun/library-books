@@ -14,7 +14,8 @@ services:
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
       - SPRING_MAIL_HOST=mailhog
       - SPRING_MAIL_PORT=1025
-      - APP_JWT_SECRET=9a4f2c8d3b7a1e6f4g5h8i0j1k2l3m4n5o6p7q8r9s0t1u2v3w4x5y6z7a8b9c0d # Example secret
+      - SPRING_PROFILES_ACTIVE=dev
+      - APP_JWT_SECRET=${APP_JWT_SECRET:-dev_default_secret_change_me}
     restart: always
 
   mailhog:
@@ -37,12 +38,16 @@ services:
     restart: always
 
   frontend:
-    build: ./frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
     ports:
       - "5173:80"
     volumes:
       - ./frontend:/app
       - /app/node_modules
+    environment:
+      - VITE_API_URL=http://localhost:8080
     depends_on:
       - app
 
