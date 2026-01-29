@@ -16,12 +16,12 @@ export const useBookStats = (bookId) => {
         const fetchData = async () => {
             setLoading(true);
             try {
-                // Fetch book details
-                const bookData = await booksApi.getById(bookId);
-                setBook(bookData);
+                const [bookData, sessionsData] = await Promise.all([
+                    booksApi.getById(bookId),
+                    sessionsApi.getByBookId(bookId)
+                ]);
 
-                // Fetch sessions
-                const sessionsData = await sessionsApi.getByBookId(bookId);
+                setBook(bookData);
                 if (sessionsData) {
                     setSessions(sessionsData);
                 }

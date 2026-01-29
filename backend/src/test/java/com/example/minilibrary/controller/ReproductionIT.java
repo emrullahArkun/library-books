@@ -4,7 +4,6 @@ import com.example.minilibrary.model.ReadingSession;
 import com.example.minilibrary.model.SessionStatus;
 import com.example.minilibrary.model.User;
 import com.example.minilibrary.model.Book;
-import com.example.minilibrary.model.Book;
 import com.example.minilibrary.repository.BookRepository;
 import com.example.minilibrary.repository.ReadingSessionRepository;
 import com.example.minilibrary.repository.UserRepository;

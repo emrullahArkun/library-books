@@ -1,9 +1,14 @@
+import { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import MyBooks from '../features/my-books/MyBooks';
-import BookStatsPage from '../features/my-books/pages/BookStatsPage';
-import ReadingSessionPage from '../features/my-books/pages/ReadingSessionPage';
-import LoginPage from '../features/auth/LoginPage';
-import RegisterPage from '../features/auth/RegisterPage';
+import { Center, Spinner } from '@chakra-ui/react';
+
+// Lazy Load Pages
+const MyBooks = lazy(() => import('../features/my-books/MyBooks'));
+const BookStatsPage = lazy(() => import('../features/my-books/pages/BookStatsPage'));
+const ReadingSessionPage = lazy(() => import('../features/my-books/pages/ReadingSessionPage'));
+const LoginPage = lazy(() => import('../features/auth/LoginPage'));
+const RegisterPage = lazy(() => import('../features/auth/RegisterPage'));
+const HomePage = lazy(() => import('../pages/HomePage'));
 
 import { AuthProvider } from '../context/AuthContext';
 import { AnimationProvider } from '../context/AnimationContext';
@@ -11,8 +16,14 @@ import { ReadingSessionProvider } from '../context/ReadingSessionContext';
 import ProtectedRoute from '../shared/components/ProtectedRoute';
 import PublicRoute from '../shared/components/PublicRoute';
 import MainLayout from '../layouts/MainLayout';
-import HomePage from '../pages/HomePage';
 import './App.css'
+
+// Loading Component
+const PageLoader = () => (
+  <Center h="100vh" w="full" bg="transparent">
+    <Spinner size="xl" color="teal.200" thickness="4px" />
+  </Center>
+);
 
 function App() {
   return (
@@ -21,29 +32,31 @@ function App() {
         <ReadingSessionProvider>
           <Router>
             <div className="app-container">
-              <Routes>
-                {/* Protected Routes Layout */}
-                <Route element={<ProtectedRoute />}>
-                  <Route element={<MainLayout />}>
-                    <Route path="/" element={<HomePage />} />
-                    <Route path="/my-books" element={<MyBooks />} />
-                    <Route path="/books/:id/stats" element={<BookStatsPage />} />
-                    <Route path="/books/:id/session" element={<ReadingSessionPage />} />
+              <Suspense fallback={<PageLoader />}>
+                <Routes>
+                  {/* Protected Routes Layout */}
+                  <Route element={<ProtectedRoute />}>
+                    <Route element={<MainLayout />}>
+                      <Route path="/" element={<HomePage />} />
+                      <Route path="/my-books" element={<MyBooks />} />
+                      <Route path="/books/:id/stats" element={<BookStatsPage />} />
+                      <Route path="/books/:id/session" element={<ReadingSessionPage />} />
+                    </Route>
                   </Route>
-                </Route>
 
-                {/* Public Routes */}
-                <Route path="/login" element={
-                  <PublicRoute>
-                    <LoginPage />
-                  </PublicRoute>
-                } />
-                <Route path="/register" element={
-                  <PublicRoute>
-                    <RegisterPage />
-                  </PublicRoute>
-                } />
-              </Routes>
+                  {/* Public Routes */}
+                  <Route path="/login" element={
+                    <PublicRoute>
+                      <LoginPage />
+                    </PublicRoute>
+                  } />
+                  <Route path="/register" element={
+                    <PublicRoute>
+                      <RegisterPage />
+                    </PublicRoute>
+                  } />
+                </Routes>
+              </Suspense>
             </div>
           </Router>
         </ReadingSessionProvider>
