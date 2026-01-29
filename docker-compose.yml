@@ -14,7 +14,7 @@ services:
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
 
       - SPRING_PROFILES_ACTIVE=dev
-      - APP_JWT_SECRET=${APP_JWT_SECRET:-dev_default_secret_change_me}
+      - APP_JWT_SECRET=${APP_JWT_SECRET}
     restart: always
 
   db:
