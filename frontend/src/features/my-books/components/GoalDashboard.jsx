@@ -70,20 +70,20 @@ const GoalDashboard = () => {
                     as={Button}
                     variant="ghost"
                     color="white"
-                    size="lg"
-                    py={8}
-                    px={6}
+                    py={10}
+                    px={8}
                     _hover={{ bg: 'whiteAlpha.200' }}
                     _active={{ bg: 'whiteAlpha.300' }}
                 >
-                    <HStack spacing={2} align="center">
-                        <Text fontSize="2xl" fontWeight="bold">{t('home.goals', 'My Goals')}</Text>
+                    <HStack spacing={4} align="center">
+                        <Text fontSize="5xl" fontWeight="bold">{t('home.goals', 'My Goals')}</Text>
                         {activeGoalsCount > 0 && (
                             <Badge
                                 colorScheme="teal"
                                 borderRadius="full"
-                                px={2}
-                                fontSize="0.9em"
+                                px={4}
+                                py={1}
+                                fontSize="2xl"
                                 display="flex"
                                 alignItems="center"
                                 justifyContent="center"
