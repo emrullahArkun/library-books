@@ -12,17 +12,9 @@ services:
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=postgres
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
-      - SPRING_MAIL_HOST=mailhog
-      - SPRING_MAIL_PORT=1025
+
       - SPRING_PROFILES_ACTIVE=dev
       - APP_JWT_SECRET=${APP_JWT_SECRET:-dev_default_secret_change_me}
-    restart: always
-
-  mailhog:
-    image: mailhog/mailhog
-    ports:
-      - "1025:1025" # SMTP port
-      - "8025:8025" # Web UI port
     restart: always
 
   db:

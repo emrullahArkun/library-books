@@ -36,9 +36,6 @@ public class BookControllerIntegrationTest {
         @Autowired
         private com.example.minilibrary.repository.UserRepository userRepository;
 
-        @org.springframework.boot.test.mock.mockito.MockBean
-        private org.springframework.mail.javamail.JavaMailSender mailSender;
-
         @Autowired
         private ObjectMapper objectMapper;
 

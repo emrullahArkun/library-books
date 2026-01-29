@@ -26,16 +26,6 @@ public class AuthController {
         return ResponseEntity.ok(Map.of("message", "Registration successful. Please login."));
     }
 
-    @GetMapping("/verify")
-    public ResponseEntity<?> verify(@RequestParam String token) {
-        boolean success = authService.verifyUser(token);
-        if (success) {
-            return ResponseEntity.ok(Map.of("message", "Account verified successfully! You can now login."));
-        } else {
-            return ResponseEntity.badRequest().body(Map.of("error", "Invalid verification token."));
-        }
-    }
-
     @PostMapping("/login")
     public ResponseEntity<?> login(
             @RequestBody @jakarta.validation.Valid com.example.minilibrary.dto.auth.LoginRequest request) {

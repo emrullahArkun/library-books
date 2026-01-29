@@ -63,7 +63,7 @@ function RegisterPage() {
 
             toast({
                 title: t('auth.register.title'),
-                description: t('auth.register.success', "Registration successful! Please check your email."),
+                description: t('auth.register.success', "Registration successful! Please login."),
                 status: "success",
                 duration: 5000,
                 isClosable: true,

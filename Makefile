@@ -6,7 +6,7 @@ dev-backend:
 
 # Start only DB and Mail (if running Backend properly in IDE)
 dev-db:
-	docker-compose up -d db mailhog
+	docker-compose up -d db
 
 # Stop everything
 stop:

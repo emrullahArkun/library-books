@@ -3,9 +3,7 @@ package com.example.minilibrary.model;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "users", indexes = {
-        @Index(name = "idx_user_verification_token", columnList = "verificationToken", unique = true)
-})
+@Table(name = "users")
 @lombok.Getter
 @lombok.Setter
 @lombok.NoArgsConstructor
@@ -25,13 +23,12 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    private boolean enabled = false;
-
-    private String verificationToken;
+    private boolean enabled = true;
 
     public User(String email, String password, Role role) {
         this.email = email;
         this.password = password;
         this.role = role;
+        this.enabled = true;
     }
 }

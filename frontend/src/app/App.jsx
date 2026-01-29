@@ -4,7 +4,7 @@ import BookStatsPage from '../features/my-books/pages/BookStatsPage';
 import ReadingSessionPage from '../features/my-books/pages/ReadingSessionPage';
 import LoginPage from '../features/auth/LoginPage';
 import RegisterPage from '../features/auth/RegisterPage';
-import VerifyEmailPage from '../features/auth/VerifyEmailPage';
+
 import { AuthProvider } from '../context/AuthContext';
 import { AnimationProvider } from '../context/AnimationContext';
 import { ReadingSessionProvider } from '../context/ReadingSessionContext';
@@ -43,7 +43,6 @@ function App() {
                     <RegisterPage />
                   </PublicRoute>
                 } />
-                <Route path="/verify" element={<VerifyEmailPage />} />
               </Routes>
             </div>
           </Router>
