@@ -1,0 +1,18 @@
+version: '3'
+
+tasks:
+  build:
+    desc: Build and start all services (Backend + Frontend) in Docker
+    cmds:
+      - docker-compose up --build
+
+  dev:
+    desc: Start Backend in Docker and Frontend locally
+    cmds:
+      - docker-compose up -d app db # Start backend and db in background
+      - cd frontend && npm run dev # Start frontend locally
+
+  stop:
+    desc: Stop all Docker containers
+    cmds:
+      - docker-compose down
