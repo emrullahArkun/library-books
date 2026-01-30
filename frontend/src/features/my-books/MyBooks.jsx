@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { FaTrash, FaTrashAlt, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import { useTranslation } from 'react-i18next';
 import { useMyBooks } from './hooks/useMyBooks';
@@ -10,11 +10,17 @@ import {
     Center,
     Text,
     HStack,
-    Box
+    Box,
+    IconButton
 } from '@chakra-ui/react';
 
 function MyBooks() {
     const { t } = useTranslation();
+    const containerRef = useRef(null);
+
+    // Initial page size (will be updated by responsive logic)
+    const [dynamicPageSize, setDynamicPageSize] = useState(12);
+
     const {
         books,
         loading,
@@ -29,7 +35,7 @@ function MyBooks() {
         page,
         setPage,
         totalPages
-    } = useMyBooks();
+    } = useMyBooks(dynamicPageSize);
 
     const {
         activeSession,
@@ -58,11 +64,62 @@ function MyBooks() {
         };
     }, []);
 
-    if (loading) return <Center h="200px" color="white">{t('myBooks.loading')}</Center>;
+    // Dynamic Page Size Calculation
+    useEffect(() => {
+        const calculatePageSize = () => {
+            const width = window.innerWidth;
+
+            // Padding based on Chakra breakpoints (approximate)
+            // base: px=4 (16px * 2 = 32px)
+            // md: px=8 (32px * 2 = 64px)
+            const padding = width >= 768 ? 64 : 32;
+            const scrollbarBuffer = 20;
+
+            const availableWidth = width - padding - scrollbarBuffer;
+
+            const cardWidth = 240; // Card fixed width on sm+
+            const gap = 32; // Gap between cards (chakra spacing=8)
+            const itemWidth = cardWidth + gap;
+
+            // How many columns fit?
+            // Formula: N * cardWidth + (N-1) * gap <= availableWidth
+            // N * (cardWidth + gap) - gap <= availableWidth
+            // N * itemWidth <= availableWidth + gap
+            let columns = Math.floor((availableWidth + gap) / itemWidth);
+
+            // On mobile (base), cards are 100% width, so effectively 1 column
+            if (width < 480) { // sm is 30em ~ 480px
+                columns = 1;
+            } else if (columns < 1) {
+                columns = 1;
+            }
+
+            // We want exactly 2 rows
+            const newPageSize = columns * 2;
+
+            // console.log(`[MyBooks] Width: ${width}, Available: ${availableWidth}, Cols: ${columns}, NewSize: ${newPageSize}`);
+
+            setDynamicPageSize(prev => {
+                if (prev !== newPageSize) {
+                    return newPageSize;
+                }
+                return prev;
+            });
+        };
+
+        // Initial calc
+        calculatePageSize();
+
+        // Listener
+        window.addEventListener('resize', calculatePageSize);
+        return () => window.removeEventListener('resize', calculatePageSize);
+    }, []);
+
+    if (loading && page === 0 && books.length === 0) return <Center h="200px" color="white">{t('myBooks.loading')}</Center>;
     if (error) return <Center h="200px" color="red.300">{t('myBooks.error', { message: error })}</Center>;
 
     return (
-        <Box w="100%" px={{ base: 4, md: 8 }} py={6}>
+        <Box w="100%" px={{ base: 4, md: 8 }} py={6} ref={containerRef}>
             <Flex justify="flex-end" align="center" mb={6} wrap="wrap" gap={4}>
 
                 <HStack spacing={4}>
@@ -100,7 +157,7 @@ function MyBooks() {
                 </Center>
             ) : (
                 <>
-                    <Flex wrap="wrap" gap={8} justify="flex-start">
+                    <Flex wrap="wrap" gap={8} justify="flex-start" minH="800px" alignContent="flex-start">
                         {books.map(book => (
                             <Box key={book.id} w={{ base: "100%", sm: "240px" }} flexShrink={0}>
                                 <MyBookCard
@@ -120,27 +177,38 @@ function MyBooks() {
                         ))}
                     </Flex>
 
+                    {/* Simplified Arrow Pagination */}
                     {totalPages > 1 && (
                         <Flex justify="center" align="center" mt={8} gap={4}>
-                            <Button
+                            <IconButton
+                                icon={<FaChevronLeft />}
                                 onClick={() => setPage(p => Math.max(0, p - 1))}
                                 isDisabled={page === 0}
-                                leftIcon={<FaChevronLeft />}
                                 colorScheme="whiteAlpha"
                                 color="white"
-                            >
-                                {t('common.previous', 'Previous')}
-                            </Button>
-                            <Text color="white">
-                                {t('common.pageOf', { current: page + 1, total: totalPages }, `Page ${page + 1} of ${totalPages}`)}
-                            </Text>
-                            <Button
+                                variant="ghost"
+                                fontSize="2xl"
+                                aria-label="Previous Page"
+                                _hover={{
+                                    bg: 'whiteAlpha.200',
+                                    transform: 'scale(1.1)'
+                                }}
+                            />
+
+                            <IconButton
+                                icon={<FaChevronRight />}
                                 onClick={() => setPage(p => Math.min(totalPages - 1, p + 1))}
                                 isDisabled={page >= totalPages - 1}
-                                rightIcon={<FaChevronRight />}
-                            >
-                                {t('common.next', 'Next')}
-                            </Button>
+                                colorScheme="whiteAlpha"
+                                color="white"
+                                variant="ghost"
+                                fontSize="2xl"
+                                aria-label="Next Page"
+                                _hover={{
+                                    bg: 'whiteAlpha.200',
+                                    transform: 'scale(1.1)'
+                                }}
+                            />
                         </Flex>
                     )}
                 </>

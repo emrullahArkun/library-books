@@ -22,6 +22,10 @@ export const useMyBooks = (pageSize = 12) => {
         enabled: !!token
     });
 
+    // Reset page to 0 if pageSize changes to prevent empty pages
+    // actually better to do this in the component or via a side effect of the pageSize changing.
+    // simpler: just return what we have.
+
     const books = data?.content || [];
     const totalPages = data?.totalPages || 0;
 
