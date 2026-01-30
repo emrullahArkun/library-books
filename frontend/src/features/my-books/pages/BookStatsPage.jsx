@@ -17,6 +17,7 @@ import {
 import { booksApi } from '../../books/api';
 import { useBookStats } from '../hooks/useBookStats';
 import { useBookStatsCalculations } from '../hooks/useBookStatsCalculations';
+import { usePinstripeBackground } from '../../../hooks/usePinstripeBackground';
 import { FaBookOpen, FaChartLine, FaArrowLeft, FaClock } from 'react-icons/fa';
 
 import StatsCard from '../components/StatsCard';
@@ -62,24 +63,8 @@ const BookStatsPage = () => {
     };
 
     // Apply brown background style (same as HomePage)
-    useEffect(() => {
-        const originalBgColor = document.body.style.backgroundColor;
-        const originalBgImage = document.body.style.backgroundImage;
-
-        document.body.style.backgroundColor = 'var(--accent-800)';
-        document.body.style.backgroundImage = `repeating-linear-gradient(
-            to right,
-            transparent,
-            transparent 39px,
-            rgba(0, 0, 0, 0.1) 40px,
-            rgba(0, 0, 0, 0.1) 41px
-        )`;
-
-        return () => {
-            document.body.style.backgroundColor = originalBgColor || 'var(--bg-app)';
-            document.body.style.backgroundImage = originalBgImage || 'none';
-        };
-    }, []);
+    // Apply brown background style (same as HomePage)
+    usePinstripeBackground();
 
     // Force styling for dark brown background
     const bgColor = 'transparent';

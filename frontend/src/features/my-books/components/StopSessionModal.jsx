@@ -15,11 +15,13 @@ import {
     VStack,
     HStack,
     FormControl,
-    FormLabel
+    FormLabel,
+    useToast
 } from '@chakra-ui/react';
 
 const StopSessionModal = ({ isOpen, onClose, onConfirm, currentBookPage, maxPages }) => {
     const { t } = useTranslation();
+    const toast = useToast();
     const [step, setStep] = useState(1);
     const [page, setPage] = useState(currentBookPage || 0);
 
@@ -30,7 +32,12 @@ const StopSessionModal = ({ isOpen, onClose, onConfirm, currentBookPage, maxPage
     const handleConfirmPage = () => {
         const pageNum = parseInt(page, 10);
         if (maxPages && pageNum > maxPages) {
-            alert(t('readingSession.stopModal.maxPagesError', { count: maxPages }));
+            toast({
+                title: t('readingSession.stopModal.maxPagesError', { count: maxPages }),
+                status: 'error',
+                duration: 3000,
+                isClosable: true
+            });
             return;
         }
         onConfirm(pageNum);

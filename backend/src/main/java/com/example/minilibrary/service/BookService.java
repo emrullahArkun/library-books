@@ -23,6 +23,7 @@ public class BookService {
     private final BookRepository bookRepository;
     private final BookMapper bookMapper;
     private final ReadingSessionService readingSessionService;
+    private final BookProgressService bookProgressService;
 
     public org.springframework.data.domain.Page<Book> findAllByUser(com.example.minilibrary.model.User user,
             org.springframework.data.domain.Pageable pageable) {
@@ -95,25 +96,7 @@ public class BookService {
         Book book = findByIdAndUser(id, user)
                 .orElseThrow(() -> new ResourceNotFoundException("Book not found"));
 
-        if (currentPage < 0) {
-            throw new IllegalArgumentException("Current page cannot be negative");
-        }
-        if (book.getPageCount() != null && currentPage > book.getPageCount()) {
-            throw new IllegalArgumentException("Current page cannot exceed total page count");
-        }
-
-        book.setCurrentPage(currentPage);
-
-        // Auto-complete/un-complete logic
-        if (book.getPageCount() != null) {
-            if (currentPage >= book.getPageCount()) {
-                book.setCompleted(true);
-            } else {
-                book.setCompleted(false);
-            }
-        }
-
-        return bookRepository.save(book);
+        return bookProgressService.updateProgress(book, currentPage);
     }
 
     @Transactional

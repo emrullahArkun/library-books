@@ -21,6 +21,7 @@ public class ReadingSessionService {
 
     private final ReadingSessionRepository sessionRepository;
     private final BookRepository bookRepository;
+    private final BookProgressService bookProgressService;
 
     @Transactional
     public ReadingSession startSession(User user, Long bookId) {
@@ -89,11 +90,8 @@ public class ReadingSessionService {
             session.setPagesRead(pagesRead);
             session.setStatus(SessionStatus.COMPLETED); // Ensuring this is set
 
-            book.setCurrentPage(endPage);
-            if (book.getPageCount() != null && endPage >= book.getPageCount()) {
-                book.setCompleted(true);
-            }
-            bookRepository.save(book);
+            // Delegate book progress update to BookProgressService
+            bookProgressService.updateProgress(book, endPage);
         }
 
         return sessionRepository.save(session);
@@ -109,7 +107,8 @@ public class ReadingSessionService {
     public ReadingSession pauseSession(User user) {
         ReadingSession session = sessionRepository.findFirstByUserAndStatusInOrderByStartTimeDesc(user,
                 List.of(SessionStatus.ACTIVE))
-                .orElseThrow(() -> new RuntimeException("No active session found to pause"));
+                .orElseThrow(() -> new com.example.minilibrary.exception.IllegalSessionStateException(
+                        "No active session found to pause"));
 
         session.setStatus(SessionStatus.PAUSED);
         session.setPausedAt(Instant.now());
@@ -120,7 +119,8 @@ public class ReadingSessionService {
     public ReadingSession resumeSession(User user) {
         ReadingSession session = sessionRepository.findFirstByUserAndStatusInOrderByStartTimeDesc(user,
                 List.of(SessionStatus.PAUSED))
-                .orElseThrow(() -> new RuntimeException("No paused session found to resume"));
+                .orElseThrow(() -> new com.example.minilibrary.exception.IllegalSessionStateException(
+                        "No paused session found to resume"));
 
         Instant now = Instant.now();
         if (session.getPausedAt() != null) {
@@ -142,7 +142,8 @@ public class ReadingSessionService {
         }
         ReadingSession session = sessionRepository.findFirstByUserAndStatusInOrderByStartTimeDesc(user,
                 List.of(SessionStatus.ACTIVE))
-                .orElseThrow(() -> new RuntimeException("No active session found"));
+                .orElseThrow(() -> new com.example.minilibrary.exception.IllegalSessionStateException(
+                        "No active session found"));
 
         long currentPaused = session.getPausedMillis() != null ? session.getPausedMillis() : 0L;
         session.setPausedMillis(currentPaused + millis);

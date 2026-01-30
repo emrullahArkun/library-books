@@ -52,14 +52,7 @@ function RegisterPage() {
         setIsLoading(true);
 
         try {
-            const response = await authApi.register(email, password);
-
-            let data = null;
-            try { data = await response.json(); } catch { /* ignore */ }
-
-            if (!response.ok) {
-                throw new Error(data?.error || 'Registration failed');
-            }
+            await authApi.register(email, password);
 
             toast({
                 title: t('auth.register.title'),

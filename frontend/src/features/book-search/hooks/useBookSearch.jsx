@@ -40,7 +40,9 @@ export const useBookSearch = () => {
         queryFn: async ({ pageParam = 0 }) => {
             if (!query.trim()) return { items: [], totalItems: 0 };
             const finalQuery = encodeURIComponent(query.trim());
-            const response = await fetch(`https://www.googleapis.com/books/v1/volumes?q=${finalQuery}&startIndex=${pageParam}&maxResults=36`);
+            const apiKey = import.meta.env.VITE_GOOGLE_BOOKS_API_KEY;
+            const keyParam = apiKey ? `&key=${apiKey}` : '';
+            const response = await fetch(`https://www.googleapis.com/books/v1/volumes?q=${finalQuery}&startIndex=${pageParam}&maxResults=36${keyParam}`);
             if (!response.ok) throw new Error('Failed to fetch from Google Books');
             return response.json();
         },

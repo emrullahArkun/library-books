@@ -1,9 +1,7 @@
-import { useState, useEffect } from 'react';
 import {
     Box,
     Heading,
     Text,
-    Image,
     Flex,
     Button,
     Card,
@@ -15,7 +13,7 @@ import {
 import { motion } from 'framer-motion';
 import { FaCheck } from 'react-icons/fa';
 import { useTranslation } from 'react-i18next';
-import { getHighResImage } from '../../../utils/googleBooks';
+import BookCover from '../../../ui/BookCover';
 
 const MotionBox = motion(Box);
 
@@ -29,63 +27,7 @@ const BookStatsSidebar = ({
     subTextColor
 }) => {
     const { t } = useTranslation();
-    const [imgSrc, setImgSrc] = useState('');
 
-    // Helper to determine safe URL and metadata
-    const getCoverInfo = (bookInfo) => {
-        if (!bookInfo) return { safeUrl: '', fallbackUrl: '', preferOpenLibrary: false, googleUrl: '' };
-
-        let fallbackUrl = '';
-        let isbn = bookInfo.isbn;
-        if (!isbn && bookInfo.industryIdentifiers) {
-            const identifier = bookInfo.industryIdentifiers.find(id => id.type === 'ISBN_13') ||
-                bookInfo.industryIdentifiers.find(id => id.type === 'ISBN_10');
-            if (identifier) {
-                isbn = identifier.identifier;
-            }
-        }
-
-        if (isbn) {
-            const cleanIsbn = isbn.replace(/-/g, '');
-            if (cleanIsbn.length >= 10) {
-                fallbackUrl = `https://covers.openlibrary.org/b/isbn/${cleanIsbn}-L.jpg`;
-            }
-        }
-
-        const preferOpenLibrary = (bookInfo.readingModes?.image === false) && fallbackUrl;
-        const googleUrl = bookInfo.coverUrl ? getHighResImage(bookInfo.coverUrl) : '';
-
-        const safeUrl = preferOpenLibrary
-            ? fallbackUrl
-            : (googleUrl || fallbackUrl);
-
-        return { safeUrl, fallbackUrl, preferOpenLibrary, googleUrl };
-    };
-
-    useEffect(() => {
-        if (book) {
-            const { safeUrl } = getCoverInfo(book);
-            setImgSrc(safeUrl);
-        }
-    }, [book]);
-
-    const handleImageError = () => {
-        if (!book) return;
-        const { fallbackUrl, preferOpenLibrary, googleUrl } = getCoverInfo(book);
-
-        if (imgSrc === fallbackUrl) {
-            // We tried OpenLibrary and it failed.
-            if (googleUrl && preferOpenLibrary) {
-                // We preferred OpenLibrary but it failed? Revert to Google.
-                setImgSrc(prev => prev === fallbackUrl ? googleUrl : prev);
-            }
-        } else {
-            // Google failed. Try OpenLibrary.
-            if (fallbackUrl && imgSrc !== fallbackUrl) {
-                setImgSrc(fallbackUrl);
-            }
-        }
-    };
 
     return (
         <MotionBox
@@ -105,14 +47,12 @@ const BookStatsSidebar = ({
                         bg="gray.200"
                         ratio={2 / 3}
                     >
-                        <Image
-                            src={imgSrc || 'https://via.placeholder.com/200x300?text=No+Cover'}
-                            onError={handleImageError}
-                            alt={book.title}
+                        <BookCover
+                            book={book}
                             w="100%"
                             h="auto"
                             objectFit="cover"
-                            fallbackSrc="https://via.placeholder.com/200x300?text=No+Cover"
+                            borderRadius="xl"
                         />
                     </Box>
 

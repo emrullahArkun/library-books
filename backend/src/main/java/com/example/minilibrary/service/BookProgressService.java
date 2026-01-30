@@ -1,0 +1,37 @@
+package com.example.minilibrary.service;
+
+import com.example.minilibrary.model.Book;
+import com.example.minilibrary.repository.BookRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+@Service
+@RequiredArgsConstructor
+public class BookProgressService {
+
+    private final BookRepository bookRepository;
+
+    @Transactional
+    public Book updateProgress(Book book, Integer currentPage) {
+        if (currentPage < 0) {
+            throw new IllegalArgumentException("Current page cannot be negative");
+        }
+        if (book.getPageCount() != null && currentPage > book.getPageCount()) {
+            throw new IllegalArgumentException("Current page cannot exceed total page count");
+        }
+
+        book.setCurrentPage(currentPage);
+
+        // Auto-complete/un-complete logic
+        if (book.getPageCount() != null) {
+            if (currentPage >= book.getPageCount()) {
+                book.setCompleted(true);
+            } else {
+                book.setCompleted(false);
+            }
+        }
+
+        return bookRepository.save(book);
+    }
+}

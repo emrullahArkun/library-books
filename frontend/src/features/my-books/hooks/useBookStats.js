@@ -1,52 +1,45 @@
-import { useState, useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { booksApi } from '../../books/api';
 import { sessionsApi } from '../api/sessionsApi';
 import { useAuth } from '../../../context/AuthContext';
 
+/**
+ * Hook to fetch book details and reading sessions for a specific book.
+ * Uses React Query for caching, automatic re-fetching, and consistent data fetching patterns.
+ */
 export const useBookStats = (bookId) => {
     const { token } = useAuth();
-    const [book, setBook] = useState(null);
-    const [sessions, setSessions] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
 
-    useEffect(() => {
-        if (!token || !bookId) return;
+    // Query for book details
+    const {
+        data: book,
+        isLoading: bookLoading,
+        error: bookError
+    } = useQuery({
+        queryKey: ['book', bookId],
+        queryFn: () => booksApi.getById(bookId),
+        enabled: !!token && !!bookId
+    });
 
-        const fetchData = async () => {
-            setLoading(true);
-            try {
-                const [bookData, sessionsData] = await Promise.all([
-                    booksApi.getById(bookId),
-                    sessionsApi.getByBookId(bookId)
-                ]);
+    // Query for sessions
+    const {
+        data: sessions = [],
+        isLoading: sessionsLoading,
+        error: sessionsError,
+        refetch: refetchSessions
+    } = useQuery({
+        queryKey: ['bookSessions', bookId],
+        queryFn: () => sessionsApi.getByBookId(bookId),
+        enabled: !!token && !!bookId
+    });
 
-                setBook(bookData);
-                if (sessionsData) {
-                    setSessions(sessionsData);
-                }
-            } catch (err) {
-                setError(err);
-                console.error("Error fetching stats:", err);
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchData();
-    }, [bookId, token]);
+    // Combined loading/error states for backward compatibility
+    const loading = bookLoading || sessionsLoading;
+    const error = bookError || sessionsError;
 
-    const refetch = async () => {
-        setLoading(true);
-        try {
-            const bookData = await booksApi.getById(bookId);
-            setBook(bookData);
-            const sessionsData = await sessionsApi.getByBookId(bookId);
-            if (sessionsData) setSessions(sessionsData);
-        } catch (err) {
-            console.error(err);
-        } finally {
-            setLoading(false);
-        }
+    // Refetch function for manual refresh (less needed with React Query but kept for compatibility)
+    const refetch = () => {
+        refetchSessions();
     };
 
     return { book, sessions, loading, error, refetch };

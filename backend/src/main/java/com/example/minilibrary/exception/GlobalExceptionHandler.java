@@ -31,6 +31,12 @@ public class GlobalExceptionHandler {
         return buildErrorResponse(ex, HttpStatus.CONFLICT, request);
     }
 
+    @ExceptionHandler(IllegalSessionStateException.class)
+    public ResponseEntity<ErrorResponse> handleIllegalSessionStateException(IllegalSessionStateException ex,
+            WebRequest request) {
+        return buildErrorResponse(ex, HttpStatus.CONFLICT, request);
+    }
+
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ErrorResponse> handleIllegalArgumentException(IllegalArgumentException ex,
             WebRequest request) {

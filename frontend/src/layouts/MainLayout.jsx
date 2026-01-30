@@ -1,4 +1,5 @@
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { useToast } from '@chakra-ui/react';
 import Navbar from '../shared/components/Navbar';
 import { useReadingSession } from '../features/my-books/hooks/useReadingSession';
 
@@ -9,10 +10,18 @@ const MainLayout = ({ fullWidth = false }) => {
     const location = useLocation();
     const isSessionPage = location.pathname.match(/\/books\/\d+\/session/);
 
+    const toast = useToast();
+
     const handleOverlayClick = (e) => {
         e.preventDefault();
         e.stopPropagation();
-        alert(t('readingSession.exitWarning', 'Beende erst die Session bevor du verlässt!'));
+        toast({
+            title: t('readingSession.exitWarning', 'Beende erst die Session bevor du verlässt!'),
+            status: 'warning',
+            duration: 3000,
+            isClosable: true,
+            position: 'top'
+        });
     };
 
     const { activeSession } = useReadingSession();

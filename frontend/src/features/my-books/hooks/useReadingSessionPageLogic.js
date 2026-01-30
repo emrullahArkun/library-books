@@ -4,11 +4,13 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../context/AuthContext';
 import { useReadingSession } from './useReadingSession';
 import { booksApi } from '../../books/api';
+import { useToast } from '@chakra-ui/react';
 
 export const useReadingSessionPageLogic = (bookId) => {
     const { t } = useTranslation();
     const navigate = useNavigate();
     const { token } = useAuth();
+    const toast = useToast();
 
     // Global Session logic
     const {
@@ -55,20 +57,29 @@ export const useReadingSessionPageLogic = (bookId) => {
     // 2. Check for session mismatch
     useEffect(() => {
         if (activeSession && book && activeSession.bookId !== book.id) {
-            alert(t('readingSession.alerts.mismatch'));
+            toast({
+                title: t('readingSession.alerts.mismatch'),
+                status: 'warning',
+                duration: 5000,
+                isClosable: true
+            });
             navigate('/my-books');
         }
-    }, [activeSession, book, navigate, t]);
+    }, [activeSession, book, navigate, t, toast]);
 
-    // 3. Track active session / Remote end
     useEffect(() => {
         if (activeSession) {
             setWasActive(true);
         } else if (wasActive && !activeSession && !hasStopped) {
-            alert(t('readingSession.alerts.endedRemote'));
+            toast({
+                title: t('readingSession.alerts.endedRemote'),
+                status: 'info',
+                duration: 5000,
+                isClosable: true
+            });
             navigate('/my-books');
         }
-    }, [activeSession, wasActive, hasStopped, navigate, t]);
+    }, [activeSession, wasActive, hasStopped, navigate, t, toast]);
 
     // 4. Auto-start session
     const isStartingRef = useRef(false);
@@ -96,7 +107,13 @@ export const useReadingSessionPageLogic = (bookId) => {
             if (activeSession) {
                 e.preventDefault();
                 window.history.pushState(null, '', window.location.href);
-                alert(t('readingSession.alerts.exitWarning'));
+                toast({
+                    title: t('readingSession.alerts.exitWarning'),
+                    status: 'warning',
+                    duration: 3000,
+                    isClosable: true,
+                    position: 'top'
+                });
             }
         };
 
@@ -110,16 +127,16 @@ export const useReadingSessionPageLogic = (bookId) => {
             window.removeEventListener('beforeunload', handleBeforeUnload);
             window.removeEventListener('popstate', handlePopState);
         };
-    }, [activeSession, t]);
+    }, [activeSession, t, toast]);
 
     // Handlers
     const handleBackClick = () => {
         if (activeSession) {
-            if (window.confirm(t('readingSession.alerts.exitConfirm'))) {
-                navigate('/my-books');
-            }
+            // Signal to UI to show confirmation
+            return true; // Indicates we need confirmation
         } else {
             navigate('/my-books');
+            return false;
         }
     };
 
@@ -145,7 +162,12 @@ export const useReadingSessionPageLogic = (bookId) => {
         setHasStopped(true);
         const success = await stopSession(new Date(), pageNum);
         if (success) {
-            alert(t('readingSession.alerts.summary', { pages: pagesRead > 0 ? pagesRead : 0 }));
+            toast({
+                title: t('readingSession.alerts.summary', { pages: pagesRead > 0 ? pagesRead : 0 }),
+                status: 'success',
+                duration: 5000,
+                isClosable: true
+            });
             navigate('/my-books');
         }
     };

@@ -2,7 +2,8 @@ import { useEffect, useState, useRef } from 'react';
 import { FaTrash, FaTrashAlt, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import { useTranslation } from 'react-i18next';
 import { useMyBooks } from './hooks/useMyBooks';
-import { useReadingSession } from './hooks/useReadingSession';
+import { usePinstripeBackground } from '../../hooks/usePinstripeBackground';
+
 import MyBookCard from './components/MyBookCard';
 import {
     Flex,
@@ -11,7 +12,15 @@ import {
     Text,
     HStack,
     Box,
-    IconButton
+    IconButton,
+    useToast,
+    useDisclosure,
+    AlertDialog,
+    AlertDialogBody,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogContent,
+    AlertDialogOverlay,
 } from '@chakra-ui/react';
 
 function MyBooks() {
@@ -31,38 +40,55 @@ function MyBooks() {
         deleteSelected,
         deleteAll,
         updateBookProgress,
-        updateBookStatus,
         page,
         setPage,
-        totalPages
+        totalPages,
+        deleteError
     } = useMyBooks(dynamicPageSize);
 
-    const {
-        activeSession,
-        startSession,
-        stopSession,
-        formattedTime,
-        excludeTimeFromSession,
+    const toast = useToast();
+    const cancelRef = useRef();
 
-    } = useReadingSession();
+    // Dialog States
+    const { isOpen: isDeleteOpen, onClose: onDeleteClose } = useDisclosure();
+    const { isOpen: isDeleteAllOpen, onOpen: onDeleteAllOpen, onClose: onDeleteAllClose } = useDisclosure();
+    const { isOpen: isDeleteSelectedOpen, onOpen: onDeleteSelectedOpen, onClose: onDeleteSelectedClose } = useDisclosure();
 
+    const [bookToDelete, setBookToDelete] = useState(null);
+
+    // Effect for errors from hook
     useEffect(() => {
-        // Set body background to match Search Page (dark pinstripe)
-        document.body.style.backgroundColor = 'var(--accent-800)';
-        document.body.style.backgroundImage = `repeating-linear-gradient(
-            to right,
-            transparent,
-            transparent 39px,
-            rgba(0, 0, 0, 0.1) 40px,
-            rgba(0, 0, 0, 0.1) 41px
-        )`;
+        if (deleteError) {
+            toast({
+                title: t('myBooks.error', { message: deleteError.message }),
+                status: 'error',
+                duration: 5000,
+                isClosable: true
+            });
+        }
+    }, [deleteError, toast, t]);
 
-        // Reset when leaving
-        return () => {
-            document.body.style.backgroundColor = 'var(--bg-app)';
-            document.body.style.backgroundImage = 'none';
-        };
-    }, []);
+    const confirmDelete = () => {
+        if (bookToDelete) {
+            deleteBook(bookToDelete);
+            setBookToDelete(null);
+            onDeleteClose();
+        }
+    };
+
+    const confirmDeleteSelected = () => {
+        deleteSelected();
+        onDeleteSelectedClose();
+    };
+
+    const confirmDeleteAll = () => {
+        deleteAll();
+        onDeleteAllClose();
+    };
+
+
+
+    usePinstripeBackground();
 
     // Dynamic Page Size Calculation
     useEffect(() => {
@@ -126,7 +152,7 @@ function MyBooks() {
                     {selectedBooks.size > 0 && (
                         <Button
                             leftIcon={<FaTrash />}
-                            onClick={deleteSelected}
+                            onClick={onDeleteSelectedOpen}
                             bg="whiteAlpha.200"
                             color="white"
                             _hover={{ bg: 'whiteAlpha.300' }}
@@ -138,7 +164,7 @@ function MyBooks() {
                     )}
                     <Button
                         leftIcon={<FaTrashAlt />}
-                        onClick={deleteAll}
+                        onClick={onDeleteAllOpen}
                         bg="whiteAlpha.200"
                         color="white"
                         _hover={{ bg: 'whiteAlpha.300' }}
@@ -165,13 +191,6 @@ function MyBooks() {
                                     isSelected={selectedBooks.has(book.id)}
                                     onToggleSelect={toggleSelection}
                                     onUpdateProgress={updateBookProgress}
-                                    onUpdateStatus={updateBookStatus}
-                                    activeSession={activeSession}
-                                    onStartSession={startSession}
-                                    onStopSession={stopSession}
-                                    onExcludeTime={excludeTimeFromSession}
-                                    timerTime={formattedTime}
-                                    onDelete={deleteBook}
                                 />
                             </Box>
                         ))}
@@ -211,6 +230,95 @@ function MyBooks() {
                             />
                         </Flex>
                     )}
+
+                    {/* CONFIRMATION DIALOGS */}
+
+                    {/* Delete Single Book */}
+                    <AlertDialog
+                        isOpen={isDeleteOpen}
+                        leastDestructiveRef={cancelRef}
+                        onClose={onDeleteClose}
+                        isCentered
+                    >
+                        <AlertDialogOverlay>
+                            <AlertDialogContent>
+                                <AlertDialogHeader fontSize='lg' fontWeight='bold'>
+                                    {t('myBooks.confirmDeleteTitle', 'Delete Book?')}
+                                </AlertDialogHeader>
+
+                                <AlertDialogBody>
+                                    {t('myBooks.confirmDelete', 'Are you sure you want to delete this book?')}
+                                </AlertDialogBody>
+
+                                <AlertDialogFooter>
+                                    <Button ref={cancelRef} onClick={onDeleteClose}>
+                                        {t('common.cancel', 'Cancel')}
+                                    </Button>
+                                    <Button colorScheme='red' onClick={confirmDelete} ml={3}>
+                                        {t('common.delete', 'Delete')}
+                                    </Button>
+                                </AlertDialogFooter>
+                            </AlertDialogContent>
+                        </AlertDialogOverlay>
+                    </AlertDialog>
+
+                    {/* Delete Selected */}
+                    <AlertDialog
+                        isOpen={isDeleteSelectedOpen}
+                        leastDestructiveRef={cancelRef}
+                        onClose={onDeleteSelectedClose}
+                        isCentered
+                    >
+                        <AlertDialogOverlay>
+                            <AlertDialogContent>
+                                <AlertDialogHeader fontSize='lg' fontWeight='bold'>
+                                    {t('myBooks.confirmDeleteSelectedTitle', 'Delete Selected Books?')}
+                                </AlertDialogHeader>
+
+                                <AlertDialogBody>
+                                    {t('myBooks.confirmDeleteSelected', { count: selectedBooks.size })}
+                                </AlertDialogBody>
+
+                                <AlertDialogFooter>
+                                    <Button ref={cancelRef} onClick={onDeleteSelectedClose}>
+                                        {t('common.cancel', 'Cancel')}
+                                    </Button>
+                                    <Button colorScheme='red' onClick={confirmDeleteSelected} ml={3}>
+                                        {t('common.delete', 'Delete')}
+                                    </Button>
+                                </AlertDialogFooter>
+                            </AlertDialogContent>
+                        </AlertDialogOverlay>
+                    </AlertDialog>
+
+                    {/* Delete All */}
+                    <AlertDialog
+                        isOpen={isDeleteAllOpen}
+                        leastDestructiveRef={cancelRef}
+                        onClose={onDeleteAllClose}
+                        isCentered
+                    >
+                        <AlertDialogOverlay>
+                            <AlertDialogContent>
+                                <AlertDialogHeader fontSize='lg' fontWeight='bold'>
+                                    {t('myBooks.confirmDeleteAllTitle', 'Delete ALL Books?')}
+                                </AlertDialogHeader>
+
+                                <AlertDialogBody>
+                                    {t('myBooks.confirmDeleteAll', 'Are you sure you want to delete ALL books? This cannot be undone.')}
+                                </AlertDialogBody>
+
+                                <AlertDialogFooter>
+                                    <Button ref={cancelRef} onClick={onDeleteAllClose}>
+                                        {t('common.cancel', 'Cancel')}
+                                    </Button>
+                                    <Button colorScheme='red' onClick={confirmDeleteAll} ml={3}>
+                                        {t('common.delete', 'Delete All')}
+                                    </Button>
+                                </AlertDialogFooter>
+                            </AlertDialogContent>
+                        </AlertDialogOverlay>
+                    </AlertDialog>
                 </>
             )}
         </Box>

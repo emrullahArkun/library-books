@@ -1,5 +1,5 @@
-import { useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useRef } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
     Box,
@@ -10,10 +10,18 @@ import {
     VStack,
     Icon,
     Spinner,
-    Flex
+    Flex,
+    AlertDialog,
+    AlertDialogBody,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogContent,
+    AlertDialogOverlay,
+    useDisclosure
 } from '@chakra-ui/react';
 import { FaArrowLeft } from 'react-icons/fa';
 import { useReadingSessionPageLogic } from '../hooks/useReadingSessionPageLogic';
+import { usePinstripeBackground } from '../../../hooks/usePinstripeBackground';
 
 import SessionBookSidebar from '../components/SessionBookSidebar';
 import SessionTimerCard from '../components/SessionTimerCard';
@@ -44,25 +52,25 @@ const ReadingSessionPage = () => {
         handleConfirmStop
     } = useReadingSessionPageLogic(id);
 
+    const navigate = useNavigate();
+    const { isOpen: isExitConfirmOpen, onOpen: onExitConfirmOpen, onClose: onExitConfirmClose } = useDisclosure();
+    const cancelRef = useRef();
+
+    const onBack = () => {
+        const needsConfirm = handleBackClick();
+        if (needsConfirm) {
+            onExitConfirmOpen();
+        }
+    };
+
+    const confirmExit = () => {
+        onExitConfirmClose();
+        navigate('/my-books');
+    };
+
     // Apply brown background style (same as HomePage and BookStatsPage)
-    useEffect(() => {
-        const originalBgColor = document.body.style.backgroundColor;
-        const originalBgImage = document.body.style.backgroundImage;
-
-        document.body.style.backgroundColor = 'var(--accent-800)';
-        document.body.style.backgroundImage = `repeating-linear-gradient(
-            to right,
-            transparent,
-            transparent 39px,
-            rgba(0, 0, 0, 0.1) 40px,
-            rgba(0, 0, 0, 0.1) 41px
-        )`;
-
-        return () => {
-            document.body.style.backgroundColor = originalBgColor || 'var(--bg-app)';
-            document.body.style.backgroundImage = originalBgImage || 'none';
-        };
-    }, []);
+    // Apply brown background style (same as HomePage and BookStatsPage)
+    usePinstripeBackground();
 
     const bgColor = 'transparent';
     const cardBg = 'whiteAlpha.200'; // Glass effect
@@ -90,7 +98,7 @@ const ReadingSessionPage = () => {
                     variant="ghost"
                     color={subTextColor}
                     _hover={{ color: brandColor, bg: 'whiteAlpha.100' }}
-                    onClick={handleBackClick}
+                    onClick={onBack}
                     pl={0}
                 >
                     {t('myBooks.title')}
@@ -140,6 +148,35 @@ const ReadingSessionPage = () => {
                         </VStack>
                     </GridItem>
                 </Grid>
+
+                {/* Exit Confirmation Dialog */}
+                <AlertDialog
+                    isOpen={isExitConfirmOpen}
+                    leastDestructiveRef={cancelRef}
+                    onClose={onExitConfirmClose}
+                    isCentered
+                >
+                    <AlertDialogOverlay>
+                        <AlertDialogContent>
+                            <AlertDialogHeader fontSize='lg' fontWeight='bold'>
+                                {t('readingSession.alerts.exitConfirmTitle', 'End Session?')}
+                            </AlertDialogHeader>
+
+                            <AlertDialogBody>
+                                {t('readingSession.alerts.exitConfirm', 'Are you sure you want to leave? The session is still running.')}
+                            </AlertDialogBody>
+
+                            <AlertDialogFooter>
+                                <Button ref={cancelRef} onClick={onExitConfirmClose}>
+                                    {t('common.cancel', 'Cancel')}
+                                </Button>
+                                <Button colorScheme='red' onClick={confirmExit} ml={3}>
+                                    {t('common.leave', 'Leave')}
+                                </Button>
+                            </AlertDialogFooter>
+                        </AlertDialogContent>
+                    </AlertDialogOverlay>
+                </AlertDialog>
             </Container>
         </Box>
     );

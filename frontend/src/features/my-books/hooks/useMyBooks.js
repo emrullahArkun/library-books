@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { useAuth } from '../../../context/AuthContext';
 import { useQuery, useMutation, useQueryClient, keepPreviousData } from '@tanstack/react-query';
-import { useTranslation } from 'react-i18next';
 import { booksApi } from '../../books/api';
 
 export const useMyBooks = (pageSize = 12) => {
@@ -9,7 +8,6 @@ export const useMyBooks = (pageSize = 12) => {
     const [selectedBooks, setSelectedBooks] = useState(new Set());
     const { token } = useAuth();
     const queryClient = useQueryClient();
-    const { t } = useTranslation();
 
     const { data, isLoading: loading, error } = useQuery({
         queryKey: ['myBooks', token, page, pageSize],
@@ -50,7 +48,7 @@ export const useMyBooks = (pageSize = 12) => {
             if (context?.previousData) {
                 queryClient.setQueryData(['myBooks', token, page, pageSize], context.previousData);
             }
-            alert(t('myBooks.deleteFailed', { message: err.message }));
+            // Propagate error to be handled by component
         },
         onSettled: () => {
             queryClient.invalidateQueries({ queryKey: ['myBooks'] });
@@ -71,7 +69,6 @@ export const useMyBooks = (pageSize = 12) => {
             if (context?.previousData) {
                 queryClient.setQueryData(['myBooks', token, page, pageSize], context.previousData);
             }
-            alert(t('myBooks.deleteAllFailed', { message: err.message }));
         },
         onSettled: () => {
             queryClient.invalidateQueries({ queryKey: ['myBooks'] });
@@ -99,7 +96,6 @@ export const useMyBooks = (pageSize = 12) => {
             if (context?.previousData) {
                 queryClient.setQueryData(['myBooks', token, page, pageSize], context.previousData);
             }
-            alert(t('myBooks.updateProgressFailed', { message: err.message }));
         },
         onSettled: () => {
             queryClient.invalidateQueries({ queryKey: ['myBooks'] });
@@ -126,7 +122,6 @@ export const useMyBooks = (pageSize = 12) => {
             if (context?.previousData) {
                 queryClient.setQueryData(['myBooks', token, page, pageSize], context.previousData);
             }
-            alert(t('myBooks.updateStatusFailed', { message: err.message }));
         },
         onSettled: () => {
             queryClient.invalidateQueries({ queryKey: ['myBooks'] });
@@ -145,8 +140,7 @@ export const useMyBooks = (pageSize = 12) => {
         });
     };
 
-    const deleteBook = async (id) => {
-        if (!window.confirm(t('myBooks.confirmDelete'))) return;
+    const deleteBook = (id) => {
         deleteMutation.mutate(id);
         setSelectedBooks(prev => {
             const next = new Set(prev);
@@ -156,7 +150,6 @@ export const useMyBooks = (pageSize = 12) => {
     };
 
     const deleteSelected = async () => {
-        if (!window.confirm(t('myBooks.confirmDeleteSelected', { count: selectedBooks.size }))) return;
 
         // Optimistic Update
         const ids = Array.from(selectedBooks);
@@ -187,7 +180,8 @@ export const useMyBooks = (pageSize = 12) => {
 
         if (failed) {
             console.error('Some deletions failed', results);
-            alert(t('myBooks.deleteFailed', { message: 'Some items could not be deleted.' }));
+            console.error('Some deletions failed', results);
+            // Component should check mutation state or we can return a promise result
             // Rollback if failed
             if (previousData) {
                 queryClient.setQueryData(['myBooks', token, page, pageSize], previousData);
@@ -199,7 +193,6 @@ export const useMyBooks = (pageSize = 12) => {
     };
 
     const deleteAll = () => {
-        if (!window.confirm(t('myBooks.confirmDeleteAll'))) return;
         deleteAllMutation.mutate();
     };
 
@@ -224,6 +217,9 @@ export const useMyBooks = (pageSize = 12) => {
         updateBookStatus,
         page,
         setPage,
-        totalPages
+        totalPages,
+        // Expose mutation states so component can show toasts/errors
+        deleteError: deleteMutation.error,
+        updateProgressError: updateProgressMutation.error
     };
 };
