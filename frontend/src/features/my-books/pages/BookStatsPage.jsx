@@ -98,8 +98,8 @@ const BookStatsPage = () => {
     if (!book) return <Box textAlign="center" py={20} color={textColor}>{t('bookStats.notFound')}</Box>;
 
     return (
-        <Box bg={bgColor} minH="100vh" py={8} px={{ base: 4, md: 8 }}>
-            <Container maxW="container.xl">
+        <Box bg={bgColor} minH="100vh" py={8} px={{ base: 4, md: 8 }} w="100%">
+            <Box w="100%">
 
                 {/* Header / Nav */}
                 <Button
@@ -114,7 +114,7 @@ const BookStatsPage = () => {
                     {t('myBooks.title')}
                 </Button>
 
-                <Grid templateColumns={{ base: "1fr", lg: "300px 1fr" }} gap={8} alignItems="start">
+                <Grid templateColumns={{ base: "1fr", lg: "300px 1fr" }} gap={8} alignItems="start" w="100%">
                     {/* Left Sidebar: Detailed Book Info */}
                     <GridItem position={{ lg: "sticky" }} top="20px">
                         <BookStatsSidebar
@@ -181,7 +181,7 @@ const BookStatsPage = () => {
                         </VStack>
                     </GridItem>
                 </Grid>
-            </Container>
+            </Box>
 
             {/* Set Goal Modal */}
             <BookGoalModal

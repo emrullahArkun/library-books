@@ -36,8 +36,13 @@ function App() {
                 <Routes>
                   {/* Protected Routes Layout */}
                   <Route element={<ProtectedRoute />}>
+                    {/* Standard Layout */}
                     <Route element={<MainLayout />}>
                       <Route path="/" element={<HomePage />} />
+                    </Route>
+
+                    {/* Full Width Layout */}
+                    <Route element={<MainLayout fullWidth={true} />}>
                       <Route path="/my-books" element={<MyBooks />} />
                       <Route path="/books/:id/stats" element={<BookStatsPage />} />
                       <Route path="/books/:id/session" element={<ReadingSessionPage />} />

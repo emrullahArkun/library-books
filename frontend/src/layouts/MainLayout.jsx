@@ -4,7 +4,7 @@ import { useReadingSession } from '../features/my-books/hooks/useReadingSession'
 
 import { useTranslation } from 'react-i18next';
 
-const MainLayout = () => {
+const MainLayout = ({ fullWidth = false }) => {
     const { t } = useTranslation();
     const location = useLocation();
     const isSessionPage = location.pathname.match(/\/books\/\d+\/session/);
@@ -73,7 +73,10 @@ const MainLayout = () => {
                     />
                 )}
             </div>
-            <div className="main-layout-content">
+            <div
+                className="main-layout-content"
+                style={fullWidth ? { maxWidth: '100%', paddingLeft: 0, paddingRight: 0 } : undefined}
+            >
                 <Outlet />
             </div>
         </>

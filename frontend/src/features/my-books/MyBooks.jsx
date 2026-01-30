@@ -5,10 +5,8 @@ import { useMyBooks } from './hooks/useMyBooks';
 import { useReadingSession } from './hooks/useReadingSession';
 import MyBookCard from './components/MyBookCard';
 import {
-    Container,
     Flex,
     Button,
-    SimpleGrid,
     Center,
     Text,
     HStack,
@@ -64,7 +62,7 @@ function MyBooks() {
     if (error) return <Center h="200px" color="red.300">{t('myBooks.error', { message: error })}</Center>;
 
     return (
-        <Container maxW="container.xl" py={4}>
+        <Box w="100%" px={{ base: 4, md: 8 }} py={6}>
             <Flex justify="flex-end" align="center" mb={6} wrap="wrap" gap={4}>
 
                 <HStack spacing={4}>
@@ -102,9 +100,9 @@ function MyBooks() {
                 </Center>
             ) : (
                 <>
-                    <SimpleGrid columns={{ base: 1, sm: 2, md: 3, lg: 4 }} spacing={8}>
+                    <Flex wrap="wrap" gap={8} justify="flex-start">
                         {books.map(book => (
-                            <Box key={book.id} w="100%">
+                            <Box key={book.id} w={{ base: "100%", sm: "240px" }} flexShrink={0}>
                                 <MyBookCard
                                     book={book}
                                     isSelected={selectedBooks.has(book.id)}
@@ -120,7 +118,7 @@ function MyBooks() {
                                 />
                             </Box>
                         ))}
-                    </SimpleGrid>
+                    </Flex>
 
                     {totalPages > 1 && (
                         <Flex justify="center" align="center" mt={8} gap={4}>
@@ -147,7 +145,7 @@ function MyBooks() {
                     )}
                 </>
             )}
-        </Container>
+        </Box>
     );
 }
 
