@@ -110,7 +110,7 @@ public class BookService {
     }
 
     @Transactional
-    public Book updateReadingGoal(@NotNull Long id, String type, Integer pages,
+    public Book updateReadingGoal(@NotNull Long id, com.example.minilibrary.model.ReadingGoalType type, Integer pages,
             com.example.minilibrary.model.User user) {
         Book book = findByIdAndUser(id, user)
                 .orElseThrow(() -> new ResourceNotFoundException("Book not found"));

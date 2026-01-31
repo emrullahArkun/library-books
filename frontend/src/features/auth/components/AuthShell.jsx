@@ -1,6 +1,6 @@
 import { Box, Flex } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
-import LanguageSwitcher from './LanguageSwitcher';
+import LanguageSwitcher from '../../../shared/components/LanguageSwitcher';
 
 const MotionBox = motion.create(Box);
 
@@ -19,7 +19,7 @@ function AuthShell({ children }) {
             overflow="hidden"
             pt={{ base: "15vh", md: "12vh" }}
         >
-            <LanguageSwitcher />
+            <LanguageSwitcher variant="auth" />
 
             <MotionBox
                 initial={{ opacity: 0, y: 20 }}

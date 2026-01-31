@@ -1,4 +1,4 @@
-import { forwardRef } from 'react';
+import { forwardRef, useId } from 'react';
 import './TextField.css';
 
 export const TextField = forwardRef(({
@@ -12,7 +12,8 @@ export const TextField = forwardRef(({
     containerClassName = '',
     ...props
 }, ref) => {
-    const inputId = id || props.name || Math.random().toString(36).substr(2, 9);
+    const generatedId = useId();
+    const inputId = id || props.name || generatedId;
 
     return (
         <div className={`ui-field ${containerClassName}`}>

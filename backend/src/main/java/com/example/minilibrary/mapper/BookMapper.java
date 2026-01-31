@@ -34,7 +34,7 @@ public abstract class BookMapper {
         java.time.LocalDate now = java.time.LocalDate.now();
         java.time.LocalDateTime startOfPeriod;
 
-        if ("WEEKLY".equals(book.getReadingGoalType())) {
+        if (com.example.minilibrary.model.ReadingGoalType.WEEKLY == book.getReadingGoalType()) {
             // Monday is 1. If Sunday(7), go back 6 days.
             java.time.LocalDate monday = now
                     .with(java.time.temporal.TemporalAdjusters.previousOrSame(java.time.DayOfWeek.MONDAY));

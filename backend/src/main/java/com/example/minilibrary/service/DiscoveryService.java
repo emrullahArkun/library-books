@@ -101,11 +101,13 @@ public class DiscoveryService {
 
     // ==================== GOOGLE BOOKS RECOMMENDATIONS ====================
 
+    // ==================== GOOGLE BOOKS RECOMMENDATIONS ====================
+
     /**
      * Fetch book recommendations by author, excluding already owned books
      */
-    @SuppressWarnings("unchecked")
-    public List<Map<String, Object>> getRecommendationsByAuthor(String author, User user, int maxResults) {
+    public List<com.example.minilibrary.dto.RecommendedBookDto> getRecommendationsByAuthor(String author, User user,
+            int maxResults) {
         Set<String> ownedIsbns = new HashSet<>(bookRepository.findAllIsbnsByUser(user));
         String url = googleBooksApiUrl + "?q=inauthor:" + encodeParam(author) + "&maxResults=" + maxResults;
         return fetchAndFilterBooks(url, ownedIsbns);
@@ -114,8 +116,8 @@ public class DiscoveryService {
     /**
      * Fetch book recommendations by category/subject
      */
-    @SuppressWarnings("unchecked")
-    public List<Map<String, Object>> getRecommendationsByCategory(String category, User user, int maxResults) {
+    public List<com.example.minilibrary.dto.RecommendedBookDto> getRecommendationsByCategory(String category, User user,
+            int maxResults) {
         Set<String> ownedIsbns = new HashSet<>(bookRepository.findAllIsbnsByUser(user));
         String url = googleBooksApiUrl + "?q=subject:" + encodeParam(category) + "&maxResults=" + maxResults;
         return fetchAndFilterBooks(url, ownedIsbns);
@@ -124,8 +126,8 @@ public class DiscoveryService {
     /**
      * Fetch book recommendations by search query
      */
-    @SuppressWarnings("unchecked")
-    public List<Map<String, Object>> getRecommendationsByQuery(String query, User user, int maxResults) {
+    public List<com.example.minilibrary.dto.RecommendedBookDto> getRecommendationsByQuery(String query, User user,
+            int maxResults) {
         Set<String> ownedIsbns = new HashSet<>(bookRepository.findAllIsbnsByUser(user));
         String url = googleBooksApiUrl + "?q=" + encodeParam(query) + "&maxResults=" + maxResults;
         return fetchAndFilterBooks(url, ownedIsbns);
@@ -134,7 +136,8 @@ public class DiscoveryService {
     // ==================== HELPER METHODS ====================
 
     @SuppressWarnings("unchecked")
-    private List<Map<String, Object>> fetchAndFilterBooks(String url, Set<String> excludeIsbns) {
+    private List<com.example.minilibrary.dto.RecommendedBookDto> fetchAndFilterBooks(String url,
+            Set<String> excludeIsbns) {
         try {
             Map<String, Object> response = restTemplate.getForObject(url, Map.class);
             if (response == null || !response.containsKey("items")) {
@@ -143,9 +146,9 @@ public class DiscoveryService {
 
             List<Map<String, Object>> items = (List<Map<String, Object>>) response.get("items");
             return items.stream()
-                    .map(this::mapToSimpleBook)
+                    .map(this::mapToDto)
                     .filter(book -> {
-                        String isbn = (String) book.get("isbn");
+                        String isbn = book.isbn();
                         return isbn == null || !excludeIsbns.contains(isbn);
                     })
                     .collect(Collectors.toList());
@@ -156,32 +159,33 @@ public class DiscoveryService {
     }
 
     @SuppressWarnings("unchecked")
-    private Map<String, Object> mapToSimpleBook(Map<String, Object> item) {
+    private com.example.minilibrary.dto.RecommendedBookDto mapToDto(Map<String, Object> item) {
         Map<String, Object> volumeInfo = (Map<String, Object>) item.get("volumeInfo");
-        Map<String, Object> result = new HashMap<>();
 
-        result.put("title", volumeInfo.get("title"));
-        result.put("authors", volumeInfo.get("authors"));
-        result.put("categories", volumeInfo.get("categories"));
-        result.put("publishedDate", volumeInfo.get("publishedDate"));
-        result.put("pageCount", volumeInfo.get("pageCount"));
+        String title = (String) volumeInfo.get("title");
+        List<String> authors = (List<String>) volumeInfo.get("authors");
+        List<String> categories = (List<String>) volumeInfo.get("categories");
+        String publishedDate = (String) volumeInfo.get("publishedDate");
+        Integer pageCount = (Integer) volumeInfo.get("pageCount");
 
-        // Extract ISBN
+        String isbn = null;
         List<Map<String, String>> identifiers = (List<Map<String, String>>) volumeInfo.get("industryIdentifiers");
         if (identifiers != null) {
-            identifiers.stream()
+            isbn = identifiers.stream()
                     .filter(id -> "ISBN_13".equals(id.get("type")) || "ISBN_10".equals(id.get("type")))
+                    .map(id -> id.get("identifier"))
                     .findFirst()
-                    .ifPresent(id -> result.put("isbn", id.get("identifier")));
+                    .orElse(null);
         }
 
-        // Cover image
+        String coverUrl = null;
         Map<String, String> imageLinks = (Map<String, String>) volumeInfo.get("imageLinks");
         if (imageLinks != null) {
-            result.put("coverUrl", imageLinks.getOrDefault("thumbnail", imageLinks.get("smallThumbnail")));
+            coverUrl = imageLinks.getOrDefault("thumbnail", imageLinks.get("smallThumbnail"));
         }
 
-        return result;
+        return new com.example.minilibrary.dto.RecommendedBookDto(title, authors, categories, publishedDate, pageCount,
+                isbn, coverUrl);
     }
 
     private String encodeParam(String param) {

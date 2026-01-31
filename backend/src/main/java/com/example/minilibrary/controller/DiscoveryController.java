@@ -7,9 +7,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/discovery")
@@ -33,98 +32,79 @@ public class DiscoveryController {
     /**
      * Get recommendations based on top authors in user's collection
      */
+    /**
+     * Get recommendations based on top authors in user's collection
+     */
     @GetMapping("/authors")
-    public ResponseEntity<Map<String, Object>> getAuthorRecommendations(@CurrentUser User user) {
+    public ResponseEntity<com.example.minilibrary.dto.DiscoveryResponse.AuthorSection> getAuthorRecommendations(
+            @CurrentUser User user) {
         List<String> topAuthors = discoveryService.getTopAuthors(user, 3);
+        List<com.example.minilibrary.dto.RecommendedBookDto> books = topAuthors.isEmpty()
+                ? java.util.Collections.emptyList()
+                : discoveryService.getRecommendationsByAuthor(topAuthors.get(0), user, MAX_RESULTS);
 
-        Map<String, Object> response = new HashMap<>();
-        response.put("authors", topAuthors);
-
-        if (!topAuthors.isEmpty()) {
-            // Get recommendations for the top author
-            List<Map<String, Object>> books = discoveryService.getRecommendationsByAuthor(
-                    topAuthors.get(0), user, MAX_RESULTS);
-            response.put("books", books);
-        }
-
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(new com.example.minilibrary.dto.DiscoveryResponse.AuthorSection(topAuthors, books));
     }
 
     /**
      * Get recommendations based on top categories/genres in user's collection
      */
     @GetMapping("/categories")
-    public ResponseEntity<Map<String, Object>> getCategoryRecommendations(@CurrentUser User user) {
+    public ResponseEntity<com.example.minilibrary.dto.DiscoveryResponse.CategorySection> getCategoryRecommendations(
+            @CurrentUser User user) {
         List<String> topCategories = discoveryService.getTopCategories(user, 3);
+        List<com.example.minilibrary.dto.RecommendedBookDto> books = topCategories.isEmpty()
+                ? java.util.Collections.emptyList()
+                : discoveryService.getRecommendationsByCategory(topCategories.get(0), user, MAX_RESULTS);
 
-        Map<String, Object> response = new HashMap<>();
-        response.put("categories", topCategories);
-
-        if (!topCategories.isEmpty()) {
-            List<Map<String, Object>> books = discoveryService.getRecommendationsByCategory(
-                    topCategories.get(0), user, MAX_RESULTS);
-            response.put("books", books);
-        }
-
-        return ResponseEntity.ok(response);
+        return ResponseEntity
+                .ok(new com.example.minilibrary.dto.DiscoveryResponse.CategorySection(topCategories, books));
     }
 
     /**
      * Get recommendations based on recent search queries
      */
     @GetMapping("/recent-searches")
-    public ResponseEntity<Map<String, Object>> getRecentSearchRecommendations(@CurrentUser User user) {
+    public ResponseEntity<com.example.minilibrary.dto.DiscoveryResponse.SearchSection> getRecentSearchRecommendations(
+            @CurrentUser User user) {
         List<String> recentSearches = discoveryService.getRecentSearches(user, DEFAULT_LIMIT);
+        List<com.example.minilibrary.dto.RecommendedBookDto> books = recentSearches.isEmpty()
+                ? java.util.Collections.emptyList()
+                : discoveryService.getRecommendationsByQuery(recentSearches.get(0), user, MAX_RESULTS);
 
-        Map<String, Object> response = new HashMap<>();
-        response.put("queries", recentSearches);
-
-        if (!recentSearches.isEmpty()) {
-            List<Map<String, Object>> books = discoveryService.getRecommendationsByQuery(
-                    recentSearches.get(0), user, MAX_RESULTS);
-            response.put("books", books);
-        }
-
-        return ResponseEntity.ok(response);
+        return ResponseEntity
+                .ok(new com.example.minilibrary.dto.DiscoveryResponse.SearchSection(recentSearches, books));
     }
 
     /**
      * Get all discovery data in one call (for Discovery page)
      */
     @GetMapping
-    public ResponseEntity<Map<String, Object>> getDiscoveryData(@CurrentUser User user) {
-        Map<String, Object> response = new HashMap<>();
-
+    public ResponseEntity<com.example.minilibrary.dto.DiscoveryResponse> getDiscoveryData(@CurrentUser User user) {
         // Authors section
         List<String> topAuthors = discoveryService.getTopAuthors(user, 3);
-        Map<String, Object> authorsSection = new HashMap<>();
-        authorsSection.put("authors", topAuthors);
-        if (!topAuthors.isEmpty()) {
-            authorsSection.put("books", discoveryService.getRecommendationsByAuthor(
-                    topAuthors.get(0), user, MAX_RESULTS));
-        }
-        response.put("byAuthor", authorsSection);
+        List<com.example.minilibrary.dto.RecommendedBookDto> authorBooks = topAuthors.isEmpty()
+                ? java.util.Collections.emptyList()
+                : discoveryService.getRecommendationsByAuthor(topAuthors.get(0), user, MAX_RESULTS);
+        var authorSection = new com.example.minilibrary.dto.DiscoveryResponse.AuthorSection(topAuthors, authorBooks);
 
         // Categories section
         List<String> topCategories = discoveryService.getTopCategories(user, 3);
-        Map<String, Object> categoriesSection = new HashMap<>();
-        categoriesSection.put("categories", topCategories);
-        if (!topCategories.isEmpty()) {
-            categoriesSection.put("books", discoveryService.getRecommendationsByCategory(
-                    topCategories.get(0), user, MAX_RESULTS));
-        }
-        response.put("byCategory", categoriesSection);
+        List<com.example.minilibrary.dto.RecommendedBookDto> categoryBooks = topCategories.isEmpty()
+                ? java.util.Collections.emptyList()
+                : discoveryService.getRecommendationsByCategory(topCategories.get(0), user, MAX_RESULTS);
+        var categorySection = new com.example.minilibrary.dto.DiscoveryResponse.CategorySection(topCategories,
+                categoryBooks);
 
         // Recent searches section
         List<String> recentSearches = discoveryService.getRecentSearches(user, 3);
-        Map<String, Object> searchesSection = new HashMap<>();
-        searchesSection.put("queries", recentSearches);
-        if (!recentSearches.isEmpty()) {
-            searchesSection.put("books", discoveryService.getRecommendationsByQuery(
-                    recentSearches.get(0), user, MAX_RESULTS));
-        }
-        response.put("bySearch", searchesSection);
+        List<com.example.minilibrary.dto.RecommendedBookDto> searchBooks = recentSearches.isEmpty()
+                ? java.util.Collections.emptyList()
+                : discoveryService.getRecommendationsByQuery(recentSearches.get(0), user, MAX_RESULTS);
+        var searchSection = new com.example.minilibrary.dto.DiscoveryResponse.SearchSection(recentSearches,
+                searchBooks);
 
-        return ResponseEntity.ok(response);
+        return ResponseEntity
+                .ok(new com.example.minilibrary.dto.DiscoveryResponse(authorSection, categorySection, searchSection));
     }
 }

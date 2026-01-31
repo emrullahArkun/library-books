@@ -52,7 +52,8 @@ public class Book {
     private Boolean completed;
 
     // Reading Goal
-    private String readingGoalType; // "WEEKLY" or "MONTHLY"
+    @jakarta.persistence.Enumerated(jakarta.persistence.EnumType.STRING)
+    private ReadingGoalType readingGoalType; // WEEKLY or MONTHLY
     private Integer readingGoalPages;
 
     // Discovery: Categories/Genres (comma-separated, e.g. "Thriller, Krimi")

@@ -42,8 +42,7 @@ public class ReadingSessionService {
             stopSession(user, Instant.now(), null);
         }
 
-        Book book = bookRepository.findById(bookId)
-                .filter(b -> b.getUser().equals(user))
+        Book book = bookRepository.findByIdAndUserId(bookId, user.getId())
                 .orElseThrow(() -> new ResourceNotFoundException("Book not found or access denied"));
 
         ReadingSession session = new ReadingSession();
@@ -151,8 +150,7 @@ public class ReadingSessionService {
     }
 
     public java.util.List<ReadingSession> getSessionsByBook(User user, Long bookId) {
-        Book book = bookRepository.findById(bookId)
-                .filter(b -> b.getUser().equals(user))
+        Book book = bookRepository.findByIdAndUserId(bookId, user.getId())
                 .orElseThrow(() -> new ResourceNotFoundException("Book not found"));
         return sessionRepository.findByUserAndBook(user, book);
     }
