@@ -91,21 +91,23 @@
 					<source>21</source>
 					<target>21</target>
 					<annotationProcessorPaths>
+						<!-- 1. Lombok must run FIRST to generate getters/setters -->
 						<path>
 							<groupId>org.projectlombok</groupId>
 							<artifactId>lombok</artifactId>
 							<version>1.18.30</version>
 						</path>
-						<!-- This is needed when using Lombok 1.18.16 and above -->
-						<path>
-							<groupId>org.projectlombok</groupId>
-							<artifactId>lombok-mapstruct-binding</artifactId>
-							<version>0.2.0</version>
-						</path>
+						<!-- 2. MapStruct processor runs AFTER Lombok -->
 						<path>
 							<groupId>org.mapstruct</groupId>
 							<artifactId>mapstruct-processor</artifactId>
 							<version>1.6.3</version>
+						</path>
+						<!-- 3. lombok-mapstruct-binding bridges the two (required for Lombok 1.18.16+) -->
+						<path>
+							<groupId>org.projectlombok</groupId>
+							<artifactId>lombok-mapstruct-binding</artifactId>
+							<version>0.2.0</version>
 						</path>
 					</annotationProcessorPaths>
 				</configuration>
