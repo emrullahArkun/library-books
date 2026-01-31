@@ -64,7 +64,7 @@ public class BookControllerIntegrationTest {
                 // When
                 CreateBookRequest request = new CreateBookRequest(
                                 "978-1234567890", "Harry Potter", author, "2001", "http://cover.url",
-                                250);
+                                250, null);
 
                 // Then
                 mockMvc.perform(post("/api/books")
@@ -80,7 +80,7 @@ public class BookControllerIntegrationTest {
         void shouldCreateBookWithAuthorName() throws Exception {
                 // When: Creating a book with ONLY author name
                 CreateBookRequest request = new CreateBookRequest(
-                                "978-9876543210", "New Book", "New Author", null, null, null);
+                                "978-9876543210", "New Book", "New Author", null, null, null, null);
 
                 mockMvc.perform(post("/api/books")
                                 .contentType(MediaType.APPLICATION_JSON)

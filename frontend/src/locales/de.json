@@ -1,6 +1,7 @@
 {
     "navbar": {
         "brand": "Bibliothek",
+        "discovery": "Entdecken",
         "search": "Suche",
         "myBooks": "Meine Bücher",
         "logout": "Abmelden",

@@ -11,6 +11,7 @@ public abstract class BookMapper {
 
     @Mapping(target = "authorName", source = "author")
     @Mapping(target = "readingGoalProgress", expression = "java(calculateProgress(book))")
+    @Mapping(target = "categories", source = "categories")
     public abstract BookDto toDto(Book book);
 
     @Mapping(target = "id", ignore = true)
@@ -22,6 +23,7 @@ public abstract class BookMapper {
     @Mapping(target = "readingGoalType", ignore = true)
     @Mapping(target = "readingGoalPages", ignore = true)
     @Mapping(target = "readingSessions", ignore = true)
+    @Mapping(target = "categories", source = "categories")
     public abstract Book toEntity(CreateBookRequest request);
 
     protected Integer calculateProgress(Book book) {

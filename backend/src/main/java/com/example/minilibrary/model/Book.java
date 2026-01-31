@@ -55,6 +55,10 @@ public class Book {
     private String readingGoalType; // "WEEKLY" or "MONTHLY"
     private Integer readingGoalPages;
 
+    // Discovery: Categories/Genres (comma-separated, e.g. "Thriller, Krimi")
+    @jakarta.persistence.Column(length = 500)
+    private String categories;
+
     @OneToMany(mappedBy = "book", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ReadingSession> readingSessions = new ArrayList<>();
 

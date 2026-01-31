@@ -1,10 +1,15 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../../../context/AuthContext';
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useToast } from '@chakra-ui/react';
 import { useTranslation } from 'react-i18next';
 import { mapGoogleBookToNewBook } from '../../../utils/googleBooks';
 import { booksApi } from '../../books/api';
+import discoveryApi from '../../discovery/discoveryApi';
+
+// Constants for debounced logging
+const LOG_DEBOUNCE_MS = 2000; // Wait 2 seconds after last keystroke
+const MIN_QUERY_LENGTH = 3;  // Minimum 3 characters to log
 
 export const useBookSearch = () => {
     const [query, setQuery] = useState('');
@@ -12,6 +17,41 @@ export const useBookSearch = () => {
     const toast = useToast();
     const { t } = useTranslation();
     const queryClient = useQueryClient();
+
+    // Track last logged query to prevent duplicates
+    const lastLoggedQuery = useRef('');
+    const logTimeoutRef = useRef(null);
+
+    // Debounced search logging - logs after user stops typing for 2 seconds
+    useEffect(() => {
+        // Clear previous timeout
+        if (logTimeoutRef.current) {
+            clearTimeout(logTimeoutRef.current);
+        }
+
+        const trimmedQuery = query.trim();
+
+        // Only log if query is long enough and different from last logged
+        if (trimmedQuery.length >= MIN_QUERY_LENGTH &&
+            trimmedQuery.toLowerCase() !== lastLoggedQuery.current.toLowerCase() &&
+            token) {
+
+            logTimeoutRef.current = setTimeout(() => {
+                discoveryApi.logSearch(trimmedQuery).then(() => {
+                    lastLoggedQuery.current = trimmedQuery;
+                    console.log(`[Discovery] Logged search: "${trimmedQuery}"`);
+                }).catch(() => {
+                    // Silently ignore logging errors
+                });
+            }, LOG_DEBOUNCE_MS);
+        }
+
+        return () => {
+            if (logTimeoutRef.current) {
+                clearTimeout(logTimeoutRef.current);
+            }
+        };
+    }, [query, token]);
 
     // Fetch owned ISBNs to check duplicates
     const { data: ownedIsbns } = useQuery({
@@ -168,7 +208,8 @@ export const useBookSearch = () => {
 
     const searchBooks = (e) => {
         if (e) e.preventDefault();
-        // Changing the query key (via setQuery) automatically triggers a refetch
+        // Search is triggered automatically via React Query when query changes
+        // Logging is now handled by debounced useEffect above
     };
 
     return {

@@ -1,6 +1,7 @@
 {
     "navbar": {
         "brand": "Library Books",
+        "discovery": "Discover",
         "search": "Search",
         "myBooks": "My Books",
         "logout": "Logout",

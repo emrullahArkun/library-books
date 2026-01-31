@@ -20,4 +20,19 @@ public interface BookRepository extends JpaRepository<Book, Long> {
     void deleteByUser(com.example.minilibrary.model.User user);
 
     java.util.Optional<Book> findByIdAndUser(Long id, com.example.minilibrary.model.User user);
+
+    // Discovery: Top authors by book count
+    @org.springframework.data.jpa.repository.Query("SELECT b.author FROM Book b WHERE b.user = :user AND b.author IS NOT NULL GROUP BY b.author ORDER BY COUNT(b) DESC")
+    java.util.List<String> findTopAuthorsByUser(
+            @org.springframework.data.repository.query.Param("user") com.example.minilibrary.model.User user);
+
+    // Discovery: All categories for a user (will parse in service)
+    @org.springframework.data.jpa.repository.Query("SELECT b.categories FROM Book b WHERE b.user = :user AND b.categories IS NOT NULL")
+    java.util.List<String> findAllCategoriesByUser(
+            @org.springframework.data.repository.query.Param("user") com.example.minilibrary.model.User user);
+
+    // Discovery: Get all ISBNs owned by user (for exclusion)
+    @org.springframework.data.jpa.repository.Query("SELECT b.isbn FROM Book b WHERE b.user = :user")
+    java.util.List<String> findAllIsbnsByUser(
+            @org.springframework.data.repository.query.Param("user") com.example.minilibrary.model.User user);
 }

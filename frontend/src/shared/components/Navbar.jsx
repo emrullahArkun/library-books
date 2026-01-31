@@ -38,11 +38,23 @@ function Navbar() {
                 {user ? (
                     <div className="navbar-glass-pane">
                         <Link to="/" className="navbar-item">
-                            {location.pathname === '/' && (
+                            {(location.pathname === '/' || location.pathname === '/discovery') && (
                                 <motion.div
                                     layoutId="nav-bubble"
                                     className="nav-bubble"
                                     transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                                />
+                            )}
+                            <span className="navbar-text">{t('navbar.discovery')}</span>
+                        </Link>
+                        <Link to="/search" className="navbar-item">
+                            {location.pathname === '/search' && (
+                                <motion.div
+                                    layoutId="nav-bubble"
+                                    className="nav-bubble"
+                                    layout="position"
+                                    transition={{ type: "spring", bounce: 0.2, duration: 0.6, layout: { type: "spring", bounce: 0.2, duration: 0.4 } }}
+                                    style={{ originY: 0.5 }}
                                 />
                             )}
                             <span className="navbar-text">{t('navbar.search')}</span>
@@ -52,7 +64,9 @@ function Navbar() {
                                 <motion.div
                                     layoutId="nav-bubble"
                                     className="nav-bubble"
-                                    transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                                    layout="position"
+                                    transition={{ type: "spring", bounce: 0.2, duration: 0.6, layout: { type: "spring", bounce: 0.2, duration: 0.4 } }}
+                                    style={{ originY: 0.5 }}
                                 />
                             )}
                             <span className="navbar-text">{t('navbar.myBooks')}</span>
