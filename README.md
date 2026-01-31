@@ -13,7 +13,7 @@ MyBooks ist ein Web-Tracker für dein Leseerlebnis – von der Buchsuche bis zur
 
 1.  **Starten**
     ```bash
-    docker-compose up --build
+    docker compose up --build
     ```
 
 2.  **Verwenden**
