@@ -18,10 +18,23 @@ export const useDiscovery = () => {
         setError(null);
         try {
             const response = await discoveryApi.getAll();
+
+            // Filter out books without ISBN
+            const filterBooksWithIsbn = (books) => books.filter(book => book.isbn);
+
             setData({
-                byAuthor: response.byAuthor || { authors: [], books: [] },
-                byCategory: response.byCategory || { categories: [], books: [] },
-                bySearch: response.bySearch || { queries: [], books: [] }
+                byAuthor: {
+                    authors: response.byAuthor?.authors || [],
+                    books: filterBooksWithIsbn(response.byAuthor?.books || [])
+                },
+                byCategory: {
+                    categories: response.byCategory?.categories || [],
+                    books: filterBooksWithIsbn(response.byCategory?.books || [])
+                },
+                bySearch: {
+                    queries: response.bySearch?.queries || [],
+                    books: filterBooksWithIsbn(response.bySearch?.books || [])
+                }
             });
         } catch (err) {
             console.error('Failed to fetch discovery data:', err);

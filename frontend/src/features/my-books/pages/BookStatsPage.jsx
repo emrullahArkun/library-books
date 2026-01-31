@@ -1,13 +1,11 @@
 import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
     Box,
-    Button,
     Grid,
     GridItem,
     SimpleGrid,
-    Icon,
     useDisclosure,
     useToast,
     Spinner,
@@ -18,7 +16,7 @@ import { booksApi } from '../../books/api';
 import { useBookStats } from '../hooks/useBookStats';
 import { useBookStatsCalculations } from '../hooks/useBookStatsCalculations';
 import { usePinstripeBackground } from '../../../hooks/usePinstripeBackground';
-import { FaBookOpen, FaChartLine, FaArrowLeft, FaClock } from 'react-icons/fa';
+import { FaBookOpen, FaChartLine, FaClock } from 'react-icons/fa';
 
 import StatsCard from '../components/StatsCard';
 import BookGoalModal from '../components/BookGoalModal';
@@ -28,7 +26,7 @@ import BookStatsCharts from '../components/BookStatsCharts';
 const BookStatsPage = () => {
     const { t } = useTranslation();
     const { id } = useParams();
-    const navigate = useNavigate();
+
     const { isOpen, onOpen, onClose } = useDisclosure();
     const toast = useToast();
 
@@ -84,19 +82,6 @@ const BookStatsPage = () => {
     return (
         <Box bg={bgColor} minH="100vh" py={8} px={{ base: 4, md: 8 }} w="100%">
             <Box w="100%">
-
-                {/* Header / Nav */}
-                <Button
-                    leftIcon={<Icon as={FaArrowLeft} />}
-                    mb={8}
-                    variant="ghost"
-                    color={subTextColor}
-                    _hover={{ color: brandColor, bg: 'whiteAlpha.100' }}
-                    onClick={() => navigate('/my-books')}
-                    pl={0}
-                >
-                    {t('myBooks.title')}
-                </Button>
 
                 <Grid templateColumns={{ base: "1fr", lg: "300px 1fr" }} gap={8} alignItems="start" w="100%">
                     {/* Left Sidebar: Detailed Book Info */}
