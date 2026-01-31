@@ -1,4 +1,4 @@
-import { FaSearch, FaExclamationCircle, FaBookOpen } from 'react-icons/fa';
+import { FaExclamationCircle, FaBookOpen } from 'react-icons/fa';
 import { usePinstripeBackground } from '../../hooks/usePinstripeBackground';
 import DiscoverySection from './components/DiscoverySection';
 import useDiscovery from './hooks/useDiscovery';
@@ -14,12 +14,11 @@ const DiscoveryPage = () => {
     if (loading) {
         return (
             <div className={styles.discoveryPage}>
-                <div className={styles.header}>
-                    <h1 className={styles.title}><FaSearch className={styles.titleIcon} /> Entdecken</h1>
-                    <p className={styles.subtitle}>Personalisierte Buchempfehlungen basierend auf deiner Bibliothek</p>
-                </div>
                 <div className={styles.loadingState}>
-                    <div className={styles.spinner}></div>
+                    <div className={styles.bouncingBallContainer}>
+                        <div className={styles.bouncingBall}></div>
+                        <div className={styles.groundLine}></div>
+                    </div>
                     <p>Empfehlungen werden geladen...</p>
                 </div>
             </div>
@@ -29,10 +28,6 @@ const DiscoveryPage = () => {
     if (error) {
         return (
             <div className={styles.discoveryPage}>
-                <div className={styles.header}>
-                    <h1 className={styles.title}><FaSearch className={styles.titleIcon} /> Entdecken</h1>
-                    <p className={styles.subtitle}>Personalisierte Buchempfehlungen basierend auf deiner Bibliothek</p>
-                </div>
                 <div className={styles.errorState}>
                     <p><FaExclamationCircle /> {error}</p>
                     <button className={styles.refreshBtn} onClick={refresh}>
@@ -50,15 +45,6 @@ const DiscoveryPage = () => {
 
     return (
         <div className={styles.discoveryPage}>
-            <div className={styles.header}>
-                <h1 className={styles.title}><FaSearch className={styles.titleIcon} /> Entdecken</h1>
-                <p className={styles.subtitle}>
-                    {hasAnyData
-                        ? 'Personalisierte Buchempfehlungen basierend auf deiner Bibliothek'
-                        : 'Füge Bücher hinzu, um personalisierte Empfehlungen zu erhalten'}
-                </p>
-            </div>
-
             <div className={styles.sections}>
                 {hasAuthors && (
                     <DiscoverySection
