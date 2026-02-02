@@ -13,6 +13,7 @@ const MIN_QUERY_LENGTH = 3;  // Minimum 3 characters to log
 
 export const useBookSearch = () => {
     const [query, setQuery] = useState('');
+    const [searchTerm, setSearchTerm] = useState(''); // Only updates on Enter/button click
     const { token } = useAuth();
     const toast = useToast();
     const { t } = useTranslation();
@@ -76,10 +77,10 @@ export const useBookSearch = () => {
         isFetching,
         isLoading
     } = useInfiniteQuery({
-        queryKey: ['books', query],
+        queryKey: ['books', searchTerm],
         queryFn: async ({ pageParam = 0 }) => {
-            if (!query.trim()) return { items: [], totalItems: 0 };
-            const finalQuery = encodeURIComponent(query.trim());
+            if (!searchTerm.trim()) return { items: [], totalItems: 0 };
+            const finalQuery = encodeURIComponent(searchTerm.trim());
             const apiKey = import.meta.env.VITE_GOOGLE_BOOKS_API_KEY;
             const keyParam = apiKey ? `&key=${apiKey}` : '';
             const response = await fetch(`https://www.googleapis.com/books/v1/volumes?q=${finalQuery}&startIndex=${pageParam}&maxResults=36${keyParam}`);
@@ -93,7 +94,7 @@ export const useBookSearch = () => {
             }
             return undefined;
         },
-        enabled: !!query.trim(),
+        enabled: !!searchTerm.trim(),
         initialPageParam: 0
     });
 
@@ -208,8 +209,8 @@ export const useBookSearch = () => {
 
     const searchBooks = (e) => {
         if (e) e.preventDefault();
-        // Search is triggered automatically via React Query when query changes
-        // Logging is now handled by debounced useEffect above
+        // Only trigger search when form is submitted (Enter or button click)
+        setSearchTerm(query.trim());
     };
 
     return {

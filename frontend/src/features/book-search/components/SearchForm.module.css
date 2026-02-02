@@ -42,3 +42,21 @@
     color: var(--neutral-50);
     /* White icon */
 }
+
+.searchButton {
+    padding: 8px 20px;
+    background: transparent;
+    border: 1px solid var(--neutral-50);
+    border-radius: 20px;
+    color: var(--neutral-50);
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.searchButton:hover {
+    background: rgba(255, 255, 255, 0.15);
+    transform: translateY(-1px);
+}
