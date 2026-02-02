@@ -1,7 +1,7 @@
 .homeContent {
     background-color: transparent;
     width: 100vw;
-    min-height: 100vh;
+    min-height: calc(100vh - 80px);
     position: relative;
     left: 50%;
     right: 50%;
@@ -9,6 +9,6 @@
     margin-right: -50vw;
     display: flex;
     flex-direction: column;
-    padding-top: 20px;
+    padding-top: 40px;
     box-sizing: border-box;
 }

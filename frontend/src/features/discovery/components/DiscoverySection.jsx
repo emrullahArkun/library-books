@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { useAnimation } from '../../../context/AnimationContext';
 import { useAuth } from '../../../context/AuthContext';
 import { booksApi } from '../../books/api';
+import BookCover from '../../../ui/BookCover';
 import styles from './DiscoverySection.module.css';
 
 // Map icon type to component
@@ -170,14 +171,18 @@ const DiscoveryBookCard = ({ book }) => {
             }}
         >
             <div className={styles.imageContainer}>
-                <img
+                <BookCover
                     ref={imageRef}
-                    src={book.coverUrl || 'https://via.placeholder.com/150x225?text=No+Cover'}
-                    alt={book.title}
-                    className={styles.bookCover}
-                    onError={(e) => {
-                        e.target.src = 'https://via.placeholder.com/150x225?text=No+Cover';
+                    book={{
+                        title: book.title,
+                        isbn: book.isbn,
+                        coverUrl: book.coverUrl,
+                        imageLinks: book.coverUrl ? { thumbnail: book.coverUrl } : undefined
                     }}
+                    className={styles.bookCover}
+                    w="100%"
+                    h="100%"
+                    borderRadius="8px"
                 />
                 {!isOwned && (
                     <div className={styles.hoverOverlay}>

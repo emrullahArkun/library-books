@@ -145,7 +145,7 @@ function MyBooks() {
     if (error) return <Center h="200px" color="red.300">{t('myBooks.error', { message: error })}</Center>;
 
     return (
-        <Box w="100%" px={{ base: 4, md: 8 }} py={6} ref={containerRef}>
+        <Box w="100%" px={{ base: 4, md: 8 }} py={6} ref={containerRef} minH="calc(100vh - 80px)">
             <Flex justify="flex-end" align="center" mb={6} wrap="wrap" gap={4}>
 
                 <HStack spacing={4}>
