@@ -1,12 +1,9 @@
 import { useState, useEffect, forwardRef } from 'react';
 import { Image, Center, Skeleton, Box } from '@chakra-ui/react';
-import { FaBookOpen } from 'react-icons/fa';
 import { getHighResImage } from '../utils/googleBooks';
 
 const BookCover = forwardRef(({
     book,
-    fallbackIcon = FaBookOpen,
-    fallbackIconSize = 48,
     objectFit = "cover",
     borderRadius = "md",
     w = "100%",
@@ -73,11 +70,7 @@ const BookCover = forwardRef(({
     const handleImageError = () => {
         if (imgSrc === fallbackUrl) {
             // OpenLibrary failed - clear imgSrc to show text fallback
-            if (googleUrl && preferOpenLibrary) {
-                setImgSrc(prev => prev === fallbackUrl ? googleUrl : prev);
-            } else {
-                setImgSrc(''); // Show title/author fallback
-            }
+            setImgSrc(''); // Show title/author fallback
         } else {
             // Google failed. Try OpenLibrary.
             if (fallbackUrl && imgSrc !== fallbackUrl) {
