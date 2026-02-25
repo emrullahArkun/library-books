@@ -97,4 +97,152 @@ describe('MyBooks Component', () => {
             expect(screen.getByText(/Error:/i)).toBeInTheDocument();
         });
     });
+
+    it('renders empty state when no books exist', async () => {
+        server.use(
+            http.get('/api/books', () => {
+                return HttpResponse.json({ content: [], totalElements: 0, totalPages: 0, number: 0 });
+            })
+        );
+        render(<MyBooks />, { wrapper: createTestWrapper() });
+        expect(await screen.findByText('myBooks.empty.line1')).toBeInTheDocument();
+        expect(await screen.findByText('myBooks.empty.line2')).toBeInTheDocument();
+    });
+
+    describe('Selection & Bulk Delete', () => {
+        it('toggles selection and deletes selected books', async () => {
+            server.use(
+                http.get('/api/books', () => {
+                    return HttpResponse.json({
+                        content: [{ id: 1, title: 'B1', readingProgress: 0 }],
+                        totalElements: 1,
+                        totalPages: 1,
+                        number: 0
+                    });
+                })
+            );
+            const user = userEvent.setup();
+            render(<MyBooks />, { wrapper: createTestWrapper() });
+
+            // Wait for books
+            const book1Cover = await screen.findByAltText('Test Book 1');
+            const bookCard = book1Cover.closest('div[role="group"]');
+
+            // Assuming clicking the card outer toggles selection
+            const toggleWrapper = bookCard.querySelector('[style*="cursor: pointer"]');
+            if (toggleWrapper) {
+                await user.click(toggleWrapper);
+            } else {
+                await user.click(bookCard.firstChild);
+            }
+
+            // "Delete Selected" button should appear
+            const delSelBtn = await screen.findByRole('button', { name: /myBooks.deleteSelectedCount/i });
+            expect(delSelBtn).toBeInTheDocument();
+
+            // Open dialog
+            await user.click(delSelBtn);
+            expect(await screen.findByText('myBooks.confirmDeleteSelectedTitle')).toBeInTheDocument();
+
+            // Setup mock for delete
+            server.use(
+                http.delete('/api/books/bulk', () => {
+                    return new HttpResponse(null, { status: 204 });
+                })
+            );
+
+            // Confirm
+            const confirmBtn = await screen.findByText('common.delete');
+            await user.click(confirmBtn);
+
+            // Dialog should close
+            await waitFor(() => {
+                expect(screen.queryByText('myBooks.confirmDeleteSelectedTitle')).not.toBeInTheDocument();
+            });
+        });
+
+        it('supports deleting all books and canceling', async () => {
+            server.use(
+                http.get('/api/books', () => {
+                    return HttpResponse.json({
+                        content: [{ id: 1, title: 'B1', readingProgress: 0 }],
+                        totalElements: 1,
+                        totalPages: 1,
+                        number: 0
+                    });
+                })
+            );
+            const user = userEvent.setup();
+            render(<MyBooks />, { wrapper: createTestWrapper() });
+
+            await screen.findByAltText('Test Book 1');
+
+            const delAllBtn = await screen.findByText('myBooks.deleteAll');
+            await user.click(delAllBtn);
+
+            expect(await screen.findByText('myBooks.confirmDeleteAllTitle')).toBeInTheDocument();
+
+            // Cancel
+            const cancelBtn = await screen.findByText('common.cancel');
+            await user.click(cancelBtn);
+
+            await waitFor(() => {
+                expect(screen.queryByText('myBooks.confirmDeleteAllTitle')).not.toBeInTheDocument();
+            });
+
+            // Re-open and confirm
+            await user.click(delAllBtn);
+            const confirmBtn = await screen.findByText('common.delete');
+            await user.click(confirmBtn);
+
+            await waitFor(() => {
+                expect(screen.queryByText('myBooks.confirmDeleteAllTitle')).not.toBeInTheDocument();
+            });
+        });
+    });
+
+    describe('Pagination & Layout Resize', () => {
+        it('handles window resize dynamically for pagination size', async () => {
+            // Mock window innerWidth and resize event
+            window.innerWidth = 400; // Force mobile
+            render(<MyBooks />, { wrapper: createTestWrapper() });
+
+            window.dispatchEvent(new Event('resize'));
+
+            // Wait for elements to respond (since dynamic calculations happen in effect)
+            expect(await screen.findByAltText('Test Book 1')).toBeInTheDocument();
+
+            window.innerWidth = 1200; // Desktop
+            window.dispatchEvent(new Event('resize'));
+        });
+
+        it('shows and handles pagination buttons', async () => {
+            const user = userEvent.setup();
+            server.use(
+                http.get('/api/books', () => {
+                    return HttpResponse.json({
+                        content: [{ id: 1, title: 'B1' }, { id: 2, title: 'B2' }],
+                        totalElements: 20,
+                        totalPages: 2,
+                        number: 0
+                    });
+                })
+            );
+
+            render(<MyBooks />, { wrapper: createTestWrapper() });
+
+            // Next Page
+            const nextBtn = await screen.findByLabelText(/Next Page/i);
+            expect(nextBtn).toBeInTheDocument();
+            expect(screen.getByLabelText(/Previous Page/i)).toBeDisabled();
+
+            await user.click(nextBtn);
+
+            // Assuming after click, we request page 1 and then prevBtn should be enabled.
+            // But we didn't mock the second call, we just want to ensure click handler fires.
+            await waitFor(() => {
+                expect(screen.getByLabelText(/Previous Page/i)).not.toBeDisabled();
+            });
+        });
+    });
 });

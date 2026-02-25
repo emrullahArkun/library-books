@@ -21,6 +21,7 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html', 'lcov'],
+      exclude: ['src/mocks/**', 'src/locales/**'],
       thresholds: {
         lines: 90,
         functions: 90,
