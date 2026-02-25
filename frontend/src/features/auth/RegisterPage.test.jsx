@@ -33,7 +33,7 @@ vi.mock('../../ui/layouts/AuthLayout', () => ({
 }));
 
 vi.mock('../../ui/TextField', () => ({
-    TextField: ({ label, value, onChange, type, error, ...rest }) => (
+    TextField: ({ label, value, onChange, type, error }) => (
         <div>
             <label>{label}</label>
             <input type={type} value={value} onChange={onChange} aria-label={label} />
