@@ -105,8 +105,8 @@ describe('MyBooks Component', () => {
             })
         );
         render(<MyBooks />, { wrapper: createTestWrapper() });
-        expect(await screen.findByText('myBooks.empty.line1')).toBeInTheDocument();
-        expect(await screen.findByText('myBooks.empty.line2')).toBeInTheDocument();
+        expect(await screen.findByText('No books in your library yet.')).toBeInTheDocument();
+        expect(await screen.findByText('Go to Home to add books!')).toBeInTheDocument();
     });
 
     describe('Selection & Bulk Delete', () => {
@@ -114,7 +114,7 @@ describe('MyBooks Component', () => {
             server.use(
                 http.get('/api/books', () => {
                     return HttpResponse.json({
-                        content: [{ id: 1, title: 'B1', readingProgress: 0 }],
+                        content: [{ id: 1, title: 'Test Book 1', authorName: 'Author 1', coverUrl: 'http://example.com/cover1.jpg', readingProgress: 0, pageCount: 300, completed: false, user: { id: 1 } }],
                         totalElements: 1,
                         totalPages: 1,
                         number: 0
@@ -126,23 +126,17 @@ describe('MyBooks Component', () => {
 
             // Wait for books
             const book1Cover = await screen.findByAltText('Test Book 1');
-            const bookCard = book1Cover.closest('div[role="group"]');
-
-            // Assuming clicking the card outer toggles selection
-            const toggleWrapper = bookCard.querySelector('[style*="cursor: pointer"]');
-            if (toggleWrapper) {
-                await user.click(toggleWrapper);
-            } else {
-                await user.click(bookCard.firstChild);
-            }
+            // Click the selection checkbox
+            const checkbox = within(book1Cover.closest('div[role="group"]')).getByRole('checkbox');
+            await user.click(checkbox);
 
             // "Delete Selected" button should appear
-            const delSelBtn = await screen.findByRole('button', { name: /myBooks.deleteSelectedCount/i });
+            const delSelBtn = await screen.findByText(/Delete \(1\)/i);
             expect(delSelBtn).toBeInTheDocument();
 
             // Open dialog
             await user.click(delSelBtn);
-            expect(await screen.findByText('myBooks.confirmDeleteSelectedTitle')).toBeInTheDocument();
+            expect(await screen.findByText('Delete Selected Books?')).toBeInTheDocument();
 
             // Setup mock for delete
             server.use(
@@ -152,12 +146,13 @@ describe('MyBooks Component', () => {
             );
 
             // Confirm
-            const confirmBtn = await screen.findByText('common.delete');
+            const dialog = screen.getByRole('alertdialog');
+            const confirmBtn = within(dialog).getByRole('button', { name: 'Delete' });
             await user.click(confirmBtn);
 
             // Dialog should close
             await waitFor(() => {
-                expect(screen.queryByText('myBooks.confirmDeleteSelectedTitle')).not.toBeInTheDocument();
+                expect(screen.queryByText('Delete Selected Books?')).not.toBeInTheDocument();
             });
         });
 
@@ -165,7 +160,7 @@ describe('MyBooks Component', () => {
             server.use(
                 http.get('/api/books', () => {
                     return HttpResponse.json({
-                        content: [{ id: 1, title: 'B1', readingProgress: 0 }],
+                        content: [{ id: 1, title: 'Test Book 1', authorName: 'Author 1', coverUrl: 'http://example.com/cover1.jpg', readingProgress: 0, pageCount: 300, completed: false, user: { id: 1 } }],
                         totalElements: 1,
                         totalPages: 1,
                         number: 0
@@ -177,26 +172,29 @@ describe('MyBooks Component', () => {
 
             await screen.findByAltText('Test Book 1');
 
-            const delAllBtn = await screen.findByText('myBooks.deleteAll');
+            const delAllBtn = await screen.findByText('Delete All');
             await user.click(delAllBtn);
 
-            expect(await screen.findByText('myBooks.confirmDeleteAllTitle')).toBeInTheDocument();
+            expect(await screen.findByText('Delete ALL Books?')).toBeInTheDocument();
 
             // Cancel
-            const cancelBtn = await screen.findByText('common.cancel');
+            const cancelBtn = await screen.findByText('Cancel');
             await user.click(cancelBtn);
 
             await waitFor(() => {
-                expect(screen.queryByText('myBooks.confirmDeleteAllTitle')).not.toBeInTheDocument();
+                expect(screen.queryByText('Delete ALL Books?')).not.toBeInTheDocument();
             });
 
             // Re-open and confirm
             await user.click(delAllBtn);
-            const confirmBtn = await screen.findByText('common.delete');
+            expect(await screen.findByText('Delete ALL Books?')).toBeInTheDocument();
+
+            const dialog = screen.getByRole('alertdialog');
+            const confirmBtn = within(dialog).getByRole('button', { name: 'Delete All' });
             await user.click(confirmBtn);
 
             await waitFor(() => {
-                expect(screen.queryByText('myBooks.confirmDeleteAllTitle')).not.toBeInTheDocument();
+                expect(screen.queryByText('Delete ALL Books?')).not.toBeInTheDocument();
             });
         });
     });
