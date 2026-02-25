@@ -16,3 +16,9 @@ tasks:
     desc: Stop all Docker containers
     cmds:
       - docker compose down
+
+  coverage:
+    desc: Run tests with coverage for both Backend and Frontend
+    cmds:
+      - cd backend && mvn clean test jacoco:report
+      - cd frontend && npm run coverage

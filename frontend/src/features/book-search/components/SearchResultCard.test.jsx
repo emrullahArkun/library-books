@@ -58,4 +58,39 @@ describe('SearchResultCard', () => {
         expect(mockFlyBook).not.toHaveBeenCalled();
         expect(mockOnAdd).toHaveBeenCalledWith(mockBook);
     });
+
+    it('identifies book as owned by matching ISBN', async () => {
+        const bookWithIsbn = {
+            ...mockBook,
+            volumeInfo: {
+                ...mockBook.volumeInfo,
+                industryIdentifiers: [{ type: 'ISBN_13', identifier: '978-1-234-56789-0' }]
+            }
+        };
+        const ownedIsbns = new Set(['9781234567890']);
+        render(<SearchResultCard book={bookWithIsbn} onAdd={mockOnAdd} ownedIsbns={ownedIsbns} />);
+
+        const card = screen.getAllByRole('button')[0];
+        fireEvent.click(card);
+
+        expect(mockFlyBook).not.toHaveBeenCalled();
+        expect(mockOnAdd).toHaveBeenCalledWith(bookWithIsbn);
+    });
+
+    it('triggers handleAddClick on Enter key press', async () => {
+        renderCard(new Set());
+        const card = screen.getByRole('button');
+
+        fireEvent.keyDown(card, { key: 'Enter' });
+        expect(mockOnAdd).toHaveBeenCalled();
+    });
+
+    it('triggers handleAddClick on Space key press', async () => {
+        mockOnAdd.mockClear();
+        renderCard(new Set());
+        const card = screen.getByRole('button');
+
+        fireEvent.keyDown(card, { key: ' ' });
+        expect(mockOnAdd).toHaveBeenCalled();
+    });
 });

@@ -1,0 +1,281 @@
+
+[1m[46m RUN [49m[22m [36mv4.0.16 [39m[90m/home/emrullah/library-books/frontend[39m
+      [2mCoverage enabled with [22m[33mv8[39m
+
+ [32m✓[39m src/features/auth/api/authApi.test.js[2m > [22mauthApi[2m > [22mlogin should POST email and password[32m 4[2mms[22m[39m
+ [32m✓[39m src/features/auth/api/authApi.test.js[2m > [22mauthApi[2m > [22mregister should POST email and password[32m 0[2mms[22m[39m
+ [32m✓[39m src/features/auth/api/authApi.test.js[2m > [22mauthApi[2m > [22mgetSession should GET session[32m 0[2mms[22m[39m
+ [32m✓[39m src/features/my-books/api/sessionsApi.test.js[2m > [22msessionsApi[2m > [22mgetActive should GET with cache-bust param[32m 7[2mms[22m[39m
+ [32m✓[39m src/features/my-books/api/sessionsApi.test.js[2m > [22msessionsApi[2m > [22mgetByBookId should GET by bookId[32m 1[2mms[22m[39m
+ [32m✓[39m src/features/my-books/api/sessionsApi.test.js[2m > [22msessionsApi[2m > [22mstart should POST with bookId[32m 5[2mms[22m[39m
+ [32m✓[39m src/features/my-books/api/sessionsApi.test.js[2m > [22msessionsApi[2m > [22mstop should POST with endTime and endPage[32m 1[2mms[22m[39m
+ [32m✓[39m src/features/my-books/api/sessionsApi.test.js[2m > [22msessionsApi[2m > [22mstop should omit endTime when null[32m 0[2mms[22m[39m
+ [32m✓[39m src/features/my-books/api/sessionsApi.test.js[2m > [22msessionsApi[2m > [22mstop should omit endPage when undefined[32m 1[2mms[22m[39m
+ [32m✓[39m src/features/my-books/api/sessionsApi.test.js[2m > [22msessionsApi[2m > [22mstop should include endPage when 0[32m 0[2mms[22m[39m
+ [32m✓[39m src/features/my-books/api/sessionsApi.test.js[2m > [22msessionsApi[2m > [22mpause should POST[32m 0[2mms[22m[39m
+ [32m✓[39m src/features/my-books/api/sessionsApi.test.js[2m > [22msessionsApi[2m > [22mresume should POST[32m 0[2mms[22m[39m
+ [32m✓[39m src/features/my-books/api/sessionsApi.test.js[2m > [22msessionsApi[2m > [22mexcludeTime should POST with millis[32m 0[2mms[22m[39m
+ [32m✓[39m src/features/discovery/discoveryApi.test.js[2m > [22mdiscoveryApi[2m > [22mgetAll should GET /api/discovery[32m 3[2mms[22m[39m
+ [32m✓[39m src/features/discovery/discoveryApi.test.js[2m > [22mdiscoveryApi[2m > [22mgetByAuthors should GET authors endpoint[32m 0[2mms[22m[39m
+ [32m✓[39m src/features/discovery/discoveryApi.test.js[2m > [22mdiscoveryApi[2m > [22mgetByCategories should GET categories endpoint[32m 0[2mms[22m[39m
+ [32m✓[39m src/features/discovery/discoveryApi.test.js[2m > [22mdiscoveryApi[2m > [22mgetByRecentSearches should GET recent-searches endpoint[32m 0[2mms[22m[39m
+ [32m✓[39m src/features/discovery/discoveryApi.test.js[2m > [22mdiscoveryApi[2m > [22mlogSearch should POST with encoded query[32m 0[2mms[22m[39m
+ [32m✓[39m src/features/discovery/discoveryApi.test.js[2m > [22mdiscoveryApi[2m > [22mlogSearch should encode special characters[32m 0[2mms[22m[39m
+ [32m✓[39m src/features/books/api/index.test.js[2m > [22mbooksApi[2m > [22mgetAll should GET with page and size[32m 8[2mms[22m[39m
+ [32m✓[39m src/features/books/api/index.test.js[2m > [22mbooksApi[2m > [22mgetAll should use default page=0 size=12[32m 0[2mms[22m[39m
+ [32m✓[39m src/features/books/api/index.test.js[2m > [22mbooksApi[2m > [22mgetOwnedIsbns should GET owned[32m 0[2mms[22m[39m
+ [32m✓[39m src/features/books/api/index.test.js[2m > [22mbooksApi[2m > [22mgetById should GET by id[32m 0[2mms[22m[39m
+ [32m✓[39m src/features/books/api/index.test.js[2m > [22mbooksApi[2m > [22mcreate should POST bookData[32m 1[2mms[22m[39m
+ [32m✓[39m src/features/books/api/index.test.js[2m > [22mbooksApi[2m > [22mdelete should DELETE by id[32m 0[2mms[22m[39m
+ [32m✓[39m src/features/books/api/index.test.js[2m > [22mbooksApi[2m > [22mdeleteAll should DELETE all[32m 0[2mms[22m[39m
+ [32m✓[39m src/features/books/api/index.test.js[2m > [22mbooksApi[2m > [22mupdateProgress should PATCH progress[32m 0[2mms[22m[39m
+ [32m✓[39m src/features/books/api/index.test.js[2m > [22mbooksApi[2m > [22mupdateStatus should PATCH status[32m 0[2mms[22m[39m
+ [32m✓[39m src/features/books/api/index.test.js[2m > [22mbooksApi[2m > [22mupdateGoal should PATCH goal[32m 0[2mms[22m[39m
+ [32m✓[39m src/features/my-books/components/UpdateProgressModal.test.jsx[2m > [22mUpdateProgressModal[2m > [22mshould render with current page[32m 37[2mms[22m[39m
+ [32m✓[39m src/features/my-books/components/UpdateProgressModal.test.jsx[2m > [22mUpdateProgressModal[2m > [22mshould call onUpdate with parsed page number[32m 22[2mms[22m[39m
+ [32m✓[39m src/features/my-books/components/UpdateProgressModal.test.jsx[2m > [22mUpdateProgressModal[2m > [22mshould show error for negative page number[32m 9[2mms[22m[39m
+ [32m✓[39m src/features/my-books/components/UpdateProgressModal.test.jsx[2m > [22mUpdateProgressModal[2m > [22mshould show error when exceeding page count[32m 11[2mms[22m[39m
+ [32m✓[39m src/features/my-books/components/UpdateProgressModal.test.jsx[2m > [22mUpdateProgressModal[2m > [22mshould allow any page when pageCount is null/undefined[32m 7[2mms[22m[39m
+ [32m✓[39m src/features/my-books/components/UpdateProgressModal.test.jsx[2m > [22mUpdateProgressModal[2m > [22mshould call onClose on cancel[32m 5[2mms[22m[39m
+ [32m✓[39m src/features/discovery/hooks/useDiscovery.test.js[2m > [22museDiscovery[2m > [22mshould start in loading state[32m 20[2mms[22m[39m
+ [32m✓[39m src/features/discovery/hooks/useDiscovery.test.js[2m > [22museDiscovery[2m > [22mshould fetch data on mount and set data[32m 65[2mms[22m[39m
+ [32m✓[39m src/features/my-books/hooks/useBookStatsCalculations.test.js[2m > [22museBookStatsCalculations[2m > [22mshould return null stats when sessions is null[32m 37[2mms[22m[39m
+ [32m✓[39m src/features/my-books/hooks/useBookStatsCalculations.test.js[2m > [22museBookStatsCalculations[2m > [22mshould return null stats when book is null[32m 7[2mms[22m[39m
+ [32m✓[39m src/features/my-books/hooks/useBookStatsCalculations.test.js[2m > [22museBookStatsCalculations[2m > [22mshould calculate basic stats[32m 16[2mms[22m[39m
+ [32m✓[39m src/features/my-books/hooks/useBookStatsCalculations.test.js[2m > [22museBookStatsCalculations[2m > [22mshould handle zero speed (no sessions with endTime)[32m 1[2mms[22m[39m
+ [32m✓[39m src/features/my-books/hooks/useBookStatsCalculations.test.js[2m > [22museBookStatsCalculations[2m > [22mshould calculate timeLeft when speed > 0 and pages left > 0[32m 1[2mms[22m[39m
+ [32m✓[39m src/features/my-books/hooks/useBookStatsCalculations.test.js[2m > [22museBookStatsCalculations[2m > [22mshould set timeLeft to null when book is complete[32m 1[2mms[22m[39m
+ [32m✓[39m src/features/my-books/hooks/useBookStatsCalculations.test.js[2m > [22museBookStatsCalculations[2m > [22mshould handle null currentPage and pageCount[32m 2[2mms[22m[39m
+ [32m✓[39m src/features/my-books/hooks/useBookStatsCalculations.test.js[2m > [22museBookStatsCalculations[2m > [22mshould cap progressPercent at 100[32m 1[2mms[22m[39m
+ [32m✓[39m src/features/my-books/hooks/useBookStatsCalculations.test.js[2m > [22museBookStatsCalculations[2m > [22mshould group sessions by day and keep latest per day for graph[32m 1[2mms[22m[39m
+ [32m✓[39m src/features/my-books/hooks/useBookStatsCalculations.test.js[2m > [22museBookStatsCalculations[2m > [22mshould skip sessions without endTime or null endPage in graph[32m 1[2mms[22m[39m
+ [32m✓[39m src/features/my-books/hooks/useBookStatsCalculations.test.js[2m > [22museBookStatsCalculations[2m > [22mshould return null goalProgress when no goal set[32m 2[2mms[22m[39m
+ [32m✓[39m src/features/my-books/hooks/useBookStatsCalculations.test.js[2m > [22museBookStatsCalculations[2m > [22mshould return null goalProgress when sessions is null[32m 2[2mms[22m[39m
+ [32m✓[39m src/features/my-books/hooks/useBookStatsCalculations.test.js[2m > [22museBookStatsCalculations[2m > [22mshould calculate WEEKLY goal progress with pagesRead[32m 2[2mms[22m[39m
+ [32m✓[39m src/features/my-books/hooks/useBookStatsCalculations.test.js[2m > [22museBookStatsCalculations[2m > [22mshould use fallback calculation when pagesRead is null[32m 6[2mms[22m[39m
+ [32m✓[39m src/features/my-books/hooks/useBookStatsCalculations.test.js[2m > [22museBookStatsCalculations[2m > [22mshould calculate multiplier when goal is reached[32m 1[2mms[22m[39m
+ [32m✓[39m src/features/my-books/hooks/useBookStatsCalculations.test.js[2m > [22museBookStatsCalculations[2m > [22mshould ignore sessions before the goal period start[32m 2[2mms[22m[39m
+ [32m✓[39m src/features/my-books/hooks/useBookStatsCalculations.test.js[2m > [22museBookStatsCalculations[2m > [22mshould skip negative added pages[32m 1[2mms[22m[39m
+ [32m✓[39m src/features/my-books/components/UpdateProgressModal.test.jsx[2m > [22mUpdateProgressModal[2m > [22mshould handle missing currentPage (default to 0)[32m 6[2mms[22m[39m
+ [32m✓[39m src/features/my-books/hooks/useReadingSession.test.jsx[2m > [22museReadingSession[2m > [22mshould fetch active session on mount and calculate elapsed time[32m 72[2mms[22m[39m
+ [32m✓[39m src/features/book-search/components/SearchForm.test.jsx[2m > [22mSearchForm[2m > [22mshould render search input and button[32m 43[2mms[22m[39m
+ [32m✓[39m src/features/book-search/components/SearchForm.test.jsx[2m > [22mSearchForm[2m > [22mshould call setQuery on input change[32m 7[2mms[22m[39m
+ [32m✓[39m src/features/book-search/components/SearchForm.test.jsx[2m > [22mSearchForm[2m > [22mshould call onSearch on form submit[32m 6[2mms[22m[39m
+ [32m✓[39m src/features/book-search/components/SearchForm.test.jsx[2m > [22mSearchForm[2m > [22mshould show the current query value[32m 2[2mms[22m[39m
+ [32m✓[39m src/features/discovery/hooks/useDiscovery.test.js[2m > [22museDiscovery[2m > [22mshould filter out books without isbn[32m 55[2mms[22m[39m
+ [32m✓[39m src/features/discovery/hooks/useDiscovery.test.js[2m > [22museDiscovery[2m > [22mshould filter out books without coverUrl or empty coverUrl[32m 54[2mms[22m[39m
+ [32m✓[39m src/features/my-books/hooks/useReadingSession.test.jsx[2m > [22museReadingSession[2m > [22mshould handle no active session[32m 54[2mms[22m[39m
+ [32m✓[39m src/features/my-books/hooks/useReadingSession.test.jsx[2m > [22museReadingSession[2m > [22mshould start a session[32m 58[2mms[22m[39m
+ [32m✓[39m src/features/discovery/hooks/useDiscovery.test.js[2m > [22museDiscovery[2m > [22mshould handle missing nested properties[32m 53[2mms[22m[39m
+ [32m✓[39m src/features/discovery/hooks/useDiscovery.test.js[2m > [22museDiscovery[2m > [22mshould set error on API failure[32m 54[2mms[22m[39m
+ [32m✓[39m src/features/discovery/hooks/useDiscovery.test.js[2m > [22museDiscovery[2m > [22mshould set fallback error message when err.message is missing[32m 53[2mms[22m[39m
+ [32m✓[39m src/features/discovery/hooks/useDiscovery.test.js[2m > [22museDiscovery[2m > [22mrefresh should re-fetch data[32m 54[2mms[22m[39m
+[90mstderr[2m | src/features/auth/LoginPage.test.jsx[2m > [22m[2mLoginPage[2m > [22m[2mshould render email and password fields
+[22m[39mWarning: React does not recognize the `isLoading` prop on a DOM element. If you intentionally want it to appear in the DOM as a custom attribute, spell it as lowercase `isloading` instead. If you accidentally passed it from a parent component, remove it from the DOM element.
+    at button
+    at Button (/home/emrullah/library-books/frontend/src/features/auth/LoginPage.test.jsx:64:14)
+    at form
+    at div
+    at AuthLayout (/home/emrullah/library-books/frontend/src/features/auth/LoginPage.test.jsx:26:18)
+    at LoginPage (/home/emrullah/library-books/frontend/src/features/auth/LoginPage.jsx:28:63)
+    at Router (file:///home/emrullah/library-books/frontend/node_modules/react-router/dist/development/chunk-JMJ3UQ3L.mjs:6577:13)
+    at MemoryRouter (file:///home/emrullah/library-books/frontend/node_modules/react-router/dist/development/chunk-JMJ3UQ3L.mjs:6493:3)
+
+[90mstderr[2m | src/features/auth/RegisterPage.test.jsx[2m > [22m[2mRegisterPage[2m > [22m[2mshould render 3 input fields and submit button
+[22m[39mWarning: React does not recognize the `isLoading` prop on a DOM element. If you intentionally want it to appear in the DOM as a custom attribute, spell it as lowercase `isloading` instead. If you accidentally passed it from a parent component, remove it from the DOM element.
+    at button
+    at Button (/home/emrullah/library-books/frontend/src/features/auth/RegisterPage.test.jsx:52:14)
+    at form
+    at div
+    at AuthLayout (/home/emrullah/library-books/frontend/src/features/auth/RegisterPage.test.jsx:22:18)
+    at RegisterPage (/home/emrullah/library-books/frontend/src/features/auth/RegisterPage.jsx:30:63)
+    at Router (file:///home/emrullah/library-books/frontend/node_modules/react-router/dist/development/chunk-JMJ3UQ3L.mjs:6577:13)
+    at MemoryRouter (file:///home/emrullah/library-books/frontend/node_modules/react-router/dist/development/chunk-JMJ3UQ3L.mjs:6493:3)
+
+ [32m✓[39m src/features/auth/LoginPage.test.jsx[2m > [22mLoginPage[2m > [22mshould render email and password fields[32m 30[2mms[22m[39m
+ [32m✓[39m src/features/auth/LoginPage.test.jsx[2m > [22mLoginPage[2m > [22mshould render submit button[32m 4[2mms[22m[39m
+ [32m✓[39m src/features/auth/RegisterPage.test.jsx[2m > [22mRegisterPage[2m > [22mshould render 3 input fields and submit button[32m 41[2mms[22m[39m
+ [32m✓[39m src/features/auth/RegisterPage.test.jsx[2m > [22mRegisterPage[2m > [22mshould show error for empty email[32m 16[2mms[22m[39m
+ [32m✓[39m src/features/auth/RegisterPage.test.jsx[2m > [22mRegisterPage[2m > [22mshould show error for invalid email[32m 9[2mms[22m[39m
+ [32m✓[39m src/features/auth/RegisterPage.test.jsx[2m > [22mRegisterPage[2m > [22mshould show error for empty password[32m 9[2mms[22m[39m
+ [32m✓[39m src/features/auth/RegisterPage.test.jsx[2m > [22mRegisterPage[2m > [22mshould show error when passwords do not match[32m 9[2mms[22m[39m
+[90mstderr[2m | src/features/book-search/components/SearchResultCard.test.jsx[2m > [22m[2mSearchResultCard[2m > [22m[2mtriggers animation if book is NOT owned
+[22m[39mWarning: React does not recognize the `fallbackIconSize` prop on a DOM element. If you intentionally want it to appear in the DOM as a custom attribute, spell it as lowercase `fallbackiconsize` instead. If you accidentally passed it from a parent component, remove it from the DOM element.
+    at img
+    at NativeImage2 (file:///home/emrullah/library-books/frontend/node_modules/@chakra-ui/react/dist/esm/image/native-image.mjs:6:11)
+    at /home/emrullah/library-books/frontend/node_modules/@emotion/react/dist/emotion-element-e8f4cc37.development.cjs.js:60:23
+    at ChakraComponent2 (file:///home/emrullah/library-books/frontend/node_modules/@chakra-ui/react/dist/esm/system/system.mjs:36:15)
+    at Image2 (file:///home/emrullah/library-books/frontend/node_modules/@chakra-ui/react/dist/esm/image/image.mjs:11:5)
+    at div
+    at /home/emrullah/library-books/frontend/node_modules/@emotion/react/dist/emotion-element-e8f4cc37.development.cjs.js:60:23
+    at ChakraComponent2 (file:///home/emrullah/library-books/frontend/node_modules/@chakra-ui/react/dist/esm/system/system.mjs:36:15)
+    at file:///home/emrullah/library-books/frontend/node_modules/@chakra-ui/react/dist/esm/skeleton/skeleton.mjs:45:32
+    at /home/emrullah/library-books/frontend/src/ui/BookCover.jsx:11:3
+    at div
+    at div
+    at SearchResultCard (/home/emrullah/library-books/frontend/src/features/book-search/components/SearchResultCard.jsx:14:29)
+Warning: React does not recognize the `fallbackIcon` prop on a DOM element. If you intentionally want it to appear in the DOM as a custom attribute, spell it as lowercase `fallbackicon` instead. If you accidentally passed it from a parent component, remove it from the DOM element.
+    at img
+    at NativeImage2 (file:///home/emrullah/library-books/frontend/node_modules/@chakra-ui/react/dist/esm/image/native-image.mjs:6:11)
+    at /home/emrullah/library-books/frontend/node_modules/@emotion/react/dist/emotion-element-e8f4cc37.development.cjs.js:60:23
+    at ChakraComponent2 (file:///home/emrullah/library-books/frontend/node_modules/@chakra-ui/react/dist/esm/system/system.mjs:36:15)
+    at Image2 (file:///home/emrullah/library-books/frontend/node_modules/@chakra-ui/react/dist/esm/image/image.mjs:11:5)
+    at div
+    at /home/emrullah/library-books/frontend/node_modules/@emotion/react/dist/emotion-element-e8f4cc37.development.cjs.js:60:23
+    at ChakraComponent2 (file:///home/emrullah/library-books/frontend/node_modules/@chakra-ui/react/dist/esm/system/system.mjs:36:15)
+    at file:///home/emrullah/library-books/frontend/node_modules/@chakra-ui/react/dist/esm/skeleton/skeleton.mjs:45:32
+    at /home/emrullah/library-books/frontend/src/ui/BookCover.jsx:11:3
+    at div
+    at div
+    at SearchResultCard (/home/emrullah/library-books/frontend/src/features/book-search/components/SearchResultCard.jsx:14:29)
+
+[90mstderr[2m | src/features/book-search/components/SearchResultCard.test.jsx[2m > [22m[2mSearchResultCard[2m > [22m[2mtriggers animation if book is NOT owned
+[22m[39mWarning: An update to SearchResultCard inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link/wrap-tests-with-act
+    at SearchResultCard (/home/emrullah/library-books/frontend/src/features/book-search/components/SearchResultCard.jsx:14:29)
+
+[90mstderr[2m | src/features/book-search/components/SearchResultCard.test.jsx[2m > [22m[2mSearchResultCard[2m > [22m[2mdoes NOT trigger animation if book is owned by ID fallback
+[22m[39mWarning: An update to SearchResultCard inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link/wrap-tests-with-act
+    at SearchResultCard (/home/emrullah/library-books/frontend/src/features/book-search/components/SearchResultCard.jsx:14:29)
+
+ [32m✓[39m src/features/auth/LoginPage.test.jsx[2m > [22mLoginPage[2m > [22mshould call authApi.login on form submit[32m 66[2mms[22m[39m
+ [32m✓[39m src/features/auth/LoginPage.test.jsx[2m > [22mLoginPage[2m > [22mshould show error message on login failure[32m 12[2mms[22m[39m
+ [32m✓[39m src/features/auth/LoginPage.test.jsx[2m > [22mLoginPage[2m > [22mshould render register link[32m 3[2mms[22m[39m
+ [32m✓[39m src/features/auth/RegisterPage.test.jsx[2m > [22mRegisterPage[2m > [22mshould call register API and navigate on success[32m 67[2mms[22m[39m
+ [32m✓[39m src/features/auth/RegisterPage.test.jsx[2m > [22mRegisterPage[2m > [22mshould handle register API error[32m 13[2mms[22m[39m
+ [32m✓[39m src/features/auth/RegisterPage.test.jsx[2m > [22mRegisterPage[2m > [22mshould render login link[32m 6[2mms[22m[39m
+ [32m✓[39m src/features/book-search/components/SearchResultCard.test.jsx[2m > [22mSearchResultCard[2m > [22mtriggers animation if book is NOT owned[32m 139[2mms[22m[39m
+ [32m✓[39m src/features/book-search/components/SearchResultCard.test.jsx[2m > [22mSearchResultCard[2m > [22mdoes NOT trigger animation if book is owned by ID fallback[32m 22[2mms[22m[39m
+[90mstderr[2m | src/features/my-books/MyBooks.test.jsx[2m > [22m[2mMyBooks Component[2m > [22m[2mrenders books from API
+[22m[39mWarning: React does not recognize the `fallbackIconSize` prop on a DOM element. If you intentionally want it to appear in the DOM as a custom attribute, spell it as lowercase `fallbackiconsize` instead. If you accidentally passed it from a parent component, remove it from the DOM element.
+    at img
+    at NativeImage2 (file:///home/emrullah/library-books/frontend/node_modules/@chakra-ui/react/dist/esm/image/native-image.mjs:6:11)
+    at /home/emrullah/library-books/frontend/node_modules/@emotion/react/dist/emotion-element-e8f4cc37.development.cjs.js:60:23
+    at ChakraComponent2 (file:///home/emrullah/library-books/frontend/node_modules/@chakra-ui/react/dist/esm/system/system.mjs:36:15)
+    at Image2 (file:///home/emrullah/library-books/frontend/node_modules/@chakra-ui/react/dist/esm/image/image.mjs:11:5)
+    at div
+    at /home/emrullah/library-books/frontend/node_modules/@emotion/react/dist/emotion-element-e8f4cc37.development.cjs.js:60:23
+    at ChakraComponent2 (file:///home/emrullah/library-books/frontend/node_modules/@chakra-ui/react/dist/esm/system/system.mjs:36:15)
+    at file:///home/emrullah/library-books/frontend/node_modules/@chakra-ui/react/dist/esm/skeleton/skeleton.mjs:45:32
+    at /home/emrullah/library-books/frontend/src/ui/BookCover.jsx:11:3
+    at div
+    at /home/emrullah/library-books/frontend/node_modules/@emotion/react/dist/emotion-element-e8f4cc37.development.cjs.js:60:23
+    at ChakraComponent2 (file:///home/emrullah/library-books/frontend/node_modules/@chakra-ui/react/dist/esm/system/system.mjs:36:15)
+    at div
+    at /home/emrullah/library-books/frontend/node_modules/@emotion/react/dist/emotion-element-e8f4cc37.development.cjs.js:60:23
+    at ChakraComponent2 (file:///home/emrullah/library-books/frontend/node_modules/@chakra-ui/react/dist/esm/system/system.mjs:36:15)
+    at MyBookCard (/home/emrullah/library-books/frontend/src/features/my-books/components/MyBookCard.jsx:19:3)
+    at div
+    at /home/emrullah/library-books/frontend/node_modules/@emotion/react/dist/emotion-element-e8f4cc37.development.cjs.js:60:23
+    at ChakraComponent2 (file:///home/emrullah/library-books/frontend/node_modules/@chakra-ui/react/dist/esm/system/system.mjs:36:15)
+    at div
+    at /home/emrullah/library-books/frontend/node_modules/@emotion/react/dist/emotion-element-e8f4cc37.development.cjs.js:60:23
+    at ChakraComponent2 (file:///home/emrullah/library-books/frontend/node_modules/@chakra-ui/react/dist/esm/system/system.mjs:36:15)
+    at Flex2 (file:///home/emrullah/library-books/frontend/node_modules/@chakra-ui/react/dist/esm/flex/flex.mjs:7:11)
+    at div
+    at /home/emrullah/library-books/frontend/node_modules/@emotion/react/dist/emotion-element-e8f4cc37.development.cjs.js:60:23
+    at ChakraComponent2 (file:///home/emrullah/library-books/frontend/node_modules/@chakra-ui/react/dist/esm/system/system.mjs:36:15)
+    at MyBooks (/home/emrullah/library-books/frontend/src/features/my-books/MyBooks.jsx:19:57)
+    at Router (file:///home/emrullah/library-books/frontend/node_modules/react-router/dist/development/chunk-JMJ3UQ3L.mjs:6577:13)
+    at MemoryRouter (file:///home/emrullah/library-books/frontend/node_modules/react-router/dist/development/chunk-JMJ3UQ3L.mjs:6493:3)
+    at QueryClientProvider (file:///home/emrullah/library-books/frontend/node_modules/@tanstack/react-query/build/modern/QueryClientProvider.js:20:3)
+    at ReadingSessionProvider (/home/emrullah/library-books/frontend/src/context/ReadingSessionContext.jsx:14:35)
+    at /home/emrullah/library-books/frontend/src/features/my-books/MyBooks.test.jsx:33:13
+
+ [32m✓[39m src/features/my-books/MyBooks.test.jsx[2m > [22mMyBooks Component[2m > [22mshows loading state initially[32m 100[2mms[22m[39m
+ [32m✓[39m src/features/my-books/components/StopSessionModal.test.jsx[2m > [22mStopSessionModal[2m > [22mshould render step 1 initially[32m 270[2mms[22m[39m
+ [32m✓[39m src/features/my-books/components/StopSessionModal.test.jsx[2m > [22mStopSessionModal[2m > [22mshould call onClose when cancel is clicked in step 1[32m 48[2mms[22m[39m
+ [32m✓[39m src/features/my-books/components/BookGoalModal.test.jsx[2m > [22mBookGoalModal[2m > [22mshould render modal with title and fields[32m 287[2mms[22m[39m
+ [32m✓[39m src/features/my-books/components/BookGoalModal.test.jsx[2m > [22mBookGoalModal[2m > [22mshould call onClose when cancel button is clicked[32m 95[2mms[22m[39m
+ [32m✓[39m src/features/my-books/MyBooks.test.jsx[2m > [22mMyBooks Component[2m > [22mrenders books from API[32m 134[2mms[22m[39m
+ [32m✓[39m src/features/my-books/components/StopSessionModal.test.jsx[2m > [22mStopSessionModal[2m > [22mshould transition to step 2 when confirm is clicked in step 1[32m 68[2mms[22m[39m
+ [32m✓[39m src/features/my-books/components/StopSessionModal.test.jsx[2m > [22mStopSessionModal[2m > [22mshould call onClose and reset to step 1 when abort is clicked in step 2[32m 51[2mms[22m[39m
+ [32m✓[39m src/features/my-books/components/BookGoalModal.test.jsx[2m > [22mBookGoalModal[2m > [22mshould call handleSaveGoal when save button is clicked[32m 76[2mms[22m[39m
+ [32m✓[39m src/features/my-books/components/BookGoalModal.test.jsx[2m > [22mBookGoalModal[2m > [22mshould call setGoalPages on input change[32m 73[2mms[22m[39m
+ [32m✓[39m src/features/my-books/MyBooks.test.jsx[2m > [22mMyBooks Component[2m > [22moptimistically updates "Mark as Read" status[32m 169[2mms[22m[39m
+ [32m✓[39m src/features/my-books/MyBooks.test.jsx[2m > [22mMyBooks Component[2m > [22mhandles API errors gracefully[32m 11[2mms[22m[39m
+ [32m✓[39m src/features/my-books/components/StopSessionModal.test.jsx[2m > [22mStopSessionModal[2m > [22mshould trigger onConfirm with parsed page when submit is clicked in step 2[32m 55[2mms[22m[39m
+ [32m✓[39m src/features/my-books/components/StopSessionModal.test.jsx[2m > [22mStopSessionModal[2m > [22mshould show error toast if page exceeds maxPages[32m 53[2mms[22m[39m
+ [32m✓[39m src/features/my-books/components/BookGoalModal.test.jsx[2m > [22mBookGoalModal[2m > [22mshould call setGoalType when selecting a different radio[32m 73[2mms[22m[39m
+ [32m✓[39m src/features/my-books/components/BookGoalModal.test.jsx[2m > [22mBookGoalModal[2m > [22mshould not render when isOpen is false[32m 1[2mms[22m[39m
+ [32m✓[39m src/features/my-books/components/StopSessionModal.test.jsx[2m > [22mStopSessionModal[2m > [22mshould allow submitting without maxPages constraint if maxPages is undefined[32m 50[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m15 passed[39m[22m[90m (15)[39m
+[2m      Tests [22m [1m[32m100 passed[39m[22m[90m (100)[39m
+[2m   Start at [22m 15:10:17
+[2m   Duration [22m 2.80s[2m (transform 2.21s, setup 6.79s, import 6.09s, tests 3.01s, environment 10.39s)[22m
+
+[34m % [39m[2mCoverage report from [22m[33mv8[39m
+-------------------|---------|----------|---------|---------|-------------------
+File               | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
+-------------------|---------|----------|---------|---------|-------------------
+All files          |   67.34 |    62.86 |   59.06 |   68.18 |                   
+ src               |     100 |      100 |     100 |     100 |                   
+  i18n.js          |     100 |      100 |     100 |     100 |                   
+ src/api           |   71.42 |    52.17 |    62.5 |   71.42 |                   
+  apiClient.js     |   71.42 |    52.17 |    62.5 |   71.42 | ...43-46,53,82-98 
+ src/context       |   44.62 |    34.78 |   36.84 |   45.66 |                   
+  ...onContext.jsx |   14.81 |        0 |       0 |   17.39 | 9-32,44-48,53-81  
+  AuthContext.jsx  |   12.76 |     12.5 |   11.11 |   13.04 | 7-78,88           
+  ...onContext.jsx |   65.17 |    46.87 |   72.22 |   66.34 | ...52,157-163,197 
+ src/features/auth |   98.41 |    86.95 |     100 |     100 |                   
+  LoginPage.jsx    |     100 |       75 |     100 |     100 | 17-18             
+  ...ge.module.css |       0 |        0 |       0 |       0 |                   
+  RegisterPage.jsx |   97.36 |    93.33 |     100 |     100 | 39                
+ ...tures/auth/api |     100 |      100 |     100 |     100 |                   
+  authApi.js       |     100 |      100 |     100 |     100 |                   
+ ...rch/components |   78.57 |    61.11 |   66.66 |   81.48 |                   
+  SearchForm.jsx   |     100 |      100 |     100 |     100 |                   
+  ...rm.module.css |       0 |        0 |       0 |       0 |                   
+  ...esultCard.jsx |      75 |    61.11 |      50 |   78.26 | 23-24,50-52       
+  ...rd.module.css |       0 |        0 |       0 |       0 |                   
+ ...ures/books/api |     100 |      100 |     100 |     100 |                   
+  index.js         |     100 |      100 |     100 |     100 |                   
+ ...ures/discovery |     100 |      100 |     100 |     100 |                   
+  discoveryApi.js  |     100 |      100 |     100 |     100 |                   
+ ...iscovery/hooks |     100 |      100 |     100 |     100 |                   
+  useDiscovery.js  |     100 |      100 |     100 |     100 |                   
+ ...tures/my-books |   72.41 |       64 |      50 |   73.58 |                   
+  MyBooks.jsx      |   72.41 |       64 |      50 |   73.58 | ...20,132,204-219 
+ ...s/my-books/api |     100 |      100 |     100 |     100 |                   
+  sessionsApi.js   |     100 |      100 |     100 |     100 |                   
+ ...oks/components |   87.03 |       90 |      75 |   87.03 |                   
+  ...GoalModal.jsx |     100 |      100 |     100 |     100 |                   
+  MyBookCard.jsx   |   53.33 |       75 |   33.33 |   53.33 | 36-37,130-221     
+  ...sionModal.jsx |     100 |    93.75 |     100 |     100 | 26                
+  ...ressModal.jsx |     100 |      100 |     100 |     100 |                   
+ ...my-books/hooks |   65.76 |    66.03 |   45.28 |   64.76 |                   
+  ...lculations.js |     100 |    96.22 |     100 |     100 | 81,103            
+  ...rollerLock.js |   83.05 |    55.55 |   88.88 |   82.14 | 43,54-65,97-98    
+  useMyBooks.js    |   29.03 |    25.71 |    12.5 |   29.67 | ...92,196,200,204 
+  ...ingSession.js |     100 |      100 |     100 |     100 |                   
+ src/hooks         |     100 |      100 |     100 |     100 |                   
+  ...Background.js |     100 |      100 |     100 |     100 |                   
+ src/locales       |       0 |        0 |       0 |       0 |                   
+  de.json          |       0 |        0 |       0 |       0 |                   
+  en.json          |       0 |        0 |       0 |       0 |                   
+ src/mocks         |   30.76 |      100 |   28.57 |   30.76 |                   
+  handlers.js      |      25 |      100 |   28.57 |      25 | 40-59,77-91       
+  server.js        |     100 |      100 |     100 |     100 |                   
+ src/ui            |   54.54 |    50.79 |   33.33 |   58.82 |                   
+  BookCover.jsx    |   54.54 |    50.79 |   33.33 |   58.82 | ...1-82,87-93,102 
+ src/utils         |   63.63 |       10 |      50 |      70 |                   
+  googleBooks.js   |   63.63 |       10 |      50 |      70 | 11-14             
+-------------------|---------|----------|---------|---------|-------------------

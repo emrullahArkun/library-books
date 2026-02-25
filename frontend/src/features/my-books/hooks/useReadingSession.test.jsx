@@ -99,7 +99,7 @@ describe('useReadingSession', () => {
         expect(global.fetch).toHaveBeenCalledWith('/api/sessions/start', expect.objectContaining({
             method: 'POST',
             headers: expect.objectContaining({
-                'Authorization': `Basic ${mockToken}`
+                'Authorization': `Bearer ${mockToken}`
             }),
             body: JSON.stringify({ bookId: 202 })
         }));

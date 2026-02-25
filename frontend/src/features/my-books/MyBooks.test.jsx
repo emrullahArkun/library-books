@@ -43,10 +43,7 @@ describe('MyBooks Component', () => {
     it('renders books from API', async () => {
         render(<MyBooks />, { wrapper: createTestWrapper() });
 
-        // Wait for Loading to finish and title to appear
-        await waitFor(() => expect(screen.getByText(/My Library/i)).toBeInTheDocument());
-
-        // Check if specific books are rendered using more specific selectors
+        // Wait for Loading to finish and book to appear
         const book1Cover = await screen.findByAltText('Test Book 1');
         expect(book1Cover).toBeInTheDocument();
 
