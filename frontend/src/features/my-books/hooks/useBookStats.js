@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { booksApi } from '../../books/api';
-import { sessionsApi } from '../api/sessionsApi';
+import { sessionsApi } from '../../reading-sessions/api/sessionsApi';
 import { useAuth } from '../../../context/AuthContext';
 
 /**

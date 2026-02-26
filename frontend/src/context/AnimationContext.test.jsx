@@ -83,8 +83,13 @@ describe('AnimationContext', () => {
             return null;
         };
 
+        const originalError = console.error;
+        console.error = vi.fn();
+
         expect(() => render(<BadComponent />)).toThrow(
             'useAnimation must be used within an AnimationProvider'
         );
+
+        console.error = originalError;
     });
 });

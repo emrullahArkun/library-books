@@ -1,22 +1,21 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { useAuth } from '../../../context/AuthContext';
 import discoveryApi from '../discoveryApi';
 
 /**
  * Hook for managing discovery data
  */
 export const useDiscovery = () => {
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
-    const [data, setData] = useState({
-        byAuthor: { authors: [], books: [] },
-        byCategory: { categories: [], books: [] },
-        bySearch: { queries: [], books: [] }
-    });
+    const { token, user } = useAuth();
 
-    const fetchDiscoveryData = useCallback(async () => {
-        setLoading(true);
-        setError(null);
-        try {
+    const {
+        data,
+        isLoading: loading,
+        error,
+        refetch: refresh
+    } = useQuery({
+        queryKey: ['discovery', user?.email],
+        queryFn: async () => {
             const response = await discoveryApi.getAll();
 
             // Filter out books without ISBN or without a valid cover URL
@@ -24,7 +23,7 @@ export const useDiscovery = () => {
                 book.isbn && book.coverUrl && book.coverUrl.trim() !== ''
             );
 
-            setData({
+            return {
                 byAuthor: {
                     authors: response.byAuthor?.authors || [],
                     books: filterValidBooks(response.byAuthor?.books || [])
@@ -37,27 +36,20 @@ export const useDiscovery = () => {
                     queries: response.bySearch?.queries || [],
                     books: filterValidBooks(response.bySearch?.books || [])
                 }
-            });
-        } catch (err) {
-            console.error('Failed to fetch discovery data:', err);
-            setError(err.message || 'Failed to load recommendations');
-        } finally {
-            setLoading(false);
-        }
-    }, []);
-
-    useEffect(() => {
-        fetchDiscoveryData();
-    }, [fetchDiscoveryData]);
-
-    const refresh = useCallback(() => {
-        fetchDiscoveryData();
-    }, [fetchDiscoveryData]);
+            };
+        },
+        enabled: !!token, // Only fetch if authenticated
+        staleTime: 5 * 60 * 1000, // Cache for 5 mins
+    });
 
     return {
         loading,
-        error,
-        data,
+        error: error ? error.message : null,
+        data: data || {
+            byAuthor: { authors: [], books: [] },
+            byCategory: { categories: [], books: [] },
+            bySearch: { queries: [], books: [] }
+        },
         refresh
     };
 };

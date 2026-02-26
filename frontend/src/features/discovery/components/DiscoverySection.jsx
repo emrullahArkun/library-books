@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { useAnimation } from '../../../context/AnimationContext';
 import { useAuth } from '../../../context/AuthContext';
 import { booksApi } from '../../books/api';
+import { useAddBookToLibrary } from '../../books/hooks/useAddBookToLibrary';
 import BookCover from '../../../ui/BookCover';
 import styles from './DiscoverySection.module.css';
 
@@ -69,12 +70,12 @@ const DiscoveryBookCard = ({ book }) => {
     const queryClient = useQueryClient();
     const toast = useToast();
     const { t } = useTranslation();
-    const { token } = useAuth();
+    const { token, user } = useAuth();
     const { flyBook } = useAnimation();
 
     // Fetch owned ISBNs to check duplicates
     const { data: ownedIsbns } = useQuery({
-        queryKey: ['ownedIsbns'],
+        queryKey: ['ownedIsbns', user?.email],
         queryFn: async () => {
             if (!token) return [];
             const response = await booksApi.getOwnedIsbns();
@@ -88,57 +89,7 @@ const DiscoveryBookCard = ({ book }) => {
     const cleanIsbn = book.isbn?.replace(/-/g, '');
     const isOwned = cleanIsbn && ownedIsbnsSet.has(cleanIsbn);
 
-    const addBookMutation = useMutation({
-        mutationFn: async () => {
-            if (!token) throw new Error(t('search.toast.loginRequired'));
-            if (!book.isbn) throw new Error(t('search.toast.noIsbn'));
-
-            const newBook = {
-                isbn: book.isbn,
-                title: book.title || 'Unbekannter Titel',
-                authorName: Array.isArray(book.authors) ? book.authors.join(', ') : (book.authors || 'Unbekannt'),
-                publishDate: book.publishedDate || null,
-                coverUrl: book.coverUrl || null,
-                pageCount: book.pageCount || 0,
-                categories: Array.isArray(book.categories) ? book.categories.join(', ') : (book.categories || null),
-            };
-
-            return await booksApi.create(newBook);
-        },
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['myBooks'] });
-            queryClient.invalidateQueries({ queryKey: ['ownedIsbns'] });
-            toast.close('add-book-toast');
-            toast({
-                id: 'add-book-toast',
-                position: 'top',
-                duration: 3000,
-                containerStyle: { marginTop: '80px' },
-                render: () => (
-                    <div style={{
-                        backgroundColor: '#38A169',
-                        color: 'white',
-                        padding: '12px 24px',
-                        borderRadius: '8px',
-                        fontWeight: '600',
-                        boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-                        textAlign: 'center'
-                    }}>
-                        {t('search.toast.successTitle')}
-                    </div>
-                ),
-            });
-        },
-        onError: (error) => {
-            toast({
-                title: t('search.toast.errorTitle'),
-                description: error.message,
-                status: 'error',
-                duration: 5000,
-                isClosable: true,
-            });
-        },
-    });
+    const addBookMutation = useAddBookToLibrary();
 
     const handleAddClick = async (e) => {
         e.stopPropagation();
@@ -151,7 +102,17 @@ const DiscoveryBookCard = ({ book }) => {
 
         setIsAdding(true);
         try {
-            await addBookMutation.mutateAsync();
+            await addBookMutation.mutateAsync({
+                volumeInfo: {
+                    title: book.title || 'Unbekannter Titel',
+                    authors: Array.isArray(book.authors) ? book.authors : [book.authors || 'Unbekannt'],
+                    publishedDate: book.publishedDate,
+                    pageCount: book.pageCount || 0,
+                    categories: Array.isArray(book.categories) ? book.categories : [book.categories],
+                    imageLinks: book.coverUrl ? { thumbnail: book.coverUrl } : undefined,
+                    industryIdentifiers: book.isbn ? [{ type: 'ISBN_13', identifier: book.isbn }] : []
+                }
+            });
         } finally {
             setIsAdding(false);
         }

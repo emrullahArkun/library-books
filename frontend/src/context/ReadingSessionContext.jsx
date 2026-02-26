@@ -1,7 +1,7 @@
 import { createContext, useContext, useState, useEffect, useRef, useCallback } from 'react';
 import { useAuth } from './AuthContext';
-import { sessionsApi } from '../features/my-books/api/sessionsApi';
-import { useControllerLock } from '../features/my-books/hooks/useControllerLock';
+import { sessionsApi } from '../features/reading-sessions/api/sessionsApi';
+import { useControllerLock } from '../shared/hooks/useControllerLock';
 
 const ReadingSessionContext = createContext(null);
 

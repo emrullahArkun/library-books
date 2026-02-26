@@ -7,7 +7,7 @@ vi.mock('./AuthContext', () => ({
     useAuth: vi.fn(),
 }));
 
-vi.mock('../features/my-books/api/sessionsApi', () => ({
+vi.mock('../features/reading-sessions/api/sessionsApi', () => ({
     sessionsApi: {
         getActive: vi.fn(),
         start: vi.fn(),
@@ -17,13 +17,13 @@ vi.mock('../features/my-books/api/sessionsApi', () => ({
     },
 }));
 
-vi.mock('../features/my-books/hooks/useControllerLock', () => ({
+vi.mock('../shared/hooks/useControllerLock', () => ({
     useControllerLock: vi.fn(),
 }));
 
 import { useAuth } from './AuthContext';
-import { sessionsApi } from '../features/my-books/api/sessionsApi';
-import { useControllerLock } from '../features/my-books/hooks/useControllerLock';
+import { sessionsApi } from '../features/reading-sessions/api/sessionsApi';
+import { useControllerLock } from '../shared/hooks/useControllerLock';
 
 // Helper
 const TestConsumer = ({ onRender }) => {

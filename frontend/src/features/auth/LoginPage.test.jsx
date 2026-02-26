@@ -88,7 +88,7 @@ describe('LoginPage', () => {
     });
 
     it('should call authApi.login on form submit', async () => {
-        authApi.login.mockResolvedValue({ email: 'a@b.com', role: 'USER', token: 'tok' });
+        authApi.login.mockResolvedValue({ user: { email: 'a@b.com', role: 'USER' }, token: 'tok' });
 
         render(
             <MemoryRouter>
