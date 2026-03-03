@@ -183,6 +183,29 @@
             "finished": "Fertig!"
         }
     },
+    "common": {
+        "cancel": "Abbrechen",
+        "delete": "Löschen",
+        "deleteAll": "Alle löschen",
+        "leave": "Verlassen"
+    },
+    "discovery": {
+        "loading": "Empfehlungen werden geladen...",
+        "retry": "Erneut versuchen",
+        "byAuthorTitle": "Mehr von deinen Lieblingsautoren",
+        "byCategoryTitle": "Entdecke dein Lieblingsgenre",
+        "bySearchTitle": "Basierend auf deinen Suchen",
+        "emptyAuthor": "Keine Empfehlungen für diesen Autor gefunden",
+        "emptyCategory": "Keine Empfehlungen für dieses Genre gefunden",
+        "emptySearch": "Keine ähnlichen Bücher gefunden",
+        "emptyState": "Füge zuerst einige Bücher zu deiner Bibliothek hinzu, um personalisierte Empfehlungen zu erhalten.",
+        "emptyDefault": "Keine Empfehlungen verfügbar",
+        "unknownTitle": "Unbekannter Titel",
+        "unknownAuthor": "Unbekannter Autor"
+    },
+    "session": {
+        "returnToSession": "In Session zurückkehren"
+    },
     "bookStats": {
         "readProgress": "Lese-Fortschritt",
         "pages": "Seiten",

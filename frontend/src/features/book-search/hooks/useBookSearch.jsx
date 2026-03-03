@@ -1,11 +1,11 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { useAuth } from '../../../context/AuthContext';
-import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useInfiniteQuery, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useToast } from '@chakra-ui/react';
 import { useTranslation } from 'react-i18next';
 import { booksApi } from '../../books/api';
 import { useAddBookToLibrary } from '../../books/hooks/useAddBookToLibrary';
-import discoveryApi from '../../discovery/discoveryApi';
+import discoveryApi from '../../discovery/api/discoveryApi';
 
 // Constants for debounced logging
 const LOG_DEBOUNCE_MS = 2000; // Wait 2 seconds after last keystroke
@@ -25,14 +25,12 @@ export const useBookSearch = () => {
 
     // Debounced search logging - logs after user stops typing for 2 seconds
     useEffect(() => {
-        // Clear previous timeout
         if (logTimeoutRef.current) {
             clearTimeout(logTimeoutRef.current);
         }
 
         const trimmedQuery = query.trim();
 
-        // Only log if query is long enough and different from last logged
         if (trimmedQuery.length >= MIN_QUERY_LENGTH &&
             trimmedQuery.toLowerCase() !== lastLoggedQuery.current.toLowerCase() &&
             token) {
@@ -40,7 +38,6 @@ export const useBookSearch = () => {
             logTimeoutRef.current = setTimeout(() => {
                 discoveryApi.logSearch(trimmedQuery).then(() => {
                     lastLoggedQuery.current = trimmedQuery;
-                    console.log(`[Discovery] Logged search: "${trimmedQuery}"`);
                 }).catch(() => {
                     // Silently ignore logging errors
                 });
@@ -67,7 +64,10 @@ export const useBookSearch = () => {
         staleTime: 5 * 60 * 1000, // Cache for 5 minutes
     });
 
-    const ownedIsbnsSet = new Set((ownedIsbns || []).map(isbn => isbn.replace(/-/g, '')));
+    const ownedIsbnsSet = useMemo(
+        () => new Set((ownedIsbns || []).map(isbn => isbn.replace(/-/g, ''))),
+        [ownedIsbns]
+    );
 
     const {
         data,
@@ -81,6 +81,8 @@ export const useBookSearch = () => {
         queryFn: async ({ pageParam = 0 }) => {
             if (!searchTerm.trim()) return { items: [], totalItems: 0 };
             const finalQuery = encodeURIComponent(searchTerm.trim());
+            // This is a restricted browser API key, safe for client-side use.
+            // It is scoped to the Google Books API and restricted by HTTP referrer.
             const apiKey = import.meta.env.VITE_GOOGLE_BOOKS_API_KEY;
             const keyParam = apiKey ? `&key=${apiKey}` : '';
             const response = await fetch(`https://www.googleapis.com/books/v1/volumes?q=${finalQuery}&startIndex=${pageParam}&maxResults=36${keyParam}`);
@@ -108,13 +110,10 @@ export const useBookSearch = () => {
         ).values()
     );
 
-    // const totalItems = data?.pages[0]?.totalItems || 0;
-
     const addBookMutation = useAddBookToLibrary();
 
     const searchBooks = (e) => {
         if (e) e.preventDefault();
-        // Only trigger search when form is submitted (Enter or button click)
         setSearchTerm(query.trim());
     };
 
@@ -130,4 +129,3 @@ export const useBookSearch = () => {
         ownedIsbns: ownedIsbnsSet
     };
 };
-

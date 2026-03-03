@@ -78,14 +78,6 @@ const apiClient = {
         });
     },
 
-    put(url, data, options = {}) {
-        return this.requestJson(url, {
-            ...options,
-            method: 'PUT',
-            body: data ? JSON.stringify(data) : undefined
-        });
-    },
-
     patch(url, data, options = {}) {
         return this.requestJson(url, {
             ...options,

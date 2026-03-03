@@ -16,6 +16,7 @@ import { AnimationProvider } from '../context/AnimationContext';
 import { ReadingSessionProvider } from '../context/ReadingSessionContext';
 import ProtectedRoute from '../shared/components/ProtectedRoute';
 import PublicRoute from '../shared/components/PublicRoute';
+import ErrorBoundary from '../shared/components/ErrorBoundary';
 import MainLayout from '../layouts/MainLayout';
 import './App.css'
 
@@ -33,6 +34,7 @@ function App() {
         <ReadingSessionProvider>
           <Router>
             <div className="app-container">
+              <ErrorBoundary>
               <Suspense fallback={<PageLoader />}>
                 <Routes>
                   {/* Protected Routes Layout */}
@@ -65,6 +67,7 @@ function App() {
                   } />
                 </Routes>
               </Suspense>
+              </ErrorBoundary>
             </div>
           </Router>
         </ReadingSessionProvider>

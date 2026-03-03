@@ -5,6 +5,26 @@ import { useAuth } from '../../../context/AuthContext';
 import { booksApi } from '../../books/api';
 import { mapGoogleBookToNewBook } from '../../../utils/googleBooks';
 
+const TOAST_STYLE = {
+    containerStyle: { marginTop: '80px' },
+    position: 'top',
+    duration: 3000,
+};
+
+const ToastMessage = ({ bgColor, children }) => (
+    <div style={{
+        backgroundColor: bgColor,
+        color: 'white',
+        padding: '12px 24px',
+        borderRadius: '8px',
+        fontWeight: '600',
+        boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+        textAlign: 'center'
+    }}>
+        {children}
+    </div>
+);
+
 export const useAddBookToLibrary = () => {
     const { token, user } = useAuth();
     const toast = useToast();
@@ -21,30 +41,22 @@ export const useAddBookToLibrary = () => {
 
             if (!isbnInfo && !book.id) throw new Error(t('search.toast.noIsbn'));
 
-            // Use utility for mapping logic
             const newBook = mapGoogleBookToNewBook(volumeInfo, isbnInfo, book.id);
 
-            // FALLBACK: If pageCount is 0 or missing, try OpenLibrary
-            if ((!newBook.pageCount || newBook.pageCount === 0) && newBook.isbn) {
+            // Fallback: If pageCount is 0 or missing, try OpenLibrary
+            if ((!newBook.pageCount || newBook.pageCount === 0) && isbnInfo) {
                 try {
-                    // Extract ISBN (remove "ID:" prefix if it exists, though mapGoogleBookToNewBook puts ISBN directly if available)
-                    // If it used the ID fallback, it starts with ID:. OpenLibrary needs actual ISBN.
-                    // isbnInfo was already found above, so we can use that directly for safety
-                    if (isbnInfo) {
-                        const cleanIsbn = isbnInfo.identifier;
-                        const olUrl = `https://openlibrary.org/api/books?bibkeys=ISBN:${cleanIsbn}&format=json&jscmd=data`;
-                        const response = await fetch(olUrl);
-                        if (response.ok) {
-                            const data = await response.json();
-                            const bookKey = `ISBN:${cleanIsbn}`;
-                            if (data[bookKey] && data[bookKey].number_of_pages) {
-                                newBook.pageCount = data[bookKey].number_of_pages;
-                                console.log(`Updated page count from OpenLibrary for ${newBook.title}: ${newBook.pageCount}`);
-                            }
+                    const cleanIsbn = isbnInfo.identifier;
+                    const olUrl = `https://openlibrary.org/api/books?bibkeys=ISBN:${cleanIsbn}&format=json&jscmd=data`;
+                    const response = await fetch(olUrl);
+                    if (response.ok) {
+                        const data = await response.json();
+                        const bookKey = `ISBN:${cleanIsbn}`;
+                        if (data[bookKey]?.number_of_pages) {
+                            newBook.pageCount = data[bookKey].number_of_pages;
                         }
                     }
-                } catch (error) {
-                    console.warn('Failed to fetch page count from OpenLibrary:', error);
+                } catch {
                     // Silently fail fallback and proceed with 0 pages
                 }
             }
@@ -57,52 +69,27 @@ export const useAddBookToLibrary = () => {
             toast.close('add-book-toast');
             toast({
                 id: 'add-book-toast',
-                position: 'top',
-                duration: 3000,
-                containerStyle: {
-                    marginTop: '80px'
-                },
+                ...TOAST_STYLE,
                 render: () => (
-                    <div style={{
-                        backgroundColor: '#38A169', // green.500
-                        color: 'white',
-                        padding: '12px 24px',
-                        borderRadius: '8px',
-                        fontWeight: '600',
-                        boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-                        textAlign: 'center'
-                    }}>
-                        Buch wurde erfolgreich hinzugefügt
-                    </div>
+                    <ToastMessage bgColor="#38A169">
+                        {t('search.toast.successTitle')}
+                    </ToastMessage>
                 )
             });
         },
         onError: (err) => {
-            // Check if it's a duplicate error based on the status code
             const isDuplicate = err.status === 409;
-            const message = isDuplicate ? 'Buch gibt es schon in der Sammlung' : (err.message || t('search.toast.addFailed'));
-            const bgColor = isDuplicate ? '#DD6B20' : '#E53E3E'; // orange.500 : red.500
+            const message = isDuplicate ? t('search.toast.duplicate') : (err.message || t('search.toast.addFailed'));
+            const bgColor = isDuplicate ? '#DD6B20' : '#E53E3E';
 
             toast.close('add-book-toast');
             toast({
                 id: 'add-book-toast',
-                position: 'top',
-                duration: 3000,
-                containerStyle: {
-                    marginTop: '80px'
-                },
+                ...TOAST_STYLE,
                 render: () => (
-                    <div style={{
-                        backgroundColor: bgColor,
-                        color: 'white',
-                        padding: '12px 24px',
-                        borderRadius: '8px',
-                        fontWeight: '600',
-                        boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-                        textAlign: 'center'
-                    }}>
+                    <ToastMessage bgColor={bgColor}>
                         {message}
-                    </div>
+                    </ToastMessage>
                 )
             });
         }

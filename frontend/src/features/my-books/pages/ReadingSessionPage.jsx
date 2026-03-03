@@ -1,4 +1,3 @@
-import { useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
@@ -11,17 +10,13 @@ import {
     Icon,
     Spinner,
     Flex,
-    AlertDialog,
-    AlertDialogBody,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogContent,
-    AlertDialogOverlay,
     useDisclosure
 } from '@chakra-ui/react';
 import { FaArrowLeft } from 'react-icons/fa';
 import { useReadingSessionPageLogic } from '../hooks/useReadingSessionPageLogic';
-import { usePinstripeBackground } from '../../../hooks/usePinstripeBackground';
+import { usePinstripeBackground } from '../../../shared/hooks/usePinstripeBackground';
+import { useThemeTokens } from '../../../shared/hooks/useThemeTokens';
+import ConfirmDialog from '../../../shared/components/ConfirmDialog';
 
 import SessionBookSidebar from '../components/SessionBookSidebar';
 import SessionTimerCard from '../components/SessionTimerCard';
@@ -54,7 +49,6 @@ const ReadingSessionPage = () => {
 
     const navigate = useNavigate();
     const { isOpen: isExitConfirmOpen, onOpen: onExitConfirmOpen, onClose: onExitConfirmClose } = useDisclosure();
-    const cancelRef = useRef();
 
     const onBack = () => {
         const needsConfirm = handleBackClick();
@@ -68,15 +62,8 @@ const ReadingSessionPage = () => {
         navigate('/my-books');
     };
 
-    // Apply brown background style (same as HomePage and BookStatsPage)
-    // Apply brown background style (same as HomePage and BookStatsPage)
     usePinstripeBackground();
-
-    const bgColor = 'transparent';
-    const cardBg = 'whiteAlpha.200'; // Glass effect
-    const textColor = 'white';
-    const subTextColor = 'gray.300';
-    const brandColor = 'teal.200';
+    const { bgColor, cardBg, textColor, subTextColor, brandColor } = useThemeTokens();
 
     if (fetchingBook || sessionLoading) {
         return (
@@ -86,12 +73,11 @@ const ReadingSessionPage = () => {
         );
     }
 
-    if (!book) return <Box textAlign="center" py={20} color={textColor}>Book not found</Box>;
+    if (!book) return <Box textAlign="center" py={20} color={textColor}>{t('bookStats.notFound')}</Box>;
 
     return (
         <Box bg={bgColor} minH="100vh" py={8} px={{ base: 4, md: 8 }}>
             <Container maxW="container.xl">
-                {/* Header */}
                 <Button
                     leftIcon={<Icon as={FaArrowLeft} />}
                     mb={8}
@@ -105,8 +91,6 @@ const ReadingSessionPage = () => {
                 </Button>
 
                 <Grid templateColumns={{ base: "1fr", lg: "300px 1fr" }} gap={8} alignItems="start">
-
-                    {/* Left: Book Info */}
                     <GridItem>
                         <SessionBookSidebar
                             book={book}
@@ -116,10 +100,8 @@ const ReadingSessionPage = () => {
                         />
                     </GridItem>
 
-                    {/* Right: Controls & Notes */}
                     <GridItem w="full">
                         <VStack spacing={6} align="stretch">
-                            {/* Timer & Controls Card */}
                             <SessionTimerCard
                                 cardBg={cardBg}
                                 brandColor={brandColor}
@@ -139,7 +121,6 @@ const ReadingSessionPage = () => {
                                 handleStopClick={handleStopClick}
                             />
 
-                            {/* Notes Card */}
                             <SessionNotesCard
                                 note={note}
                                 setNote={setNote}
@@ -149,34 +130,15 @@ const ReadingSessionPage = () => {
                     </GridItem>
                 </Grid>
 
-                {/* Exit Confirmation Dialog */}
-                <AlertDialog
+                <ConfirmDialog
                     isOpen={isExitConfirmOpen}
-                    leastDestructiveRef={cancelRef}
                     onClose={onExitConfirmClose}
-                    isCentered
-                >
-                    <AlertDialogOverlay>
-                        <AlertDialogContent>
-                            <AlertDialogHeader fontSize='lg' fontWeight='bold'>
-                                {t('readingSession.alerts.exitConfirmTitle', 'End Session?')}
-                            </AlertDialogHeader>
-
-                            <AlertDialogBody>
-                                {t('readingSession.alerts.exitConfirm', 'Are you sure you want to leave? The session is still running.')}
-                            </AlertDialogBody>
-
-                            <AlertDialogFooter>
-                                <Button ref={cancelRef} onClick={onExitConfirmClose}>
-                                    {t('common.cancel', 'Cancel')}
-                                </Button>
-                                <Button colorScheme='red' onClick={confirmExit} ml={3}>
-                                    {t('common.leave', 'Leave')}
-                                </Button>
-                            </AlertDialogFooter>
-                        </AlertDialogContent>
-                    </AlertDialogOverlay>
-                </AlertDialog>
+                    onConfirm={confirmExit}
+                    title={t('readingSession.alerts.exitConfirmTitle', 'End Session?')}
+                    body={t('readingSession.alerts.exitConfirm')}
+                    confirmLabel={t('common.leave')}
+                    cancelLabel={t('common.cancel')}
+                />
             </Container>
         </Box>
     );

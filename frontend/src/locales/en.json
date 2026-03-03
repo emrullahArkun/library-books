@@ -183,6 +183,29 @@
             "finished": "Finished!"
         }
     },
+    "common": {
+        "cancel": "Cancel",
+        "delete": "Delete",
+        "deleteAll": "Delete All",
+        "leave": "Leave"
+    },
+    "discovery": {
+        "loading": "Loading recommendations...",
+        "retry": "Try Again",
+        "byAuthorTitle": "More from your favorite authors",
+        "byCategoryTitle": "Discover your favorite genre",
+        "bySearchTitle": "Based on your searches",
+        "emptyAuthor": "No recommendations found for this author",
+        "emptyCategory": "No recommendations found for this genre",
+        "emptySearch": "No similar books found",
+        "emptyState": "Add some books to your library first to get personalized recommendations.",
+        "emptyDefault": "No recommendations available",
+        "unknownTitle": "Unknown Title",
+        "unknownAuthor": "Unknown Author"
+    },
+    "session": {
+        "returnToSession": "Return to Session"
+    },
     "bookStats": {
         "readProgress": "Reading Progress",
         "pages": "Pages",

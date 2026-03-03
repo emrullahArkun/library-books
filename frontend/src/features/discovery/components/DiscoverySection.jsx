@@ -25,7 +25,7 @@ const DiscoverySection = ({
     subtitle,
     iconType = 'author',
     books = [],
-    emptyMessage = 'Keine Empfehlungen verfügbar'
+    emptyMessage
 }) => {
     const Icon = ICONS[iconType] || FaBook;
 
@@ -104,8 +104,8 @@ const DiscoveryBookCard = ({ book }) => {
         try {
             await addBookMutation.mutateAsync({
                 volumeInfo: {
-                    title: book.title || 'Unbekannter Titel',
-                    authors: Array.isArray(book.authors) ? book.authors : [book.authors || 'Unbekannt'],
+                    title: book.title || t('discovery.unknownTitle'),
+                    authors: Array.isArray(book.authors) ? book.authors : [book.authors || t('discovery.unknownAuthor')],
                     publishedDate: book.publishedDate,
                     pageCount: book.pageCount || 0,
                     categories: Array.isArray(book.categories) ? book.categories : [book.categories],
@@ -164,7 +164,7 @@ const DiscoveryBookCard = ({ book }) => {
                 {book.title}
             </p>
             <p className={styles.bookAuthor}>
-                {Array.isArray(book.authors) ? book.authors[0] : book.authors || 'Unbekannter Autor'}
+                {Array.isArray(book.authors) ? book.authors[0] : book.authors || t('discovery.unknownAuthor')}
             </p>
         </div>
     );

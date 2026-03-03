@@ -4,13 +4,13 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useDiscovery } from './useDiscovery';
 import * as AuthContextModule from '../../../context/AuthContext';
 
-vi.mock('../discoveryApi', () => ({
+vi.mock('../api/discoveryApi', () => ({
     default: {
         getAll: vi.fn(),
     },
 }));
 
-import discoveryApi from '../discoveryApi';
+import discoveryApi from '../api/discoveryApi';
 
 const createTestQueryClient = () => new QueryClient({
     defaultOptions: {

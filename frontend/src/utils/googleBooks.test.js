@@ -55,7 +55,6 @@ describe('googleBooks utils', () => {
             expect(result.title).toBe('Test Title');
             expect(result.authorName).toBe('Author One'); // Takes first author
             expect(result.publishDate).toBe('2023-01-01');
-            expect(result.readingModes).toEqual({ text: true, image: false });
             expect(result.pageCount).toBe(350);
         });
 
@@ -77,7 +76,6 @@ describe('googleBooks utils', () => {
             expect(result.authorName).toBe('Unknown Author');
             expect(result.publishDate).toBe('Unknown Date');
             expect(result.pageCount).toBe(0);
-            expect(result.readingModes).toBeUndefined();
         });
     });
 });

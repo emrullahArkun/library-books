@@ -1,4 +1,4 @@
-import { usePinstripeBackground } from '../hooks/usePinstripeBackground';
+import { usePinstripeBackground } from '../shared/hooks/usePinstripeBackground';
 import TypewriterTitle from '../shared/components/TypewriterTitle';
 import BookSearch from '../features/book-search/BookSearch';
 import styles from './HomePage.module.css';

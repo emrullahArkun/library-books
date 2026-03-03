@@ -1,13 +1,12 @@
 import { FaExclamationCircle, FaBookOpen } from 'react-icons/fa';
-import { usePinstripeBackground } from '../../hooks/usePinstripeBackground';
+import { useTranslation } from 'react-i18next';
+import { usePinstripeBackground } from '../../shared/hooks/usePinstripeBackground';
 import DiscoverySection from './components/DiscoverySection';
 import useDiscovery from './hooks/useDiscovery';
 import styles from './DiscoveryPage.module.css';
 
-/**
- * Discovery page showing personalized book recommendations
- */
 const DiscoveryPage = () => {
+    const { t } = useTranslation();
     usePinstripeBackground();
     const { loading, error, data, refresh } = useDiscovery();
 
@@ -19,7 +18,7 @@ const DiscoveryPage = () => {
                         <div className={styles.bouncingBall}></div>
                         <div className={styles.groundLine}></div>
                     </div>
-                    <p>Empfehlungen werden geladen...</p>
+                    <p>{t('discovery.loading')}</p>
                 </div>
             </div>
         );
@@ -31,7 +30,7 @@ const DiscoveryPage = () => {
                 <div className={styles.errorState}>
                     <p><FaExclamationCircle /> {error}</p>
                     <button className={styles.refreshBtn} onClick={refresh}>
-                        Erneut versuchen
+                        {t('discovery.retry')}
                     </button>
                 </div>
             </div>
@@ -48,38 +47,38 @@ const DiscoveryPage = () => {
             <div className={styles.sections}>
                 {hasAuthors && (
                     <DiscoverySection
-                        title="Mehr von deinen Lieblingsautoren"
+                        title={t('discovery.byAuthorTitle')}
                         subtitle={data.byAuthor.authors[0]}
                         iconType="author"
                         books={data.byAuthor.books}
-                        emptyMessage="Keine Empfehlungen für diesen Autor gefunden"
+                        emptyMessage={t('discovery.emptyAuthor')}
                     />
                 )}
 
                 {hasCategories && (
                     <DiscoverySection
-                        title="Entdecke dein Lieblingsgenre"
+                        title={t('discovery.byCategoryTitle')}
                         subtitle={data.byCategory.categories[0]}
                         iconType="category"
                         books={data.byCategory.books}
-                        emptyMessage="Keine Empfehlungen für dieses Genre gefunden"
+                        emptyMessage={t('discovery.emptyCategory')}
                     />
                 )}
 
                 {hasSearches && (
                     <DiscoverySection
-                        title="Basierend auf deinen Suchen"
+                        title={t('discovery.bySearchTitle')}
                         subtitle={data.bySearch.queries[0]}
                         iconType="search"
                         books={data.bySearch.books}
-                        emptyMessage="Keine ähnlichen Bücher gefunden"
+                        emptyMessage={t('discovery.emptySearch')}
                     />
                 )}
 
                 {!hasAnyData && (
                     <div className={styles.emptyState}>
                         <FaBookOpen className={styles.emptyIcon} />
-                        <p>Füge zuerst einige Bücher zu deiner Bibliothek hinzu, um personalisierte Empfehlungen zu erhalten.</p>
+                        <p>{t('discovery.emptyState')}</p>
                     </div>
                 )}
             </div>

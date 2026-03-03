@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../context/AuthContext';
-import { useReadingSession } from './useReadingSession';
+import { useReadingSessionContext } from '../../../context/ReadingSessionContext';
 import { booksApi } from '../../books/api';
 import { useToast } from '@chakra-ui/react';
 
@@ -24,7 +24,7 @@ export const useReadingSessionPageLogic = (bookId) => {
         resumeSession,
         isController,
         takeControl
-    } = useReadingSession();
+    } = useReadingSessionContext();
 
     // Local State
     const [book, setBook] = useState(null);

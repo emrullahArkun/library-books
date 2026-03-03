@@ -6,7 +6,7 @@ const HEARTBEAT_INTERVAL_MS = 2000; // Renew every 2s
 
 // Helper to generate a unique ID for this tab
 const generateTabId = () => {
-    return 'tab_' + Math.random().toString(36).substr(2, 9);
+    return 'tab_' + Math.random().toString(36).substring(2, 11);
 };
 
 export const useControllerLock = () => {
@@ -90,7 +90,7 @@ export const useControllerLock = () => {
     useEffect(() => {
         // Run check immediately
         checkLock();
-        checkRef.current = setInterval(checkLock, 1000); // Check frequently
+        checkRef.current = setInterval(checkLock, 3000);
 
         // Also listen for storage events to update React state faster
         const handleStorage = (e) => {

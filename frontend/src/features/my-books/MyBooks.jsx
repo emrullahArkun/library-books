@@ -2,7 +2,8 @@ import { useEffect, useState, useRef } from 'react';
 import { FaTrash, FaTrashAlt, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import { useTranslation } from 'react-i18next';
 import { useMyBooks } from './hooks/useMyBooks';
-import { usePinstripeBackground } from '../../hooks/usePinstripeBackground';
+import { usePinstripeBackground } from '../../shared/hooks/usePinstripeBackground';
+import ConfirmDialog from '../../shared/components/ConfirmDialog';
 
 import MyBookCard from './components/MyBookCard';
 import {
@@ -15,19 +16,12 @@ import {
     IconButton,
     useToast,
     useDisclosure,
-    AlertDialog,
-    AlertDialogBody,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogContent,
-    AlertDialogOverlay,
 } from '@chakra-ui/react';
 
 function MyBooks() {
     const { t } = useTranslation();
     const containerRef = useRef(null);
 
-    // Initial page size (will be updated by responsive logic)
     const [dynamicPageSize, setDynamicPageSize] = useState(12);
 
     const {
@@ -47,16 +41,14 @@ function MyBooks() {
     } = useMyBooks(dynamicPageSize);
 
     const toast = useToast();
-    const cancelRef = useRef();
 
     // Dialog States
-    const { isOpen: isDeleteOpen, onClose: onDeleteClose } = useDisclosure();
+    const { isOpen: isDeleteOpen, onOpen: onDeleteOpen, onClose: onDeleteClose } = useDisclosure();
     const { isOpen: isDeleteAllOpen, onOpen: onDeleteAllOpen, onClose: onDeleteAllClose } = useDisclosure();
     const { isOpen: isDeleteSelectedOpen, onOpen: onDeleteSelectedOpen, onClose: onDeleteSelectedClose } = useDisclosure();
 
     const [bookToDelete, setBookToDelete] = useState(null);
 
-    // Effect for errors from hook
     useEffect(() => {
         if (deleteError) {
             toast({
@@ -86,59 +78,43 @@ function MyBooks() {
         onDeleteAllClose();
     };
 
-
-
     usePinstripeBackground();
 
     // Dynamic Page Size Calculation
     useEffect(() => {
         const calculatePageSize = () => {
             const width = window.innerWidth;
-
-            // Padding based on Chakra breakpoints (approximate)
-            // base: px=4 (16px * 2 = 32px)
-            // md: px=8 (32px * 2 = 64px)
             const padding = width >= 768 ? 64 : 32;
             const scrollbarBuffer = 20;
-
             const availableWidth = width - padding - scrollbarBuffer;
-
-            const cardWidth = 240; // Card fixed width on sm+
-            const gap = 32; // Gap between cards (chakra spacing=8)
+            const cardWidth = 240;
+            const gap = 32;
             const itemWidth = cardWidth + gap;
 
-            // How many columns fit?
-            // Formula: N * cardWidth + (N-1) * gap <= availableWidth
-            // N * (cardWidth + gap) - gap <= availableWidth
-            // N * itemWidth <= availableWidth + gap
             let columns = Math.floor((availableWidth + gap) / itemWidth);
-
-            // On mobile (base), cards are 100% width, so effectively 1 column
-            if (width < 480) { // sm is 30em ~ 480px
+            if (width < 480) {
                 columns = 1;
             } else if (columns < 1) {
                 columns = 1;
             }
 
-            // We want exactly 2 rows
             const newPageSize = columns * 2;
-
-            // console.log(`[MyBooks] Width: ${width}, Available: ${availableWidth}, Cols: ${columns}, NewSize: ${newPageSize}`);
-
-            setDynamicPageSize(prev => {
-                if (prev !== newPageSize) {
-                    return newPageSize;
-                }
-                return prev;
-            });
+            setDynamicPageSize(prev => prev !== newPageSize ? newPageSize : prev);
         };
 
-        // Initial calc
         calculatePageSize();
 
-        // Listener
-        window.addEventListener('resize', calculatePageSize);
-        return () => window.removeEventListener('resize', calculatePageSize);
+        let timeoutId;
+        const debouncedResize = () => {
+            clearTimeout(timeoutId);
+            timeoutId = setTimeout(calculatePageSize, 150);
+        };
+
+        window.addEventListener('resize', debouncedResize);
+        return () => {
+            clearTimeout(timeoutId);
+            window.removeEventListener('resize', debouncedResize);
+        };
     }, []);
 
     if (loading && page === 0 && books.length === 0) return <Center h="200px" color="white">{t('myBooks.loading')}</Center>;
@@ -159,7 +135,7 @@ function MyBooks() {
                             _active={{ bg: 'whiteAlpha.400' }}
                             backdropFilter="blur(5px)"
                         >
-                            {t('myBooks.deleteSelectedCount', { count: selectedBooks.size, defaultValue: `Löschen (${selectedBooks.size})` })}
+                            {t('myBooks.deleteSelectedCount', { count: selectedBooks.size })}
                         </Button>
                     )}
                     <Button
@@ -196,7 +172,6 @@ function MyBooks() {
                         ))}
                     </Flex>
 
-                    {/* Simplified Arrow Pagination */}
                     {totalPages > 1 && (
                         <Flex justify="center" align="center" mt={8} gap={4}>
                             <IconButton
@@ -231,94 +206,35 @@ function MyBooks() {
                         </Flex>
                     )}
 
-                    {/* CONFIRMATION DIALOGS */}
-
-                    {/* Delete Single Book */}
-                    <AlertDialog
+                    <ConfirmDialog
                         isOpen={isDeleteOpen}
-                        leastDestructiveRef={cancelRef}
                         onClose={onDeleteClose}
-                        isCentered
-                    >
-                        <AlertDialogOverlay>
-                            <AlertDialogContent>
-                                <AlertDialogHeader fontSize='lg' fontWeight='bold'>
-                                    {t('myBooks.confirmDeleteTitle', 'Delete Book?')}
-                                </AlertDialogHeader>
+                        onConfirm={confirmDelete}
+                        title={t('myBooks.confirmDeleteTitle', 'Delete Book?')}
+                        body={t('myBooks.confirmDelete')}
+                        confirmLabel={t('common.delete')}
+                        cancelLabel={t('common.cancel')}
+                    />
 
-                                <AlertDialogBody>
-                                    {t('myBooks.confirmDelete', 'Are you sure you want to delete this book?')}
-                                </AlertDialogBody>
-
-                                <AlertDialogFooter>
-                                    <Button ref={cancelRef} onClick={onDeleteClose}>
-                                        {t('common.cancel', 'Cancel')}
-                                    </Button>
-                                    <Button colorScheme='red' onClick={confirmDelete} ml={3}>
-                                        {t('common.delete', 'Delete')}
-                                    </Button>
-                                </AlertDialogFooter>
-                            </AlertDialogContent>
-                        </AlertDialogOverlay>
-                    </AlertDialog>
-
-                    {/* Delete Selected */}
-                    <AlertDialog
+                    <ConfirmDialog
                         isOpen={isDeleteSelectedOpen}
-                        leastDestructiveRef={cancelRef}
                         onClose={onDeleteSelectedClose}
-                        isCentered
-                    >
-                        <AlertDialogOverlay>
-                            <AlertDialogContent>
-                                <AlertDialogHeader fontSize='lg' fontWeight='bold'>
-                                    {t('myBooks.confirmDeleteSelectedTitle', 'Delete Selected Books?')}
-                                </AlertDialogHeader>
+                        onConfirm={confirmDeleteSelected}
+                        title={t('myBooks.confirmDeleteSelectedTitle', 'Delete Selected Books?')}
+                        body={t('myBooks.confirmDeleteSelected', { count: selectedBooks.size })}
+                        confirmLabel={t('common.delete')}
+                        cancelLabel={t('common.cancel')}
+                    />
 
-                                <AlertDialogBody>
-                                    {t('myBooks.confirmDeleteSelected', { count: selectedBooks.size })}
-                                </AlertDialogBody>
-
-                                <AlertDialogFooter>
-                                    <Button ref={cancelRef} onClick={onDeleteSelectedClose}>
-                                        {t('common.cancel', 'Cancel')}
-                                    </Button>
-                                    <Button colorScheme='red' onClick={confirmDeleteSelected} ml={3}>
-                                        {t('common.delete', 'Delete')}
-                                    </Button>
-                                </AlertDialogFooter>
-                            </AlertDialogContent>
-                        </AlertDialogOverlay>
-                    </AlertDialog>
-
-                    {/* Delete All */}
-                    <AlertDialog
+                    <ConfirmDialog
                         isOpen={isDeleteAllOpen}
-                        leastDestructiveRef={cancelRef}
                         onClose={onDeleteAllClose}
-                        isCentered
-                    >
-                        <AlertDialogOverlay>
-                            <AlertDialogContent>
-                                <AlertDialogHeader fontSize='lg' fontWeight='bold'>
-                                    {t('myBooks.confirmDeleteAllTitle', 'Delete ALL Books?')}
-                                </AlertDialogHeader>
-
-                                <AlertDialogBody>
-                                    {t('myBooks.confirmDeleteAll', 'Are you sure you want to delete ALL books? This cannot be undone.')}
-                                </AlertDialogBody>
-
-                                <AlertDialogFooter>
-                                    <Button ref={cancelRef} onClick={onDeleteAllClose}>
-                                        {t('common.cancel', 'Cancel')}
-                                    </Button>
-                                    <Button colorScheme='red' onClick={confirmDeleteAll} ml={3}>
-                                        {t('common.delete', 'Delete All')}
-                                    </Button>
-                                </AlertDialogFooter>
-                            </AlertDialogContent>
-                        </AlertDialogOverlay>
-                    </AlertDialog>
+                        onConfirm={confirmDeleteAll}
+                        title={t('myBooks.confirmDeleteAllTitle', 'Delete ALL Books?')}
+                        body={t('myBooks.confirmDeleteAll')}
+                        confirmLabel={t('common.deleteAll')}
+                        cancelLabel={t('common.cancel')}
+                    />
                 </>
             )}
         </Box>

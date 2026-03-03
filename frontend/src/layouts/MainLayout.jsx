@@ -1,9 +1,8 @@
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useToast } from '@chakra-ui/react';
-import Navbar from '../shared/components/Navbar';
-import { useReadingSession } from '../features/my-books/hooks/useReadingSession';
-
 import { useTranslation } from 'react-i18next';
+import Navbar from '../shared/components/Navbar';
+import { useReadingSessionContext } from '../context/ReadingSessionContext';
 
 const MainLayout = ({ fullWidth = false }) => {
     const { t } = useTranslation();
@@ -16,7 +15,7 @@ const MainLayout = ({ fullWidth = false }) => {
         e.preventDefault();
         e.stopPropagation();
         toast({
-            title: t('readingSession.exitWarning', 'Beende erst die Session bevor du verlässt!'),
+            title: t('readingSession.alerts.exitWarning'),
             status: 'warning',
             duration: 3000,
             isClosable: true,
@@ -24,7 +23,7 @@ const MainLayout = ({ fullWidth = false }) => {
         });
     };
 
-    const { activeSession } = useReadingSession();
+    const { activeSession } = useReadingSessionContext();
     const navigate = useNavigate();
 
     // Global Session Alert
@@ -61,7 +60,7 @@ const MainLayout = ({ fullWidth = false }) => {
                             onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
                             onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
                         >
-                            <span style={{ fontWeight: 'bold' }}>⚠️ In Session zurückkehren</span>
+                            <span style={{ fontWeight: 'bold' }}>⚠️ {t('session.returnToSession')}</span>
                         </div>
                     </div>
                 )}

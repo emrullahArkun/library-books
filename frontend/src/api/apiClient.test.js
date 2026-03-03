@@ -232,34 +232,6 @@ describe('apiClient', () => {
         });
     });
 
-    describe('put()', () => {
-        it('should call with PUT method and body', async () => {
-            global.fetch.mockResolvedValue({
-                status: 200, ok: true,
-                json: vi.fn().mockResolvedValue({}),
-            });
-
-            await apiClient.put('/api/books/1', { title: 'Updated' });
-            expect(global.fetch).toHaveBeenCalledWith('/api/books/1', expect.objectContaining({
-                method: 'PUT',
-                body: JSON.stringify({ title: 'Updated' }),
-            }));
-        });
-
-        it('should handle null data', async () => {
-            global.fetch.mockResolvedValue({
-                status: 200, ok: true,
-                json: vi.fn().mockResolvedValue({}),
-            });
-
-            await apiClient.put('/api/books/1', null);
-            expect(global.fetch).toHaveBeenCalledWith('/api/books/1', expect.objectContaining({
-                method: 'PUT',
-                body: undefined,
-            }));
-        });
-    });
-
     describe('patch()', () => {
         it('should call with PATCH method and body', async () => {
             global.fetch.mockResolvedValue({

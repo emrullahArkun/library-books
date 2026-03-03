@@ -1,5 +1,5 @@
 import { renderHook, act, waitFor } from '@testing-library/react';
-import { useReadingSession } from './useReadingSession';
+import { useReadingSessionContext } from '../../../context/ReadingSessionContext';
 import { ReadingSessionProvider } from '../../../context/ReadingSessionContext';
 import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 
@@ -9,7 +9,7 @@ vi.mock('../../../context/AuthContext', () => ({
     useAuth: () => ({ token: mockToken })
 }));
 
-describe('useReadingSession', () => {
+describe('useReadingSessionContext', () => {
     beforeEach(() => {
         global.fetch = vi.fn();
         vi.spyOn(Storage.prototype, 'getItem').mockReturnValue(mockToken);
@@ -37,7 +37,7 @@ describe('useReadingSession', () => {
             <ReadingSessionProvider>{children}</ReadingSessionProvider>
         );
 
-        const { result } = renderHook(() => useReadingSession(), { wrapper });
+        const { result } = renderHook(() => useReadingSessionContext(), { wrapper });
 
         // Wait for fetch to complete
         await waitFor(() => expect(result.current.loading).toBe(false));
@@ -59,7 +59,7 @@ describe('useReadingSession', () => {
             <ReadingSessionProvider>{children}</ReadingSessionProvider>
         );
 
-        const { result } = renderHook(() => useReadingSession(), { wrapper });
+        const { result } = renderHook(() => useReadingSessionContext(), { wrapper });
         await waitFor(() => expect(result.current.loading).toBe(false));
 
         expect(result.current.activeSession).toBeNull();
@@ -74,7 +74,7 @@ describe('useReadingSession', () => {
             <ReadingSessionProvider>{children}</ReadingSessionProvider>
         );
 
-        const { result } = renderHook(() => useReadingSession(), { wrapper });
+        const { result } = renderHook(() => useReadingSessionContext(), { wrapper });
         await waitFor(() => expect(result.current.loading).toBe(false));
 
         // Mock start response

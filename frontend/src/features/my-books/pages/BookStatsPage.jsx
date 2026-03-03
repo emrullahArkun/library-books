@@ -15,7 +15,8 @@ import {
 import { booksApi } from '../../books/api';
 import { useBookStats } from '../hooks/useBookStats';
 import { useBookStatsCalculations } from '../hooks/useBookStatsCalculations';
-import { usePinstripeBackground } from '../../../hooks/usePinstripeBackground';
+import { usePinstripeBackground } from '../../../shared/hooks/usePinstripeBackground';
+import { useThemeTokens } from '../../../shared/hooks/useThemeTokens';
 import { FaBookOpen, FaChartLine, FaClock } from 'react-icons/fa';
 
 import StatsCard from '../components/StatsCard';
@@ -60,16 +61,8 @@ const BookStatsPage = () => {
         }
     };
 
-    // Apply brown background style (same as HomePage)
-    // Apply brown background style (same as HomePage)
     usePinstripeBackground();
-
-    // Force styling for dark brown background
-    const bgColor = 'transparent';
-    const cardBg = 'whiteAlpha.200'; // Glass effect
-    const textColor = 'white';
-    const subTextColor = 'gray.300';
-    const brandColor = 'teal.200';
+    const { bgColor, cardBg, textColor, subTextColor, brandColor } = useThemeTokens();
 
     if (loading) return (
         <Flex justify="center" align="center" h="100vh" bg={bgColor}>
