@@ -22,11 +22,7 @@ public class BookProgressService {
         book.setCurrentPage(currentPage);
 
         if (book.getPageCount() != null) {
-            if (currentPage >= book.getPageCount()) {
-                book.setCompleted(true);
-            } else {
-                book.setCompleted(false);
-            }
+            book.setCompleted(currentPage >= book.getPageCount());
         }
 
         return bookRepository.save(book);

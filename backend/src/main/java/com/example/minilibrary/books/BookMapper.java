@@ -4,9 +4,10 @@ import com.example.minilibrary.books.dto.BookDto;
 import com.example.minilibrary.books.dto.CreateBookRequest;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.ReportingPolicy;
 import org.springframework.beans.factory.annotation.Autowired;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.ERROR)
 public abstract class BookMapper {
 
     @Autowired

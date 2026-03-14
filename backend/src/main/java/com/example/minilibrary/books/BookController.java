@@ -42,7 +42,7 @@ public class BookController {
         return bookService.getAllOwnedIsbns(user);
     }
 
-    @GetMapping("/{id:\\d+}")
+    @GetMapping("/{id}")
     public ResponseEntity<BookDto> getBookById(@PathVariable Long id, @CurrentUser User user) {
         Book book = bookService.findByIdAndUser(id, user)
                 .orElseThrow(() -> new ResourceNotFoundException("Book not found with id: " + id));

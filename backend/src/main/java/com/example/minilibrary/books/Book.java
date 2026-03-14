@@ -59,6 +59,16 @@ public class Book {
     @OneToMany(mappedBy = "book", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ReadingSession> readingSessions = new ArrayList<>();
 
+    public void addReadingSession(ReadingSession session) {
+        readingSessions.add(session);
+        session.setBook(this);
+    }
+
+    public void removeReadingSession(ReadingSession session) {
+        readingSessions.remove(session);
+        session.setBook(null);
+    }
+
     @PrePersist
     public void prePersist() {
         if (currentPage == null) {
